@@ -67,6 +67,24 @@ we must definitely have a unique ID as "key" property. (Each child in a list sho
 
 However, we must not try to access key in the rendering part. It will render as undefined. To access it for some reason, pass it in a different prop other than "key"
 
+## Using JS short circuit and Truthy Falsy properties in React Codes
+We can exploit the conditional (ternary) operator, truthy-falsy and logical short circuiting for writing short codes
+
+Example:
+``` js
+
+function Form(props) {
+  return (
+    <form className="form">
+      <input type="text" placeholder="Username" />
+      <input type="password" placeholder="Password" />
+      { !props.isRegistered && <input type="password" placeholder="Confirm Password" />} //Input element rendered only if props.isRegistered is false
+      <button type="submit">{props.isRegistered? "Login":"Register"}</button> // If props.isRegistered is true, then button says login else register
+    </form>
+  );
+}
+```
+
 ## Important Links
 1) My code sample: https://codesandbox.io/s/introduction-to-jsx-forked-j5wyjn?file=/src/index.js
 2) JSX syntax: https://github.com/airbnb/javascript/blob/master/react/README.md
