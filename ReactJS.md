@@ -3,6 +3,10 @@
 - [Local Environment Setup](#setup-local-environment)
 - [Basics](#basics)
 - [Useful JS functions](#useful-js-functions)
+- [Using JS properties in React](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
+- [React States](#state-in-react)
+- [React Hooks](#hooks-in-react)
+- [React Events](#event-handling-in-react)
 - [Important Links](#important-links)
 
 
@@ -84,6 +88,101 @@ function Form(props) {
   );
 }
 ```
+
+## State in React
+
+UI is a function of state. State makes the UI interactive.
+UI = f(state)
+We have 2 approaches
+1) Declarative
+2) Imperative
+
+### Declarative state programming
+An UI will depend on the value of a state variable. We are declaring how our UI should look under different conditions or depending upon state.
+Even if we use state variables and change the value of state to change UI, we wont get the desired effect without re rendering the UI after a state change.
+For this purpose, we use hooks, which are functions that helps us to hook into react state variables and read/modify it. 
+
+### Imperative state programming
+This is more primitive and we use it during the early stage of learning JS for frontend. Like having a button which on click calls a function, inside the function we get element by ID and do the necessary changes.
+
+## Hooks in React
+Hooks help us re render the part of html that depends on a state variable whenever there is a change in said state.
+A react hook will only work inside a function.
+
+Example,
+useState Hook
+``` js
+import React from "react";
+function App(){
+    // we are using ES6 concept called destructuring (for arrays and objects)
+    // count is the state variable and setCount is a function which will define the logic for changing state
+    // value passed inside useState while decalaration is initial value. (here 0)
+    // the value passed here inside setCount will be set as current value.
+    const [count, setCount] = useState(0);
+
+    function increase(){
+        setCount(count+1);
+    }
+    function decrease(){
+        setCount(count-1);
+    }
+    return (
+        <div>
+        <h1>{count}</h1>
+        <button onClick={increase}> + </button>
+        <button onClick={decrease}> - </button>
+        </div>
+    )
+
+}
+
+```
+
+## Event handling in React
+
+Events are handled just like we do in vanilla JavaScript, except we use state variables instead of JS variables.
+
+Example,
+``` js
+import React, { useState } from "react";
+
+function App() {
+  const [headingText, setHeadingText] = useState("Hello");
+  const [isMousedOver, setMouseOver] = useState(false);
+
+  function handleClick() {
+    setHeadingText("Submitted");
+  }
+
+  function handleMouseOver() {
+    setMouseOver(true);
+  }
+
+  function handleMouseOut() {
+    setMouseOver(false);
+  }
+
+  return (
+    <div className="container">
+      <h1>{headingText}</h1>
+      <input type="text" placeholder="What's your name?" />
+      <button
+        style={{ backgroundColor: isMousedOver ? "black" : "white" }}
+        onClick={handleClick}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+      >
+        Submit
+      </button>
+    </div>
+  );
+}
+
+export default App;
+
+```
+
+
 
 ## Important Links
 1) My code sample: https://codesandbox.io/s/introduction-to-jsx-forked-j5wyjn?file=/src/index.js
