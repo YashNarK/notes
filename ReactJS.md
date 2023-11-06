@@ -1,4 +1,4 @@
-#React JS
+# React JS
 ## Table of contents
 - [Local Environment Setup](#setup-local-environment)
 - [Basics](#basics)
