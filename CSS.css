@@ -1,0 +1,104 @@
+/*
+display properties:
+Block
+Inline
+Inline-Block
+None
+
+Block element takes the whole width of the page. Ex: h1..h6, ol, ul, li, p etc., We can modify the width of block elements.
+
+Inline elements do not take the whole width and can sit next to each other. Ex: span, img etc., However, we cannot control the width of the element.
+
+Inline-Block elements can sit next to each other and yet their width can be changed.
+
+None display type will make the element disappear
+
+
+Color Theory:
+Red - Energetic
+Green - Fresh, Safety
+Yellow - Attention grabbing
+blue - sincerity, trust
+purple - royalty, feminism
+
+Color palette:
+anologous color palette - 2 colors near to each other in color wheel
+complementary color palette - 2 colors opposite to each other in color wheel
+
+use adobe color for making color combinations
+
+
+Fonts:
+Serif Family: Traditional, Stable, Respectable
+Sans-Serif Family: Sensible, Simple, Straight forward
+Script Family: personal, creative, elegant
+Display family: friendly, loud, amusing
+Modern Family: Stylish, Chic, Smart
+
+Always avoid comic sans, kristen, euubon, curlz, viner, papyrus fonts
+
+Good ones: Sans serif, monospace, fantasy
+
+Goto ccsfontstack.com for fonts
+Also fonts.google.com and get links for fonts you like
+eg: sacramento, Montserrat
+
+Use F Layout or Z layout
+
+Tips:
+1. Content is everything
+2. Order comes from code
+3. Children sit on Parents
+
+Position property:
+Static
+Relative
+Absolute
+Fixed
+
+All html elements are static by default. They go along with the default settings.
+
+Relative positioning means, the position of element will be relative to its static position. relative position will not work without coordinate properties (top,bottom,left,right).
+The space it leaves by positioning does not get affected.
+
+Absolute positioning also uses coordinates. Here the elements are positioned relative to their parents. Instead of coordinates pushing away the element, they act as anchor points. The space it leaves behind by positioning gets affected by other elements. preferred parent is the closest parent with relative layout.
+
+Fixed positioning will give you a fixed element positioning even when you scroll through the page. This is most useful in navigation bars.
+
+To center the contents, use text align in the parent container. But this approach doesnt work when you try to modify width of a block element subjected to alignment.
+
+Another approach to center align the block element and width set contents is the margin.
+margin:0 auto 0 auto; => horizontal centering
+margin:auto 0 auto 0; => vertical centering
+margin: auto; => center
+
+Goto flaticon.com for images
+Goto giphy.com for gifs
+Goto fontawesome for icons
+Bootstrap for SVGs
+
+
+px will not be inherited and added. em and % will be added.
+px is static while other two are dyanamic.
+use rem instead of em to ignore parent settings
+
+For flex box visit:
+https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
+Use float property only for wrapping texts
+
+Use https://www.ui-patterns.com/ for UI designs template
+dribble for UI design inspiration
+sneakpeekit.com for wireframing in paper pencil
+use balsamiq.cloud for wireframing online
+
+Stacking order:
+top most html element is the bottom most in stack
+and as we progress down the html code, each susequent element gets stacked on top of each .
+The bottom most html element is the most farthest away from screen in projection
+
+z-index is a CSS property which can be used to modify stacking order. But this wont work unless the affected elements are positioned static. They must be absolute, fixed or relative.
+
+Default z-index is 0 for all elements.
+
+*/
