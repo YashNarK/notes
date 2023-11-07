@@ -2,11 +2,12 @@
 ## Table of contents
 - [Local Environment Setup](#setup-local-environment)
 - [Basics](#basics)
-- [Useful JS functions](#useful-js-functions)
-- [Using JS properties in React](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
+- [React Components](#react-components)
 - [React States](#state-in-react)
 - [React Hooks](#hooks-in-react)
 - [React Events](#event-handling-in-react)
+- [Useful JS functions](#useful-js-functions)
+- [Using JS properties in React](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
 - [Important Links](#important-links)
 
 
@@ -55,39 +56,27 @@ Just like how we have attributes for html tags, we have props for react tags.
 These props can be received as arguments.
 className will not work on any react tags, so it must be used only on html tags.
 
+## React Components
+React apps are made out of components. A component is a piece of the UI (user interface) that has its own logic and appearance. A component can be as small as a button, or as large as an entire page.
 
-## Useful JS functions
-1) Map - Create a new array by doing something in each item of an array.
-2) Filter - Create a new array by keeping the items that return true.
-3) Reduce - Accumulate a value by doing something to each item in an array.
-4) Find - find the first item that matches from an array.
-5) FindIndex - find the index of the first item that matches.
-
-### Map function
-Each React component must have a create{ComponentName}() function which takes in the passed object and returns the component's .
- function so that a list of data can be generated as a list of react components. 
-When we use map function (loop feature) to render a component multiple times with different inputs (from a datasource),
-we must definitely have a unique ID as "key" property. (Each child in a list should have a unique "key" prop.)
-
-However, we must not try to access key in the rendering part. It will render as undefined. To access it for some reason, pass it in a different prop other than "key"
-
-## Using JS short circuit and Truthy Falsy properties in React Codes
-We can exploit the conditional (ternary) operator, truthy-falsy and logical short circuiting for writing short codes
-
-Example:
+React components are JavaScript functions that return markup:
 ``` js
-
-function Form(props) {
+function MyButton() {
   return (
-    <form className="form">
-      <input type="text" placeholder="Username" />
-      <input type="password" placeholder="Password" />
-      { !props.isRegistered && <input type="password" placeholder="Confirm Password" />} //Input element rendered only if props.isRegistered is false
-      <button type="submit">{props.isRegistered? "Login":"Register"}</button> // If props.isRegistered is true, then button says login else register
-    </form>
+    <button>I'm a button</button>
+  );
+}
+
+export default function MyApp() {
+  return (
+    <div>
+      <h1>Welcome to my app</h1>
+      <MyButton />
+    </div>
   );
 }
 ```
+Notice that <MyButton /> starts with a capital letter. That’s how you know it’s a React component. React component names must always start with a capital letter, while HTML tags must be lowercase.
 
 ## State in React
 
@@ -181,7 +170,38 @@ function App() {
 export default App;
 
 ```
+## Useful JS functions
+1) Map - Create a new array by doing something in each item of an array.
+2) Filter - Create a new array by keeping the items that return true.
+3) Reduce - Accumulate a value by doing something to each item in an array.
+4) Find - find the first item that matches from an array.
+5) FindIndex - find the index of the first item that matches.
 
+### Map function
+Each React component must have a create{ComponentName}() function which takes in the passed object and returns the component's .
+ function so that a list of data can be generated as a list of react components. 
+When we use map function (loop feature) to render a component multiple times with different inputs (from a datasource),
+we must definitely have a unique ID as "key" property. (Each child in a list should have a unique "key" prop.)
+
+However, we must not try to access key in the rendering part. It will render as undefined. To access it for some reason, pass it in a different prop other than "key"
+
+## Using JS short circuit and Truthy Falsy properties in React Codes
+We can exploit the conditional (ternary) operator, truthy-falsy and logical short circuiting for writing short codes
+
+Example:
+``` js
+
+function Form(props) {
+  return (
+    <form className="form">
+      <input type="text" placeholder="Username" />
+      <input type="password" placeholder="Password" />
+      { !props.isRegistered && <input type="password" placeholder="Confirm Password" />} //Input element rendered only if props.isRegistered is false
+      <button type="submit">{props.isRegistered? "Login":"Register"}</button> // If props.isRegistered is true, then button says login else register
+    </form>
+  );
+}
+```
 
 
 ## Important Links
