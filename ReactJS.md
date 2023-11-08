@@ -79,6 +79,7 @@ export default function MyApp() {
 Notice that <MyButton /> starts with a capital letter. That’s how you know it’s a React component. React component names must always start with a capital letter, while HTML tags must be lowercase.
 
 ## State in React
+Often, you’ll want your component to “remember” some information and display it. For example, maybe you want to count the number of times a button is clicked. To do this, add state to your component.
 
 UI is a function of state. State makes the UI interactive.
 UI = f(state)
@@ -95,6 +96,10 @@ For this purpose, we use hooks, which are functions that helps us to hook into r
 This is more primitive and we use it during the early stage of learning JS for frontend. Like having a button which on click calls a function, inside the function we get element by ID and do the necessary changes.
 
 ## Hooks in React
+Functions starting with 'use' are called Hooks. useState is a built-in Hook provided by React. You can find other built-in Hooks in the [API reference](https://react.dev/reference/react). You can also write your own Hooks by combining the existing ones.
+
+Hooks are more restrictive than other functions. You can only call Hooks at the top of your components (or other Hooks). If you want to use useState in a condition or a loop, extract a new component and put it there.
+
 Hooks help us re render the part of html that depends on a state variable whenever there is a change in said state.
 A react hook will only work inside a function.
 
@@ -130,8 +135,7 @@ function App(){
 ## Event handling in React
 
 Events are handled just like we do in vanilla JavaScript, except we use state variables instead of JS variables.
-
-Example,
+You can respond to events by declaring event handler functions inside your components:
 ``` js
 import React, { useState } from "react";
 
@@ -170,6 +174,8 @@ function App() {
 export default App;
 
 ```
+Notice how onClick={handleClick} has no parentheses at the end! Do not call the event handler function: you only need to pass it down. React will call your event handler when the user clicks the button.
+
 ## Useful JS functions
 1) Map - Create a new array by doing something in each item of an array.
 2) Filter - Create a new array by keeping the items that return true.
