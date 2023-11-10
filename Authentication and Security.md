@@ -190,9 +190,9 @@ An access token is a file that contains the user’s information and permissions
 ### Access Token Advantages over session cookies
 Some advantages of using access tokens over session cookies are:
 
-They are more scalable, as the server does not need to store or retrieve session files for each user.
-They are more secure, as they cannot be tampered with or forged by anyone who does not have the server’s secret key.
-They are more flexible, as they can be used for different types of authentication, such as OAuth or JWT.
+- They are more scalable, as the server does not need to store or retrieve session files for each user.
+- They are more secure, as they cannot be tampered with or forged by anyone who does not have the server’s secret key.
+- They are more flexible, as they can be used for different types of authentication, such as OAuth or JWT.
 
 ### Notes
 Cookies are used widely to save browsing session data. It can be shared amongst sites to provide user a relative experience.
