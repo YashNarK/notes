@@ -178,24 +178,28 @@ bcrypt.compare(passwordEntered,password,(err,result)=>{
 
 ## Level 5: Cookies and Sessions or Token Authentication
 
-Cookies are used widely to save browsing session data. It can be shared amongst sites to provide user a relative experience.
-For example, we add an item in cart in Amazon, but then we close the Amazon site and open facebook, only to be greeted by ads related to that item we added in cart.
-
-Session is a period of time when a browser interacts with a server.
-In nodeJS we have passport (a node module) for implementing all these.
-
+### Session cookie and Access token
 A session cookie and an access token are both ways of authenticating a user’s requests over the internet. They are issued by the server when the user logs in and are sent back with every request. However, they have some differences:
 
+### Session Cookie
 A session cookie is a small file that contains a unique ID for the user. The server stores the rest of the user’s information in a session file, which is linked to the ID. The server can access the session file by looking up the ID from the cookie. A session cookie is stored only on the client’s local storage.
 
+### Access Token
 An access token is a file that contains the user’s information and permissions, as well as a signature from the server. The server can verify the token by checking its signature, without needing to look up anything in the database. An access token can be stored anywhere, such as in the client’s local storage, a header, or a query parameter.
 
+### Access Token Advantages over session cookies
 Some advantages of using access tokens over session cookies are:
 
 They are more scalable, as the server does not need to store or retrieve session files for each user.
 They are more secure, as they cannot be tampered with or forged by anyone who does not have the server’s secret key.
 They are more flexible, as they can be used for different types of authentication, such as OAuth or JWT.
 
+### Notes
+Cookies are used widely to save browsing session data. It can be shared amongst sites to provide user a relative experience.
+For example, we add an item in cart in Amazon, but then we close the Amazon site and open facebook, only to be greeted by ads related to that item we added in cart.
+
+Session is a period of time when a browser interacts with a server.
+In nodeJS we have passport (a node module) for implementing all these.
 In code, always immport express-session first.
 1) express-session (middleware)
 2) passport (middleware)
