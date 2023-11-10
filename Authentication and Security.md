@@ -19,12 +19,12 @@ Authentication: Typically, users prove they are who they say they are by enterin
 Authorization: The system verifies that the users have permission to the system that they’re attempting to access.
 
 ## Authentication levels
-Level 1: Email and Password
-Level 2: Database Encryption and Enviornment variable usage (using mongoose-encryption, dotenv)
-Level 3: Hashing (using md5)
-Level 4: Hashing and Salting (bcrypt)
-Level 5: Cookies and Sessions (using passport, passport-local, passport-local-mongoose, express-session) or Token authentication
-Level 6: OAuth (using passport-google-oauth2 [may vary depending on Oauth provider])
+- Level 1: Email and Password
+- Level 2: Database Encryption and Enviornment variable usage (using mongoose-encryption, dotenv)
+- Level 3: Hashing (using md5)
+- Level 4: Hashing and Salting (bcrypt)
+- Level 5: Cookies and Sessions (using passport, passport-local, passport-local-mongoose, express-session) or Token authentication
+- Level 6: OAuth (using passport-google-oauth2 [may vary depending on Oauth provider])
 
 ## Level 1: Email and Password
 Username or Email or Mobile Number + Password can be the basic authentication setup.
