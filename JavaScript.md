@@ -215,3 +215,98 @@ The rest operator (`...`) is particularly useful in functions when you want to h
     - Checks if an object is an instance of a particular class or constructor.
 
 These are some of the fundamental operators in JavaScript. Understanding how to use them is essential for effective programming in the language.
+
+## Loops
+JavaScript supports various types of loops that allow you to repeatedly execute a block of code. Here are the main types of loops in JavaScript:
+
+### 1. **For Loop:**
+   - The `for` loop repeats a block of code a specified number of times.
+
+   ```javascript
+   for (let i = 0; i < 5; i++) {
+     console.log(i);
+   }
+   ```
+
+### 2. **While Loop:**
+   - The `while` loop repeats a block of code as long as a specified condition is true.
+
+   ```javascript
+   let i = 0;
+   while (i < 5) {
+     console.log(i);
+     i++;
+   }
+   ```
+
+### 3. **Do-While Loop:**
+   - Similar to the `while` loop, but it always executes the block of code at least once, even if the condition is initially false.
+
+   ```javascript
+   let i = 0;
+   do {
+     console.log(i);
+     i++;
+   } while (i < 5);
+   ```
+
+### 4. **For...In Loop:**
+   - Used to iterate over the properties of an object.
+
+   ```javascript
+   const person = { name: 'John', age: 30 };
+   for (let key in person) {
+     console.log(key, person[key]);
+   }
+   ```
+
+### 5. **For...Of Loop:**
+   - Introduced in ECMAScript 6 (ES6), it iterates over iterable objects (arrays, strings, etc.).
+
+   ```javascript
+   const numbers = [1, 2, 3, 4, 5];
+   for (let number of numbers) {
+     console.log(number);
+   }
+   ```
+
+### 6. **forEach Method:**
+   - A method available for arrays that executes a provided function once for each array element.
+
+   ```javascript
+   const numbers = [1, 2, 3, 4, 5];
+   numbers.forEach(function(number) {
+     console.log(number);
+   });
+   ```
+
+### 7. **Map Method:**
+   - Another method for arrays that creates a new array by applying a function to each element of the original array.
+
+   ```javascript
+   const numbers = [1, 2, 3, 4, 5];
+   const squaredNumbers = numbers.map(function(number) {
+     return number * number;
+   });
+   ```
+
+### 8. **Filter Method:**
+   - Filters elements in an array based on a provided function.
+
+   ```javascript
+    const numbers = [1, 2, 3, 4, 5];
+    const evenNumbers = numbers.filter(function(number) {
+        return number % 2 === 0;
+    });
+   ```
+### 9. **Reduce method:**
+   - Iterates over each element in an array and accumulates a single result, often by applying a provided function to each element.
+
+   ```javascript
+    const numbers = [1, 2, 3, 4, 5];
+    const sum = numbers.reduce(function(accumulator, currentValue) {
+    return accumulator + currentValue;
+    }, 0);
+
+   ``` 
+These loops provide different ways to iterate over data structures or execute code repeatedly based on specific conditions. Choose the appropriate loop based on your use case.
