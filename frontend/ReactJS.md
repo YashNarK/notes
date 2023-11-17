@@ -1,18 +1,25 @@
 # React JS
 
 ## Table of Contents
-- [Local Environment Setup](#setup-local-environment)
-- [JSX](#jsx)
-- [What is React](#what-is-react)
-- [Basics](#basics)
-- [React Elements](#react-elements)
-- [React Components](#react-components)
-- [React States](#state)
-- [React Hooks](#hooks-in-react)
-- [React Events](#event-handling-in-react)
-- [Useful JS Functions](#useful-js-functions)
-- [Using JS Properties in React](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
-- [Important Links](#important-links)
+- [React JS](#react-js)
+  - [Table of Contents](#table-of-contents)
+  - [Setup Local Environment](#setup-local-environment)
+  - [JSX](#jsx)
+  - [What is React?](#what-is-react)
+  - [Basics](#basics)
+  - [React Elements](#react-elements)
+  - [React Components](#react-components)
+  - [State](#state)
+    - [Declarative State Programming](#declarative-state-programming)
+    - [Imperative State Programming](#imperative-state-programming)
+    - [React State](#react-state)
+  - [Hooks in React](#hooks-in-react)
+  - [Event Handling in React](#event-handling-in-react)
+  - [Useful JS Functions](#useful-js-functions)
+    - [Map Function](#map-function)
+  - [Using JS Short Circuit and Truthy Falsy Properties in React Codes](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
+  - [Important Links](#important-links)
+
 
 ## Setup Local Environment
 1. Install Node LTS.

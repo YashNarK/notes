@@ -8,6 +8,7 @@ Welcome to the Developer Notes Repository! This repository serves as a collectio
 2. [ReactJS](frontend/ReactJS.md)
 3. [Authentication and Security (using Node.js)](cybersecurity/Authentication%20and%20Security.md)
 4. [Prompt Engineering](prompt_engineering/PromptEngineering.md)
+5. [Frontend Development](frontend/frontend_basics.md)
 
 Feel free to explore the notes and enhance your understanding of these topics.
 

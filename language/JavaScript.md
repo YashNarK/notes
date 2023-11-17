@@ -1654,7 +1654,6 @@ Understanding when to use synchronous or asynchronous programming is crucial for
 Choosing between callbacks, promises, or async/await depends on the specific use case, project requirements, and the level of support needed for older environments. Async/Await has become the preferred choice in modern JavaScript development due to its readability and ease of use.
 
 ## Important resources
-It looks like you've already identified some excellent resources for practicing and learning web development. Here's a summary of the resources you've mentioned:
 
 ### Practice Platforms:
 1. **CodePen:**
