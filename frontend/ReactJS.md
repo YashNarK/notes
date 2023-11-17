@@ -2,7 +2,7 @@
 
 ## Table of Contents
 - [Local Environment Setup](#setup-local-environment)
-- [JSX]
+- [JSX](#jsx)
 - [What is React](#what-is-react)
 - [Basics](#basics)
 - [React Elements](#react-elements)
@@ -204,7 +204,6 @@ Using components allows for a modular and organized approach to building React a
 
 ## State
 
-### State
 State makes UI interactive. UI = f(state). There are declarative and imperative approaches.
 
 ### Declarative State Programming
@@ -415,46 +414,116 @@ These are just a few examples of the many hooks available in React. Hooks provid
 
 ## Event Handling in React
 
-Events are handled using state variables. Respond to events by declaring event handler functions.
+In React, event handling is similar to handling events in HTML but with some differences due to the nature of React components. React provides a consistent way to handle events across different browsers and abstracts away some of the complexities.
 
-```javascript
-import React, { useState } from "react";
+Here's a basic overview of handling events in React:
 
-function App() {
-  const [headingText, setHeadingText] = useState("Hello");
-  const [isMousedOver, setMouseOver] = useState(false);
+1. **Event Naming:**
+   - React events are named using camelCase, similar to how they are in JavaScript. For example, `onClick` instead of `onclick`.
+   - Some common events include `onClick`, `onChange`, `onSubmit`, etc.
 
-  function handleClick() {
-    setHeadingText("Submitted");
-  }
+2. **Event Handling in JSX:**
+   - You can attach event handlers directly to JSX elements. The handler should be a function or a reference to a method.
+   - For example, handling a button click event:
 
-  function handleMouseOver() {
-    setMouseOver(true);
-  }
+   ```jsx
+   import React from 'react';
 
-  function handleMouseOut() {
-    setMouseOver(false);
-  }
+   class MyComponent extends React.Component {
+     handleClick() {
+       console.log('Button clicked!');
+     }
 
-  return (
-    <div className="container">
-      <h1>{headingText}</h1>
-      <input type="text" placeholder="What's your name?" />
-      <button
-        style={{ backgroundColor: isMousedOver ? "black" : "white" }}
-        onClick={handleClick}
-        onMouseOver={handleMouseOver}
-        onMouseOut={handleMouseOut}
-      >
-        Submit
-      </button>
-    </div>
-  );
-}
+     render() {
+       return (
+         <button onClick={this.handleClick}>Click me</button>
+       );
+     }
+   }
+   ```
 
-export default App;
+3. **Passing Parameters to Event Handlers:**
+   - If you need to pass additional parameters to the event handler, you can use an arrow function or bind the function.
 
-```
+   ```jsx
+   import React from 'react';
+
+   class MyComponent extends React.Component {
+     handleClickWithParameter(id) {
+       console.log(`Button clicked with ID: ${id}`);
+     }
+
+     render() {
+       const itemId = 123;
+       return (
+         <button onClick={() => this.handleClickWithParameter(itemId)}>Click me</button>
+       );
+     }
+   }
+   ```
+
+   - Alternatively, you can bind the function in the constructor:
+
+   ```jsx
+   constructor(props) {
+     super(props);
+     this.handleClickWithParameter = this.handleClickWithParameter.bind(this);
+   }
+   ```
+
+4. **Preventing Default Behavior:**
+   - If you're handling a form submission, you might want to prevent the default behavior to avoid a page reload.
+
+   ```jsx
+   import React from 'react';
+
+   class MyForm extends React.Component {
+     handleSubmit(event) {
+       event.preventDefault();
+       console.log('Form submitted!');
+     }
+
+     render() {
+       return (
+         <form onSubmit={this.handleSubmit}>
+           {/* Form elements */}
+           <button type="submit">Submit</button>
+         </form>
+       );
+     }
+   }
+   ```
+
+5. **Handling State in Event Handlers:**
+   - You often want to update the component state based on user interactions.
+
+   ```jsx
+   import React from 'react';
+
+   class Counter extends React.Component {
+     constructor(props) {
+       super(props);
+       this.state = {
+         count: 0,
+       };
+     }
+
+     handleIncrement() {
+       this.setState({ count: this.state.count + 1 });
+     }
+
+     render() {
+       return (
+         <div>
+           <p>Count: {this.state.count}</p>
+           <button onClick={() => this.handleIncrement()}>Increment</button>
+         </div>
+       );
+     }
+   }
+   ```
+
+These are some basic patterns for event handling in React. Remember to be cautious when using arrow functions in JSX, as they can lead to unnecessary re-renders if used in render methods. Using class methods or binding functions in the constructor can help mitigate this issue.
 
 ## Useful JS Functions
 
@@ -479,9 +548,6 @@ const myComponents = myData.map(createMyComponent);
 ```
 
 ## Using JS Short Circuit and Truthy Falsy Properties in React Codes
-
-
-
 Exploit the conditional (ternary) operator, truthy-falsy, and logical short-circuiting for writing concise code.
 
 Example:

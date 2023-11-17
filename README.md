@@ -4,9 +4,10 @@ Welcome to the Developer Notes Repository! This repository serves as a collectio
 
 ## Table of Contents
 
-1. [JavaScript](JavaScript.md)
-2. [ReactJS](ReactJS.md)
-3. [Authentication and Security (using Node.js)](Authentication%20and%20Security.md)
+1. [JavaScript](language/JavaScript.md)
+2. [ReactJS](frontend/ReactJS.md)
+3. [Authentication and Security (using Node.js)](cybersecurity/Authentication%20and%20Security.md)
+4. [Prompt Engineering](prompt_engineering/PromptEngineering.md)
 
 Feel free to explore the notes and enhance your understanding of these topics.
 
@@ -26,6 +27,10 @@ Feel free to explore the notes and enhance your understanding of these topics.
 
 - Implementing user authentication in Node.js applications.
 - Ensuring security best practices, handling sessions, and protecting against common vulnerabilities.
+
+### 4. Prompt Engineering
+- Notes of Pluralsight learning pathway for prompt engineering.
+- Guidelines for prompting, quick review of AI (especially Generative AI)
 
 ## Contributing
 
