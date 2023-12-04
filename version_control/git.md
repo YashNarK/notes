@@ -1,6 +1,7 @@
 # Git
 - [Github's note on GIT](https://docs.github.com/en/get-started/using-git/about-git)
 - [Git full command list reference - GitHub](https://git-scm.com/docs)
+- [Collection of reusable gitignores from GitHub](https://github.com/github/gitignore)
 
 Git is a distributed version control system that is widely used for tracking changes in source code during software development. It allows multiple developers to work on a project simultaneously, keeping track of changes, and merging their work efficiently. Here are some fundamental concepts and commands in Git:
 
