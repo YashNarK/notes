@@ -1,15 +1,25 @@
 #  Authentication and Security
 
 ## Table of Contents
-- [Authentication](#authentication)
-- [Authentication Levels](#authentication-levels)
-- [Level 1: Email and Password](#level-1-email-and-password)
-- [Level 2: Database Encryption and Enviornment variable usage](#level-2-database-encryption-and-enviornment-variable-usage)
-- [Level 3: Hashing](#level-3-hashing)
-- [Level 4: Hashing and Salting](#level-4-hashing-and-salting)
-- [Level 5: Cookies and Sessions or Token Authentication](#level-5-cookies-and-sessions-or-token-authentication)
-- [Level 6: OAuth](#level-6-oauth)
-- [Example codes](#example-codes)
+- [Authentication and Security](#authentication-and-security)
+  - [Table of Contents](#table-of-contents)
+  - [Authentication](#authentication)
+  - [Authentication levels](#authentication-levels)
+  - [Level 1: Email and Password](#level-1-email-and-password)
+  - [Level 2: Database Encryption and Enviornment variable usage](#level-2-database-encryption-and-enviornment-variable-usage)
+  - [Level 3: Hashing](#level-3-hashing)
+  - [Level 4: Hashing and Salting](#level-4-hashing-and-salting)
+  - [Level 5: Cookies and Sessions or Token Authentication](#level-5-cookies-and-sessions-or-token-authentication)
+    - [Session cookie and Access token](#session-cookie-and-access-token)
+    - [Session Cookie](#session-cookie)
+    - [Access Token](#access-token)
+    - [Access Token Advantages over session cookies](#access-token-advantages-over-session-cookies)
+    - [Notes](#notes)
+  - [Level 6: OAuth](#level-6-oauth)
+    - [OAuth features](#oauth-features)
+    - [Steps to setup](#steps-to-setup)
+  - [Example codes](#example-codes)
+
 
 ## Authentication
 Authentication is the process that companies use to confirm that only the right people, services, and apps with the right permissions can get organizational resources. It’s an important part of cybersecurity because a bad actor’s number one priority is to gain unauthorized access to systems. They do this by stealing the username and passwords of users that do have access. The authentication process includes three primary steps:

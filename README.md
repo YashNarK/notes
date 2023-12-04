@@ -35,6 +35,66 @@ Feel free to explore the notes and enhance your understanding of these topics.
 - Notes of Pluralsight learning pathway for prompt engineering.
 - Guidelines for prompting, quick review of AI (especially Generative AI)
 
+### 5. Frontend Development
+
+- **HTML**
+  - Overview of HTML and its structure.
+  - Commonly used HTML tags and attributes.
+
+- **CSS**
+  - Introduction to Cascading Style Sheets.
+  - Styling HTML elements using CSS.
+
+- **JavaScript in the Browser**
+  - Interacting with the Document Object Model (DOM).
+  - Handling events and manipulating the DOM dynamically.
+
+- **Responsive Web Design**
+  - Creating websites that adapt to different screen sizes.
+  - Media queries and flexible grid layouts.
+
+- **Frontend Frameworks**
+  - Overview of popular frontend frameworks (e.g., Angular, ReactJS).
+  - Building single-page applications (SPAs).
+
+- **Web Performance Optimization**
+  - Techniques for optimizing website performance.
+  - Minification, compression, and lazy loading.
+
+### 6. WSL Basics
+
+- **Installation**
+  - Step-by-step guide for installing WSL on Windows.
+
+- **Managing Distributions**
+  - Installing and removing WSL distributions.
+  - Updating and upgrading WSL.
+
+- **Command Line Basics**
+  - Basic commands for navigating and interacting with WSL.
+
+- **File System Integration**
+  - Accessing Windows files from WSL.
+  - File permissions and ownership in WSL.
+
+### 7. GIT
+
+- **Git Basics**
+  - Initializing a Git repository.
+  - Committing changes and viewing commit history.
+
+- **Branching and Merging**
+  - Creating and managing branches.
+  - Merging changes and resolving conflicts.
+
+- **Collaborative Workflows**
+  - Forking and cloning repositories.
+  - Pull requests and code reviews.
+
+- **Git Best Practices**
+  - Guidelines for clean and effective version control.
+  - Commit message conventions and branching strategies.
+
 ## Contributing
 
 If you find any errors, have additional insights, or want to contribute notes on new topics, feel free to create a pull request or open an issue.
