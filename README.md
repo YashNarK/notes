@@ -10,6 +10,7 @@ Welcome to the Developer Notes Repository! This repository serves as a collectio
 4. [Prompt Engineering](prompt_engineering/PromptEngineering.md)
 5. [Frontend Development](frontend/frontend_basics.md)
 6. [WSL Basics](os/WSL.md)
+7. [GIT](version_control/git.md)
 
 Feel free to explore the notes and enhance your understanding of these topics.
 
