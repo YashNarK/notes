@@ -1,39 +1,176 @@
 # React JS
 
 ## Table of Contents
+
 - [React JS](#react-js)
   - [Table of Contents](#table-of-contents)
+  - [Useful VS Code extensions](#useful-vs-code-extensions)
+  - [Useful browser extensions](#useful-browser-extensions)
+  - [Populer UI Libraries](#populer-ui-libraries)
+  - [Icons for UI](#icons-for-ui)
+    - [Installation](#installation)
+    - [Usage](#usage)
+    - [Icon Props](#icon-props)
+  - [Preferred backend stacks](#preferred-backend-stacks)
   - [Setup Local Environment](#setup-local-environment)
+    - [1. create-react-app](#1-create-react-app)
+    - [2. Vite](#2-vite)
   - [JSX](#jsx)
+  - [TSX](#tsx)
   - [What is React?](#what-is-react)
-  - [Basics](#basics)
+  - [Opinions of React](#opinions-of-react)
   - [React Elements](#react-elements)
   - [React Components](#react-components)
+    - [Fragment](#fragment)
+    - [Props](#props)
+      - [**Passing function via a prop**](#passing-function-via-a-prop)
+      - [**Passing children via prop:**](#passing-children-via-prop)
   - [State](#state)
     - [Declarative State Programming](#declarative-state-programming)
     - [Imperative State Programming](#imperative-state-programming)
     - [React State](#react-state)
+  - [Props vs State](#props-vs-state)
   - [Hooks in React](#hooks-in-react)
   - [Event Handling in React](#event-handling-in-react)
+    - [Using class components](#using-class-components)
+    - [Using functions components](#using-functions-components)
   - [Useful JS Functions](#useful-js-functions)
     - [Map Function](#map-function)
   - [Using JS Short Circuit and Truthy Falsy Properties in React Codes](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
   - [Important Links](#important-links)
+- [Summary](#summary)
+  - [Getting started with React](#getting-started-with-react)
+  - [Building components](#building-components)
+    - [Creating a component](#creating-a-component)
+    - [Rendering a List](#rendering-a-list)
+    - [Conditional Rendering](#conditional-rendering)
+    - [Handling events](#handling-events)
+    - [Defining state](#defining-state)
+    - [Props](#props-1)
+    - [Passing Children](#passing-children)
+  - [Styling components](#styling-components)
+    - [Vanilla CSS](#vanilla-css)
+    - [CSS modules](#css-modules)
+    - [CSS in JS](#css-in-js)
+    - [Inline Styling](#inline-styling)
 
+## Useful VS Code extensions
+
+1. [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+2. [Simple React Snippets](https://marketplace.visualstudio.com/items?itemName=burkeholland.simple-react-snippets)
+3. [ES7+ React/Redux/React-Native snippets](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets)
+
+After installing above extensions, at preference > settings of VS Code, make default formatter as "Prettier" and enable format on save.
+
+## Useful browser extensions
+
+1. [React Dev Tools](https://microsoftedge.microsoft.com/addons/detail/react-developer-tools/gpphkfbcpidddadnkolkpfckpihlkkil)
+2. [Pesticide](https://chrome.google.com/webstore/detail/bakpbgckdnepkmkeaiomhmfcnejndkbi)
+
+## Populer UI Libraries
+
+1. [Bootstrap](https://getbootstrap.com/)
+2. [Material UI](https://mui.com/material-ui/)
+3. [Tailwind CSS](https://tailwindcss.com/)
+
+## Icons for UI
+
+1. [react-icons](https://react-icons.github.io/react-icons/)
+
+### Installation
+
+```bash
+npm install react-icons --save
+```
+
+### Usage
+
+```tsx
+import { FaBeer } from "react-icons/fa";
+
+function Question(){
+  return <h3>Let's go for a <FaBeer />?</h3>
+}
+```
+
+### Icon Props
+
+| Key         | Default               | Notes                              |
+| ----------- | --------------------- | ---------------------------------- |
+| `color`     | `undefined` (inherit) |                                    |
+| `size`      | `1em`                 |                                    |
+| `className` | `undefined`           |                                    |
+| `style`     | `undefined`           | Can overwrite size and color       |
+| `attr`      | `undefined`           | Overwritten by other attributes    |
+| `title`     | `undefined`           | Icon description for accessibility |
+
+## Preferred backend stacks
+
+1. Node + Express
+2. C#/ASP.NET
+3. Firebase
 
 ## Setup Local Environment
+
 1. Install Node LTS.
 2. Install VS Code and extensions like "sublime babel" and "vscode icons."
 3. Create a React app & run it in dev server mode using the command:
-   ```bash
-   npx create-react-app my-app
-   cd my-app
-   npm start
-   ```
+
+There are two ways to create react app
+
+### 1. create-react-app
+
+React's official tool.
+
+```bash
+npx create-react-app my-app
+cd my-app
+npm start
+```
+
+With the above commands we get a development server, Webpack and Babel with zero configurations needed from our side.
+
+However, one can edit the configurations using below command
+
+```bash
+npm run eject
+```
+
+When ejected, all hidden dependencies (maintained by create-react-app) will be exposed in package.json and can be edited as per our preference.
+
+### 2. Vite
+
+Vite (French word for "quick", pronounced [`/vit/`](https://cdn.jsdelivr.net/gh/vitejs/vite@main/docs/public/vite.mp3), like "veet") is a new breed of frontend build tooling that significantly improves the frontend development experience. It consists of two major parts:
+
+- A dev server that serves your source files over [native ES modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules), with [rich built-in features](https://vitejs.dev/guide/features.html) and astonishingly fast [Hot Module Replacement (HMR)](https://vitejs.dev/guide/features.html#hot-module-replacement).
+
+- A [build command](https://vitejs.dev/guide/build.html) that bundles your code with [Rollup](https://rollupjs.org), pre-configured to output highly optimized static assets for production.
+
+In addition, Vite is highly extensible via its [Plugin API](https://vitejs.dev/guide/api-plugin.html) and [JavaScript API](https://vitejs.dev/guide/api-javascript.html) with full typing support.
+
+[Read the Docs to Learn More](https://vitejs.dev).
+
+```bash
+npx create vite@latest
+# Then choose your project name and technology etc.,
+
+# Change working directory to your root
+cd my-first-react-vite-app
+
+# Initialize git
+git init
+
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+```
+
 ## JSX
+
 JSX (JavaScript XML) is a syntax extension for JavaScript that looks similar to XML or HTML. It is often used with React to describe what the UI should look like. JSX provides a concise and expressive syntax for defining React elements, making it more readable and easier to write and understand UI components.
 JSX (JavaScript Extension) allows embedding HTML within JS files and supports JS within HTML. It is compiled by Babel.
-
 
 Here are some key points about JSX:
 
@@ -85,15 +222,65 @@ Here are some key points about JSX:
    ```jsx
    const isLoggedIn = true;
    const element = (
-     <div>
-       {isLoggedIn ? <p>Welcome, User!</p> : <p>Please log in</p>}
-     </div>
+     <div>{isLoggedIn ? <p>Welcome, User!</p> : <p>Please log in</p>}</div>
    );
    ```
 
 JSX makes it more convenient to work with React by providing a syntax that closely resembles the final output. While it might look like HTML, it's important to remember that JSX is not HTML; it's a syntactic sugar for `React.createElement` calls, producing React elements that are then rendered to the DOM.
 
+Goto https://babeljs.io/repl for converting JSX to vanilla JS which any browser can acceot for more understanding of JSX.
+
+## TSX
+
+1. **Definition:**
+
+   - TSX stands for TypeScript JSX. It is a syntax extension for TypeScript that allows developers to write JSX (JavaScript XML) syntax with the benefits of static typing provided by TypeScript.
+
+2. **JSX in React:**
+
+   - JSX is a syntax extension for JavaScript often used with React. It allows developers to write HTML-like code within JavaScript files. JSX makes it easier to describe what the UI should look like.
+
+3. **TypeScript Integration:**
+
+   - TypeScript is a superset of JavaScript that adds static typing to the language. TSX is an extension of JSX specifically designed to work seamlessly with TypeScript. It allows developers to write React components with strong typing.
+
+4. **Benefits of TypeScript with JSX (TSX):**
+
+   - **Static Typing:** TypeScript adds a layer of static typing to JavaScript, reducing runtime errors and improving code maintainability.
+   - **Code Autocompletion:** Developers get better tooling support, including autocompletion and inline documentation, in TypeScript-enabled IDEs.
+   - **Early Error Detection:** TypeScript can catch certain types of errors during development, providing feedback to developers before runtime.
+
+5. **Example TSX Code in React:**
+
+   ```tsx
+   import React, { useState } from "react";
+
+   // A simple React component using TSX
+   const MyComponent: React.FC = () => {
+     const [count, setCount] = useState<number>(0);
+
+     return (
+       <div>
+         <p>Count: {count}</p>
+         <button onClick={() => setCount(count + 1)}>Increment</button>
+       </div>
+     );
+   };
+
+   export default MyComponent;
+   ```
+
+6. **Type Annotations in TSX:**
+
+   - TypeScript allows developers to annotate types explicitly. In the example above, `useState<number>` specifies that the `count` state should be of type `number`.
+
+7. **Integration with React Ecosystem:**
+   - Many libraries and tools in the React ecosystem support TypeScript, making it easier for developers to adopt TypeScript in their React projects.
+
+In summary, TSX in React refers to using TypeScript with JSX syntax. It enhances React development by providing static typing, improved tooling, and early error detection, making it a popular choice for developers building robust and scalable React applications.
+
 ## What is React?
+
 React is an open-source JavaScript library for building user interfaces or UI components, primarily for single-page applications where user interactions are dynamic and frequent. It was developed and is maintained by Facebook. React allows developers to create reusable UI components and manage the state of these components efficiently.
 
 Key features of React include:
@@ -112,21 +299,33 @@ Key features of React include:
 
 React is often used in conjunction with other libraries or frameworks (such as Redux for state management) and is a popular choice for building modern web applications. It has a large and active community, which contributes to its ecosystem of third-party libraries and tools.
 
-## Basics
+## Opinions of React
+
+- UI
+- Routing
+- HTTP
+- Managing app state
+- Internationalization
+- Form Validation
+- Animations
+
+Out of all the above concerns, react has opinion on only the UI part.
+Also, react is agnostic to whether the app is web app (ReactDOM) or mobile (React Native).
 
 ## React Elements
+
 In React, elements are the smallest building blocks of a React application. They are plain JavaScript objects that represent what you want to see on the screen. A React element is an immutable description of what to render.
 
 Here is a basic example of a React element:
 
-```jsx
+```tsx
 const element = <h1>Hello, React!</h1>;
 ```
 
 In this example, `<h1>Hello, React!</h1>` is a JSX expression that represents a React element. Behind the scenes, JSX gets transpiled into a `React.createElement` function call:
 
-```jsx
-const element = React.createElement('h1', null, 'Hello, React!');
+```tsx
+const element = React.createElement("h1", null, "Hello, React!");
 ```
 
 The `React.createElement` function takes three arguments:
@@ -140,12 +339,25 @@ React elements are lightweight, and they describe what you want to see on the sc
 Once you have a React element, you can render it to the DOM using the `ReactDOM.render()` function. Here's a simple example:
 
 ```jsx
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
 const element = <h1>Hello, React!</h1>;
 
-ReactDOM.render(element, document.getElementById('root'));
+ReactDOM.render(element, document.getElementById("root"));
+```
+
+```tsx
+/* eslint-disable linebreak-style */
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { App } from "./App";
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
 ```
 
 In this example, the `ReactDOM.render()` function takes the React element (`<h1>Hello, React!</h1>`) and renders it to a container element with the ID of `'root'` in the HTML document.
@@ -154,19 +366,23 @@ React elements are often used in conjunction with components. Components are reu
 
 ## React Components
 
+Component - A piece of UI, that are independent, isolated and reusable.
+
 React apps are made of components, which are JavaScript functions returning markup. Components must start with a capital letter.
 Just like HTML attributes, React components have props. Props can be received as arguments.
 
 In React, components are the fundamental building blocks of a user interface. They are reusable, self-contained pieces of code that define a part of a user interface. React applications are typically built by composing these components together to create the complete UI.
 
+A react app always have a root component and contains other child components. So every react app is essentially a tree of components.
+
 There are two main types of components in React:
 
-1. **Functional Components:** These are simpler and more concise components that are defined as JavaScript functions. They take in props (properties) as an argument and return React elements, describing what should be rendered on the screen. Functional components were stateless until the introduction of hooks in React 16.8, which allowed functional components to manage state and have lifecycle methods.
+1. **Functional Components:** These are simpler and more concise components that are defined as JavaScript functions. They follow Pascal case for naming convention. They take in props (properties) as an argument and return React elements, describing what should be rendered on the screen. Functional components were stateless until the introduction of hooks in React 16.8, which allowed functional components to manage state and have lifecycle methods.
 
    Example of a functional component:
 
    ```jsx
-   import React from 'react';
+   import React from "react";
 
    const MyFunctionalComponent = (props) => {
      return <div>Hello, {props.name}!</div>;
@@ -180,13 +396,13 @@ There are two main types of components in React:
    Example of a class component:
 
    ```jsx
-   import React, { Component } from 'react';
+   import React, { Component } from "react";
 
    class MyClassComponent extends Component {
      constructor(props) {
        super(props);
        this.state = {
-         count: 0
+         count: 0,
        };
      }
 
@@ -194,7 +410,9 @@ There are two main types of components in React:
        return (
          <div>
            Count: {this.state.count}
-           <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+           <button
+             onClick={() => this.setState({ count: this.state.count + 1 })}
+           >
              Increment
            </button>
          </div>
@@ -209,6 +427,155 @@ With the introduction of React Hooks, functional components can now also have st
 
 Using components allows for a modular and organized approach to building React applications. Components can be composed and reused, making it easier to reason about the structure and behavior of the UI.
 
+### Fragment
+
+To return multiple html elements we can enclose them with a parent div element. However, it will create unnecessary creation of an extra div in DOM.
+So, we can import and use Fragment element to wrap them.
+
+```tsx
+import { Fragment } from "react";
+function MultiElem() {
+  return (
+    <Fragment>
+      <h1>Heading</h1>
+      <span>Some Content</span>
+    </Fragment>
+  );
+}
+```
+
+There is a shortcut for fragments. We can use empty tags to represent fragments even without importing them.
+
+```tsx
+function MultiElem() {
+  return (
+    <>
+      <h1>Heading</h1>
+      <span>Some Content</span>
+    </>
+  );
+}
+```
+
+### Props
+
+- In React, "props" is a shorthand for "properties," and it refers to the mechanism by which data is passed from a parent component to its child components.
+- Props are used to transmit information from one component to another in a unidirectional flow.
+- They are immutable and are used to configure and customize child components based on the requirements of the parent component.
+- Props can contain various types of data, such as strings, numbers, functions, or even other React components.
+- Components can access and use the data passed through props to render dynamic content or perform specific actions.
+
+#### **Passing function via a prop**
+
+- ListGroup.tsx
+
+```tsx
+/* eslint-disable linebreak-style */
+interface Props {
+  items: string[];
+  heading: string;
+  headingColor?: "red" | "blue" | "Green";
+  // (item:string) => void   - A generic function that can take in a string arg and return void
+  onSelectItem: (item: string) => void;
+}
+
+function ListGroup({
+  items,
+  heading,
+  headingColor = "red",
+  onSelectItem,
+}: Props) {
+  return (
+    <>
+      <h1 style={{ color: headingColor }}>{heading}</h1>
+
+      {items.map((item, index) => (
+        <li
+          onClick={() => {
+            onSelectItem(item);
+          }}
+          key={index}
+        >
+          {item}
+        </li>
+      ))}
+    </>
+  );
+}
+
+export default ListGroup;
+```
+
+- App.tsx
+
+```tsx
+import ListGroup from "./Components/ListGroup";
+
+function App() {
+  const items = ["Chennai", "Bangalore", "Mumbai"];
+  const handleSelectItem = (item: string) => {
+    console.log(item);
+  };
+  return (
+    <div>
+      <ListGroup
+        items={items}
+        heading="Cities"
+        onSelectItem={handleSelectItem}
+      />
+    </div>
+  );
+}
+
+export default App;
+```
+
+#### **Passing children via prop:**
+
+In React, you can pass children to a component by using the special children prop. The children prop allows you to include arbitrary JSX/TSX elements or components between the opening and closing tags of a component. The content placed between the tags is then passed to the component as the children prop.
+
+- Alert.tsx
+
+```tsx
+import React, { ReactNode } from "react";
+
+interface Props {
+  // message : string  ---> We use it when we want to pass the message as an attribute
+  // example: <Alert message = "Hello World" />
+
+  // children : string ---> We use it to pass data inside Alert tag as a child. But cannot have HTML markups
+  // example: <Alert> Hello World !</Alert>
+
+  // children: ReactNode ----> We use it to pass data inside Alert tag as a child and allows html markups in JSX/TSX syntax.
+  // example: <Alert> Hello <i>World</i> </Alert>
+  children: ReactNode;
+}
+
+const Alert = ({ children }: Props) => {
+  return <div>{children}</div>;
+};
+
+export default Alert;
+```
+
+- App.tsx
+
+```tsx
+import Alert from "./components/Alert";
+
+function App() {
+  return (
+    <div>
+      <Alert>
+        Hello <span>World </span>
+      </Alert>
+    </div>
+  );
+}
+
+export default App;
+```
+
 ## State
 
 State makes UI interactive. UI = f(state). There are declarative and imperative approaches.
@@ -222,6 +589,7 @@ UI depends on the value of a state variable. Hooks help hook into state variable
 More primitive, used in early JS learning for frontend.
 
 ### React State
+
 In React, `state` is a fundamental concept that allows components to keep track of and manage their internal data. The `state` object is used to store and update information that can change over time, causing the component to re-render when the state is updated.
 
 Here's a basic overview of how state works in React:
@@ -230,13 +598,13 @@ Here's a basic overview of how state works in React:
    You can initialize the state in a class component by setting the `state` property in the component's constructor. Here's an example:
 
    ```jsx
-   import React, { Component } from 'react';
+   import React, { Component } from "react";
 
    class MyComponent extends Component {
      constructor(props) {
        super(props);
        this.state = {
-         count: 0
+         count: 0,
        };
      }
 
@@ -258,13 +626,13 @@ Here's a basic overview of how state works in React:
    To update the state, you should never modify it directly. Instead, use the `setState` method provided by React. This method takes an object as an argument, representing the updated state. React then merges the provided object with the current state and triggers a re-render.
 
    ```jsx
-   import React, { Component } from 'react';
+   import React, { Component } from "react";
 
    class MyComponent extends Component {
      constructor(props) {
        super(props);
        this.state = {
-         count: 0
+         count: 0,
        };
      }
 
@@ -290,8 +658,8 @@ Here's a basic overview of how state works in React:
 3. **Functional Components and Hooks:**
    With the introduction of Hooks in React 16.8, functional components can now also have state using the `useState` hook. Here's a simple example:
 
-   ```jsx
-   import React, { useState } from 'react';
+   ```tsx
+   import React, { useState } from "react";
 
    const MyFunctionalComponent = () => {
      const [count, setCount] = useState(0);
@@ -315,19 +683,29 @@ Here's a basic overview of how state works in React:
 
 State management is crucial for building dynamic and interactive user interfaces in React. By using state, components can respond to user interactions, data changes, and other events, providing a dynamic and responsive user experience.
 
+## Props vs State
+
+| Props                       | State                       |
+| --------------------------- | --------------------------- |
+| Input passed to a component | Data managed by a component |
+| Similar to function args    | Similar to local variables  |
+| Immutable                   | Mutable                     |
+| Cause a re-render           | Cause a re-render           |
+
 ## Hooks in React
 
-Functions starting with 'use' are Hooks. 
+Functions starting with 'use' are Hooks.
 React Hooks are functions that allow functional components to use state and lifecycle features that were previously only available in class components. Introduced in React 16.8, Hooks provide a more direct way to interact with React's features in functional components, making it easier to reuse stateful logic and manage side effects.
 
 Here are some of the most commonly used React Hooks:
 
 1. **useState:**
+
    - Allows functional components to have local state.
    - Returns an array with two elements: the current state value and a function to update it.
-   
+
    ```jsx
-   import React, { useState } from 'react';
+   import React, { useState } from "react";
 
    function Example() {
      const [count, setCount] = useState(0);
@@ -335,21 +713,20 @@ Here are some of the most commonly used React Hooks:
      return (
        <div>
          <p>You clicked {count} times</p>
-         <button onClick={() => setCount(count + 1)}>
-           Click me
-         </button>
+         <button onClick={() => setCount(count + 1)}>Click me</button>
        </div>
      );
    }
    ```
 
 2. **useEffect:**
+
    - Enables performing side effects in functional components.
    - Takes a function that contains the code for the side effect.
    - Can be used for tasks like data fetching, subscriptions, manual DOM manipulations, etc.
 
    ```jsx
-   import React, { useState, useEffect } from 'react';
+   import React, { useState, useEffect } from "react";
 
    function Example() {
      const [count, setCount] = useState(0);
@@ -361,21 +738,20 @@ Here are some of the most commonly used React Hooks:
      return (
        <div>
          <p>You clicked {count} times</p>
-         <button onClick={() => setCount(count + 1)}>
-           Click me
-         </button>
+         <button onClick={() => setCount(count + 1)}>Click me</button>
        </div>
      );
    }
    ```
 
 3. **useContext:**
+
    - Allows functional components to consume values from the React context.
    - Takes a context object (created by `React.createContext`) and returns the current context value.
 
    ```jsx
-   import React, { useContext } from 'react';
-   import MyContext from './MyContext';
+   import React, { useContext } from "react";
+   import MyContext from "./MyContext";
 
    function MyComponent() {
      const contextValue = useContext(MyContext);
@@ -385,19 +761,20 @@ Here are some of the most commonly used React Hooks:
    ```
 
 4. **useReducer:**
+
    - Provides an alternative to `useState` when dealing with more complex state logic.
    - Takes a reducer function and an initial state, returning the current state and a dispatch function.
 
    ```jsx
-   import React, { useReducer } from 'react';
+   import React, { useReducer } from "react";
 
    const initialState = { count: 0 };
 
    function reducer(state, action) {
      switch (action.type) {
-       case 'increment':
+       case "increment":
          return { count: state.count + 1 };
-       case 'decrement':
+       case "decrement":
          return { count: state.count - 1 };
        default:
          return state;
@@ -410,8 +787,12 @@ Here are some of the most commonly used React Hooks:
      return (
        <div>
          Count: {state.count}
-         <button onClick={() => dispatch({ type: 'increment' })}>Increment</button>
-         <button onClick={() => dispatch({ type: 'decrement' })}>Decrement</button>
+         <button onClick={() => dispatch({ type: "increment" })}>
+           Increment
+         </button>
+         <button onClick={() => dispatch({ type: "decrement" })}>
+           Decrement
+         </button>
        </div>
      );
    }
@@ -423,37 +804,40 @@ These are just a few examples of the many hooks available in React. Hooks provid
 
 In React, event handling is similar to handling events in HTML but with some differences due to the nature of React components. React provides a consistent way to handle events across different browsers and abstracts away some of the complexities.
 
+### Using class components
+
 Here's a basic overview of handling events in React:
 
 1. **Event Naming:**
+
    - React events are named using camelCase, similar to how they are in JavaScript. For example, `onClick` instead of `onclick`.
    - Some common events include `onClick`, `onChange`, `onSubmit`, etc.
 
-2. **Event Handling in JSX:**
-   - You can attach event handlers directly to JSX elements. The handler should be a function or a reference to a method.
+2. **Event Handling in TSX:**
+
+   - You can attach event handlers directly to TSX elements. The handler should be a function or a reference to a method.
    - For example, handling a button click event:
 
    ```jsx
-   import React from 'react';
+   import React from "react";
 
    class MyComponent extends React.Component {
      handleClick() {
-       console.log('Button clicked!');
+       console.log("Button clicked!");
      }
 
      render() {
-       return (
-         <button onClick={this.handleClick}>Click me</button>
-       );
+       return <button onClick={this.handleClick}>Click me</button>;
      }
    }
    ```
 
 3. **Passing Parameters to Event Handlers:**
+
    - If you need to pass additional parameters to the event handler, you can use an arrow function or bind the function.
 
    ```jsx
-   import React from 'react';
+   import React from "react";
 
    class MyComponent extends React.Component {
      handleClickWithParameter(id) {
@@ -463,7 +847,9 @@ Here's a basic overview of handling events in React:
      render() {
        const itemId = 123;
        return (
-         <button onClick={() => this.handleClickWithParameter(itemId)}>Click me</button>
+         <button onClick={() => this.handleClickWithParameter(itemId)}>
+           Click me
+         </button>
        );
      }
    }
@@ -479,15 +865,16 @@ Here's a basic overview of handling events in React:
    ```
 
 4. **Preventing Default Behavior:**
+
    - If you're handling a form submission, you might want to prevent the default behavior to avoid a page reload.
 
    ```jsx
-   import React from 'react';
+   import React from "react";
 
    class MyForm extends React.Component {
      handleSubmit(event) {
        event.preventDefault();
-       console.log('Form submitted!');
+       console.log("Form submitted!");
      }
 
      render() {
@@ -502,10 +889,11 @@ Here's a basic overview of handling events in React:
    ```
 
 5. **Handling State in Event Handlers:**
+
    - You often want to update the component state based on user interactions.
 
    ```jsx
-   import React from 'react';
+   import React from "react";
 
    class Counter extends React.Component {
      constructor(props) {
@@ -532,6 +920,21 @@ Here's a basic overview of handling events in React:
 
 These are some basic patterns for event handling in React. Remember to be cautious when using arrow functions in JSX, as they can lead to unnecessary re-renders if used in render methods. Using class methods or binding functions in the constructor can help mitigate this issue.
 
+### Using functions components
+
+```tsx
+import { MouseEvent } from "react";
+
+// Event Handler
+const handleClick = (event: MouseEvent) => {
+  console.log(event);
+};
+
+const MyButton = () => {
+  return <button onClick="handleClick">Click Me</button>;
+};
+```
+
 ## Useful JS Functions
 
 1. **Map:** Create a new array by doing something in each item of an array.
@@ -546,15 +949,14 @@ Each React component must have a `create{ComponentName}()` function, taking in t
 
 ```javascript
 function createMyComponent(item) {
-  return (
-    <MyComponent key={item.id} data={item} />
-  );
+  return <MyComponent key={item.id} data={item} />;
 }
 
 const myComponents = myData.map(createMyComponent);
 ```
 
 ## Using JS Short Circuit and Truthy Falsy Properties in React Codes
+
 Exploit the conditional (ternary) operator, truthy-falsy, and logical short-circuiting for writing concise code.
 
 Example:
@@ -564,12 +966,13 @@ function Form(props) {
   return (
     <form className="form">
       <input type="text" placeholder="Username" />
-      { !props.isRegistered && <input type="password" placeholder="Confirm Password" />}
+      {!props.isRegistered && (
+        <input type="password" placeholder="Confirm Password" />
+      )}
       <button type="submit">{props.isRegistered ? "Login" : "Register"}</button>
     </form>
   );
 }
-
 ```
 
 ## Important Links
@@ -579,3 +982,305 @@ function Form(props) {
 3. [Practice: Keeper App](https://codesandbox.io/s/keeper-app-part-1-starting-forked-7ht3v2)
 4. [HTML, CSS Notes](https://codepen.io/NarendranAI/pen/VwXENJO)
 
+# Summary
+
+## Getting started with React
+
+- React is a JavaScript library for building dynamic and interactive user interfaces.
+- In React applications, we don’t query and update the DOM. Instead, we describe our
+  application using small, reusable components. React will take care of efficiently creating
+  and updating DOM elements.
+- React components can be created using a function or a class. Function-based
+  components are the preferred approach as they’re more concise and easier to work
+  with.
+- JSX stands for JavaScript XML. It is a syntax that allows us to write components that
+  combine HTML and JavaScript in a readable and expressive way, making it easier to
+  create complex user interfaces.
+- When our application starts, React takes a tree of components and builds a JavaScript
+  data structure called the virtual DOM. This virtual DOM is different from the actual
+  DOM in the browser. It’s a lightweight, in-memory representation of our component
+  tree
+- When the state or the data of a component changes, React updates the
+  corresponding node in the virtual DOM to reflect the new state. Then, it compares
+  the current version of virtual DOM with the previous version to identify the nodes
+  that should be updated. It’ll then update those nodes in the actual DOM.
+- In browser-based apps, updating the DOM is done by a companion library called
+  ReactDOM. In mobile apps, React Native uses native components to render the
+  user interface.
+- Since React is just a library and not a framework like Angular or Vue, we often
+  need other tools for concerns such as routing, state management,
+  internationalization, form validation, etc
+
+## Building components
+
+In React apps, a component can only return a single element. To return multiple
+elements, we wrap them in a fragment, which is represented by empty angle brackets.
+
+- To render a list in JSX, we use the ‘array.map()’ method. When mapping items, each
+  item must have a unique key, which can be a string or a number.
+- To conditionally render content, we can use an ‘if’ statement or a ternary operator.
+- We use the state hook to define state (data that can change over time) in a component. A
+  hook is a function that allows us to tap into built-in features in React.
+- Components can optionally have props (short for properties) to accept input.
+- We can pass data and functions to a component using props. Functions are used to
+  notify the parent (consumer) of a component about certain events that occur in the
+  component, such as an item being clicked or selected.
+- We should treat props as immutable (read-only) and not modify them.
+- When the state or props of a component change, React will re-render the component
+  and update the DOM accordingly.
+
+### Creating a component
+
+```tsx
+const Message = () => {
+  return <h1>Hello World</h1>;
+};
+
+export default Message;
+```
+
+### Rendering a List
+
+```tsx
+const Component = () => {
+  const items = ["a", "b", "c"];
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  );
+};
+```
+
+### Conditional Rendering
+
+```tsx
+{
+  items.length === 0 ? "a" : "b";
+}
+{
+  items.length === 0 && "a";
+}
+```
+
+### Handling events
+
+```tsx
+<button
+  onClick={() => {
+    console.log("clicked");
+  }}
+></button>
+```
+
+### Defining state
+
+```tsx
+const [name, setName] = useState("");
+```
+
+### Props
+
+```tsx
+interface Props {
+  name: string;
+}
+
+const Component = ({ name }: Props) => {
+  return <p>{name}</p>;
+};
+```
+
+### Passing Children
+
+```tsx
+interface Props {
+  children: ReactNode;
+}
+const Component = ({ children }: Props) => {
+  return <div>{children}</div>;
+};
+```
+
+## Styling components
+
+- We have several options for styling React components, including vanilla CSS, CSS modules, CSS-in-JS, and inline styles.
+- With vanilla CSS, we write our component styles in a separate CSS file and import it into the component file. However, we may encounter conflicts if the same CSS classes are defined in multiple files.
+- CSS modules resolve this issue by generating unique class names during the build process.
+- With CSS-in-JS, we define all the styles for a component alongside its code. Like CSS modules, this provides scoping for CSS classes and eliminates conflicts. It also makes it easier for us to change or delete a component without affecting other components.
+- The separation of concerns principle suggests that we divide a program into distinct sections or modules where each section handles a specific functionality. It helps us build modular and maintainable applications.
+- With this principle, the complexity and implementation details of a module are hidden behind a well-defined interface.
+- Separation of concerns is not just about organizing code into files, but rather dividing areas of functionality. Therefore, CSS-in-JS does not violate the separation of concerns principle as all the complexity for a component remains hidden behind its interface.
+- Although inline styles are easy to apply, they can make our code difficult to maintain over time and should only be used as a last resort.
+- We can add icons to our applications using the react-icons library.
+- There are several UI libraries available that can assist us in quickly building beautiful and modern applications. Some popular options include Bootstrap, Material UI, TailwindCSS, DaisyUI, ChakraUI, and more.
+
+### Vanilla CSS
+
+```tsx
+import "./ListGroup.css";
+
+function ListGroup() {
+  return <ul className="list-group"></ul>;
+}
+```
+
+### CSS modules
+
+```tsx
+import styles from "./ListGroup.module.css";
+
+function ListGroup() {
+  return <ul className={[styles.listGroup, styles.container].join(" ")}></ul>;
+}
+```
+
+### CSS in JS
+
+- Libraries available for CSS-In-JS styling are
+
+  - Styled components
+  - Emotion
+  - Polished
+
+- Example using styled-components library
+
+```bash
+npm i styled-components
+# @types is a library that contains type defintion for variables used in popular JS libraries.
+# Useful when using JS libraries without type defined in TS
+npm i @types/styled-components
+```
+
+```tsx
+import styled from "styled-components";
+import { useState } from "react";
+
+interface Props {
+  items: string[];
+  heading: string;
+}
+
+// Props for styled React Component
+interface ListItemProps {
+  active: boolean;
+}
+
+const [selectedIndex, setSelectedIndex] = useState(-1);
+
+// styled contains all the HTML elements
+// This line returns a react component with the styles we defined
+const List = styled.ul`
+  list-style: none;
+  color: white;
+  background: black;
+  padding: 0;
+`;
+
+// Styled React component with props
+const ListItem = styled.li<ListItemProps>`
+  padding: 3px 0;
+  background: ${(props) => (props.active ? "blue" : "none")};
+`;
+
+function ListGroup({ items, heading }: Props) {
+  return (
+    <List>
+      {items.map((item, index) => (
+        <ListItem active={index === selectedIndex} key={index}>
+          {item}
+        </ListItem>
+      ))}
+    </List>
+  );
+}
+```
+
+### Inline Styling
+
+**NOT RECOMMENDED. USE AS A LAST RESORT ONLY**
+
+Inline styling in React refers to the practice of applying styles directly to individual React elements using the `style` attribute. Here are some key points to note about inline styling in React:
+
+1. **JavaScript Object Syntax:**
+
+   - Inline styles in React use a JavaScript object syntax to define CSS styles.
+   - Each style property is represented as a camelCased key in the object.
+
+   ```jsx
+   const styleObject = {
+     color: "red",
+     fontSize: "16px",
+     backgroundColor: "#f0f0f0",
+   };
+
+   <div style={styleObject}>Hello, React!</div>;
+   ```
+
+2. **Dynamic Styles:**
+
+   - Since styles are defined using JavaScript objects, you can dynamically generate styles based on variables or conditions.
+
+   ```jsx
+   const dynamicColor = "blue";
+
+   const dynamicStyle = {
+     color: dynamicColor,
+     fontSize: "18px",
+   };
+
+   <div style={dynamicStyle}>Dynamic Style</div>;
+   ```
+
+3. **String Interpolation:**
+
+   - String interpolation can be used within style values when necessary.
+   - However, it's generally more common and recommended to use JavaScript objects.
+
+   ```jsx
+   const fontSizeValue = "20px";
+
+   const dynamicStyle = {
+     fontSize: fontSizeValue,
+   };
+
+   <div style={dynamicStyle}>Dynamic Font Size</div>;
+   ```
+
+4. **Style Prop in JSX:**
+
+   - The `style` attribute is a standard prop in JSX that accepts a JavaScript object for styling.
+
+   ```jsx
+   const myStyle = {
+     fontWeight: "bold",
+     textAlign: "center",
+   };
+
+   <div style={myStyle}>Styled Component</div>;
+   ```
+
+5. **Avoiding XSS Attacks:**
+
+   - Be cautious when dynamically generating styles from user inputs to avoid XSS attacks.
+   - Ensure that user inputs are sanitized and properly validated before applying them as styles.
+
+6. **CSS-in-JS Libraries:**
+
+   - For more advanced styling needs, you may consider using CSS-in-JS libraries like Styled Components or Emotion.
+   - These libraries provide a more sophisticated way to handle styles in React applications.
+
+   ```jsx
+   import styled from "styled-components";
+
+   const StyledDiv = styled.div`
+     color: red;
+     font-size: 16px;
+   `;
+
+   <StyledDiv>Hello, Styled Components!</StyledDiv>;
+   ```
+
+Inline styling is a convenient and flexible way to apply styles directly to React components, especially for smaller applications or components where the use of external stylesheets or CSS-in-JS libraries might be overkill. However, for larger projects, using external stylesheets or CSS-in-JS libraries is often recommended for better maintainability and organization.

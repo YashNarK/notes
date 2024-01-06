@@ -1,3 +1,26 @@
+**Table of Contents:**
+- [Navigating Generative AI Hurdles: Prototyping, Evaluation, and Ethics](#navigating-generative-ai-hurdles-prototyping-evaluation-and-ethics)
+  - [Prototyping](#prototyping)
+    - [Prototyping Significance](#prototyping-significance)
+    - [Prototyping Steps](#prototyping-steps)
+    - [Prototyping Techniques](#prototyping-techniques)
+    - [Prototyping Effectiveness](#prototyping-effectiveness)
+  - [Evaluating Generative AI Applications](#evaluating-generative-ai-applications)
+    - [Evaluation Importance](#evaluation-importance)
+    - [Different Evaluation Methods](#different-evaluation-methods)
+    - [Applying Evaluation Methods](#applying-evaluation-methods)
+    - [Understand Evaluation Results](#understand-evaluation-results)
+  - [Customizing Generative AI](#customizing-generative-ai)
+    - [Customization Importance](#customization-importance)
+    - [Customizations Factors](#customizations-factors)
+    - [Customization Techniques](#customization-techniques)
+  - [Ethical Considerations in Generative AI](#ethical-considerations-in-generative-ai)
+    - [Ethical Issues](#ethical-issues)
+    - [Ethical Principles](#ethical-principles)
+    - [Ethical Implications](#ethical-implications)
+
+
+
 # Navigating Generative AI Hurdles: Prototyping, Evaluation, and Ethics
 
 Generative AI technologies, such as language models, have evolved significantly, offering tremendous potential across various applications. However, navigating the challenges associated with prototyping, evaluation, and ethics is crucial for responsible and effective deployment. Let's delve into each aspect.
