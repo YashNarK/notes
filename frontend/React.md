@@ -4,6 +4,7 @@
 
 - [React](#react)
   - [Table of Contents](#table-of-contents)
+  - [Cohesion and Coupling](#cohesion-and-coupling)
   - [Useful VS Code extensions](#useful-vs-code-extensions)
   - [Useful browser extensions](#useful-browser-extensions)
   - [Populer UI Libraries](#populer-ui-libraries)
@@ -11,12 +12,28 @@
     - [Installation](#installation)
     - [Usage](#usage)
     - [Icon Properties](#icon-properties)
+  - [Update logic Libraries](#update-logic-libraries)
+  - [React Form Libraries](#react-form-libraries)
+  - [Validation Libraries](#validation-libraries)
+    - [Joi vs Zod](#joi-vs-zod)
+  - [CSS in JS styling libraries](#css-in-js-styling-libraries)
+  - [TS types for JS library variables](#ts-types-for-js-library-variables)
   - [Preferred backend stacks](#preferred-backend-stacks)
   - [Setup Local Environment](#setup-local-environment)
     - [1. create-react-app](#1-create-react-app)
     - [2. Vite](#2-vite)
   - [JSX](#jsx)
   - [TSX](#tsx)
+  - [Useful JS Functions](#useful-js-functions)
+    - [1. Map Function:](#1-map-function)
+    - [2. Filter Function:](#2-filter-function)
+    - [3. Reduce Function:](#3-reduce-function)
+    - [4. Find Function:](#4-find-function)
+    - [5. FindIndex Function:](#5-findindex-function)
+  - [Using JS Short Circuit and Truthy Falsy Properties in React Codes](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
+    - [JS Short Circuiting:](#js-short-circuiting)
+    - [Truthy/Falsy Properties:](#truthyfalsy-properties)
+    - [React example](#react-example)
   - [What is React?](#what-is-react)
   - [Opinions of React](#opinions-of-react)
   - [React Elements](#react-elements)
@@ -24,7 +41,7 @@
     - [Fragment](#fragment)
     - [Props](#props)
       - [**Passing function via a prop**](#passing-function-via-a-prop)
-      - [**Passing children via prop:**](#passing-children-via-prop)
+      - [**Passing children via prop**](#passing-children-via-prop)
   - [State](#state)
     - [Declarative State Programming](#declarative-state-programming)
     - [Imperative State Programming](#imperative-state-programming)
@@ -48,9 +65,13 @@
   - [Event Handling in React](#event-handling-in-react)
     - [Using class components](#using-class-components)
     - [Using functions components](#using-functions-components)
-  - [Useful JS Functions](#useful-js-functions)
-    - [Map Function](#map-function)
-  - [Using JS Short Circuit and Truthy Falsy Properties in React Codes](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
+  - [React Form](#react-form)
+    - [Controlled Components](#controlled-components)
+    - [useState vs useRef](#usestate-vs-useref)
+      - [**useState**:](#usestate)
+      - [**useRef**:](#useref)
+      - [**Combining `useState` and `useRef`**:](#combining-usestate-and-useref)
+    - [Managing forms with React Hook Form (library)](#managing-forms-with-react-hook-form-library)
   - [Important Links](#important-links)
 - [Summary](#summary)
   - [Getting started with React](#getting-started-with-react)
@@ -73,6 +94,16 @@
     - [Updating arrays](#updating-arrays)
     - [Updating array of objects](#updating-array-of-objects)
     - [Updating with Immer](#updating-with-immer)
+
+## Cohesion and Coupling
+
+- Cohesion and coupling are two key concepts in software engineering that are used to measure the quality of a software system’s design.
+- Cohesion refers to the degree to which elements within a module work together to fulfill a single, well-defined purpose.
+- High cohesion means that elements are closely related and focused on a single purpose, while low cohesion means that elements are loosely related and serve multiple purposes.
+- Coupling refers to the degree of interdependence between software modules.
+- High coupling means that modules are closely connected and changes in one module may affect other modules.
+- Low coupling means that modules are independent and changes in one module have little impact on other modules.
+- Both coupling and cohesion are important factors in determining the maintainability, scalability, and reliability of a software system. High cohesion and low coupling can make a system easier to maintain and improve.
 
 ## Useful VS Code extensions
 
@@ -128,6 +159,62 @@ function Question() {
 | `attr`      | `undefined`           | Overwritten by other attributes    |
 | `title`     | `undefined`           | Icon description for accessibility |
 
+## Update logic Libraries
+
+1. [immer](https://github.com/immerjs/immer#readme)
+
+## React Form Libraries
+
+1. [React hook form](https://www.react-hook-form.com/)
+
+## Validation Libraries
+
+1. [Joi](https://github.com/hapijs/joi#readme)
+2. [Yup](https://github.com/jquense/yup)
+3. [Zod](https://github.com/colinhacks/zod)
+
+### Joi vs Zod
+
+**Joi** and **Zod** are both popular JavaScript validation libraries, each with their own strengths and use cases.
+
+**Joi** is a mature and feature-rich validation library, often used in Node.js applications. It provides a wide range of validation rules and customization options, making it suitable for complex validation scenarios. However, it can add some overhead to smaller projects and may require more effort for type safety in TypeScript projects.
+
+**Pros of Joi**:
+
+- Battle-tested and widely used in the Node.js ecosystem.
+- Extensive set of validation rules and options.
+- Robust error handling and customization capabilities.
+
+**Cons of Joi**:
+
+- Bulkier and can add some overhead to smaller projects.
+- May require more effort for type safety in TypeScript projects.
+
+On the other hand, **Zod** is a powerful validation library that shines in its ability to leverage TypeScript's type system. If you're using TypeScript, Zod's type inference will ensure that your validation code is type-safe, providing extra confidence in your data handling. However, there might be a learning curve for developers unfamiliar with TypeScript.
+
+**Pros of Zod**:
+
+- Strong TypeScript support for type-safe validation.
+- Powerful validation capabilities and rich validation API.
+- Excellent error messages and error handling.
+
+**Cons of Zod**:
+
+- Learning curve for developers unfamiliar with TypeScript.
+- Might add overhead for projects not using TypeScript.
+
+In conclusion, the choice between Joi and Zod depends on your project's requirements, familiarity with TypeScript, and the level of complexity your data validation demands.
+
+## CSS in JS styling libraries
+
+1. [Styled components](https://styled-components.com/)
+2. [Emotion](https://github.com/emotion-js/emotion/tree/main#readme)
+3. [Polished](https://polished.js.org/)
+
+## TS types for JS library variables
+
+1. @types
+
 ## Preferred backend stacks
 
 1. Node + Express
@@ -175,7 +262,7 @@ In addition, Vite is highly extensible via its [Plugin API](https://vitejs.dev/g
 [Read the Docs to Learn More](https://vitejs.dev).
 
 ```bash
-npx create vite@latest
+npm create vite@latest
 # Then choose your project name and technology etc.,
 
 # Change working directory to your root
@@ -302,6 +389,159 @@ Goto https://babeljs.io/repl for converting JSX to vanilla JS which any browser 
    - Many libraries and tools in the React ecosystem support TypeScript, making it easier for developers to adopt TypeScript in their React projects.
 
 In summary, TSX in React refers to using TypeScript with JSX syntax. It enhances React development by providing static typing, improved tooling, and early error detection, making it a popular choice for developers building robust and scalable React applications.
+
+## Useful JS Functions
+
+1. **Map:** Create a new array by doing something in each item of an array.
+2. **Filter:** Create a new array by keeping the items that return true.
+3. **Reduce:** Accumulate a value by doing something to each item in an array.
+4. **Find:** Find the first item that matches from an array.
+5. **FindIndex:** Find the index of the first item that matches.
+
+### 1. Map Function:
+
+```javascript
+// Example: Create a new array by doubling each item in the original array
+const originalArray = [1, 2, 3, 4];
+const doubledArray = originalArray.map((item) => item * 2);
+// doubledArray: [2, 4, 6, 8]
+```
+
+### 2. Filter Function:
+
+```javascript
+// Example: Create a new array by keeping only the even numbers from the original array
+const originalArray = [1, 2, 3, 4, 5, 6];
+const evenNumbers = originalArray.filter((item) => item % 2 === 0);
+// evenNumbers: [2, 4, 6]
+```
+
+### 3. Reduce Function:
+
+```javascript
+// Example: Accumulate the sum of all items in the original array
+const originalArray = [1, 2, 3, 4];
+const sum = originalArray.reduce((accumulator, item) => accumulator + item, 0);
+// sum: 10
+```
+
+### 4. Find Function:
+
+```javascript
+// Example: Find the first even number in the original array
+const originalArray = [1, 3, 5, 2, 7];
+const firstEvenNumber = originalArray.find((item) => item % 2 === 0);
+// firstEvenNumber: 2
+```
+
+### 5. FindIndex Function:
+
+```javascript
+// Example: Find the index of the first item greater than 3 in the original array
+const originalArray = [1, 2, 4, 5];
+const index = originalArray.findIndex((item) => item > 3);
+// index: 2
+```
+
+These examples showcase the basic usage of each function. You can customize the functions based on your specific use cases and data structures.
+
+## Using JS Short Circuit and Truthy Falsy Properties in React Codes
+
+### JS Short Circuiting:
+
+1. **Using `&&` Operator:**
+
+```javascript
+// Example: Only execute the second function if the first function returns true
+const executeFirstFunction = true;
+const executeSecondFunction = false;
+
+executeFirstFunction && console.log("First function executed");
+executeSecondFunction && console.log("Second function executed");
+// Output: First function executed
+```
+
+2. **Using `||` Operator:**
+
+```javascript
+// Example: Use default value if the provided value is falsy
+const providedValue = null;
+const defaultValue = "Default Value";
+
+const result = providedValue || defaultValue;
+console.log(result);
+// Output: Default Value
+```
+
+### Truthy/Falsy Properties:
+
+1. **Truthy Example:**
+
+```javascript
+// Example: Check if a variable has a truthy value
+const truthyValue = "Hello, World!";
+
+if (truthyValue) {
+  console.log("Truthy value is present");
+} else {
+  console.log("Falsy value");
+}
+// Output: Truthy value is present
+```
+
+2. **Falsy Example:**
+
+In JavaScript, the following values are considered falsy:
+
+- **Falsy Primitive Values:**
+
+  - `false`: The boolean value `false`.
+  - `0`: The number zero.
+  - `''` or `""`: Empty string.
+  - `null`: A special keyword representing an empty or non-existent value.
+  - `undefined`: A variable that has not been assigned a value.
+  - `NaN`: Not a Number, resulting from an undefined or unrepresentable mathematical operation.
+
+- **Falsy Objects:**
+  - `document.all`: An object representing all HTML elements in the document.
+  - `[]` or `new Array()`: An empty array.
+  - `{}` or `new Object()`: An empty object.
+
+These values are considered falsy when used in a boolean context, such as in conditional statements (`if`, `while`, etc.) or with logical operators (`&&`, `||`). All other values not mentioned in the falsy list are considered truthy.
+
+```javascript
+// Example: Check if a variable has a falsy value
+const falsyValue = 0;
+
+if (!falsyValue) {
+  console.log("Falsy value is present");
+} else {
+  console.log("Truthy value");
+}
+// Output: Falsy value is present
+```
+
+These examples illustrate the concept of short circuiting and checking truthy/falsy values in JavaScript. Feel free to modify them based on your specific scenarios.
+
+### React example
+
+Exploit the conditional (ternary) operator, truthy-falsy, and logical short-circuiting for writing concise code.
+
+Example:
+
+```javascript
+function Form(props) {
+  return (
+    <form className="form">
+      <input type="text" placeholder="Username" />
+      {!props.isRegistered && (
+        <input type="password" placeholder="Confirm Password" />
+      )}
+      <button type="submit">{props.isRegistered ? "Login" : "Register"}</button>
+    </form>
+  );
+}
+```
 
 ## What is React?
 
@@ -554,7 +794,7 @@ function App() {
 export default App;
 ```
 
-#### **Passing children via prop:**
+#### **Passing children via prop**
 
 In React, you can pass children to a component by using the special children prop. The children prop allows you to include arbitrary JSX/TSX elements or components between the opening and closing tags of a component. The content placed between the tags is then passed to the component as the children prop.
 
@@ -1364,6 +1604,7 @@ In React, event handling is similar to handling events in HTML but with some dif
 
 ### Using class components
 
+`Class Components are not used much anymore. Look much into function components`
 Here's a basic overview of handling events in React:
 
 1. **Event Naming:**
@@ -1493,45 +1734,310 @@ const MyButton = () => {
 };
 ```
 
-## Useful JS Functions
+## React Form
 
-1. **Map:** Create a new array by doing something in each item of an array.
-2. **Filter:** Create a new array by keeping the items that return true.
-3. **Reduce:** Accumulate a value by doing something to each item in an array.
-4. **Find:** Find the first item that matches from an array.
-5. **FindIndex:** Find the index of the first item that matches.
+In React, forms are a crucial part of building interactive user interfaces. Managing form data and handling user input efficiently is essential for creating dynamic and responsive web applications. React provides a way to handle forms through controlled components, which means that form elements are controlled by the state of the React components.
 
-### Map Function
+- Example of a react form
 
-Each React component must have a `create{ComponentName}()` function, taking in the passed object and returning the component's function to generate a list of data as a list of React components.
+```tsx
+import { FormEvent, useRef } from "react";
 
-```javascript
-function createMyComponent(item) {
-  return <MyComponent key={item.id} data={item} />;
-}
+const Form = () => {
+  // Create refs for input elements using the useRef hook
+  const nameRef = useRef<HTMLInputElement>(null);
+  const ageRef = useRef<HTMLInputElement>(null);
 
-const myComponents = myData.map(createMyComponent);
+  // Create an object to store form data
+  const person = { name: "", age: 0 };
+
+  // Define a function to handle form submission
+  const handleSubmit = (event: FormEvent) => {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+
+    // If the nameRef has a current value, update the person object with the name
+    if (nameRef.current) person.name = nameRef.current.value;
+
+    // If the ageRef has a current value, parse it to an integer and update the person object with the age
+    if (ageRef.current) person.age = parseInt(ageRef.current.value);
+
+    // Log the person object to the console
+    console.log(person);
+  };
+
+  // Render a form with input fields and a submit button
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="mb-3">
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        {/* Connect the nameRef to the input field */}
+        <input ref={nameRef} id="name" type="text" className="form-control" />
+        <label htmlFor="age" className="form-label">
+          Age
+        </label>
+        {/* Connect the ageRef to the input field */}
+        <input ref={ageRef} id="age" type="number" className="form-control" />
+        {/* Submit button triggers the handleSubmit function */}
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
+      </div>
+    </form>
+  );
+};
+
+export default Form;
 ```
 
-## Using JS Short Circuit and Truthy Falsy Properties in React Codes
+### Controlled Components
 
-Exploit the conditional (ternary) operator, truthy-falsy, and logical short-circuiting for writing concise code.
+In React, a controlled component refers to a form element, like an input or textarea, whose value is controlled by the React component's state. This means that the component's state is the single source of truth for the value of the form element, and any changes to that value are managed through React state and React's lifecycle methods.
 
-Example:
+Here's a breakdown of how controlled components work in React:
 
-```javascript
-function Form(props) {
+1. **State Management:**
+
+   - The value of the form element is stored in the component's state.
+   - The state is initialized with an initial value, and it's updated whenever the user interacts with the form element.
+
+2. **Event Handling:**
+
+   - React provides event handlers (e.g., `onChange` for input elements) to capture user input.
+   - When the user interacts with the form element, an event is triggered, and the event handler updates the component's state with the new value.
+
+3. **Rendering:**
+   - The value of the form element is then set explicitly using the value attribute, which is controlled by the component's state.
+   - Since the value is controlled by React state, the component re-renders with the updated value whenever the state changes.
+
+Here's an example of a controlled input component in React:
+
+```tsx
+import { FormEvent, useState } from "react";
+import { produce } from "immer";
+
+const Form = () => {
+  // State to hold form data (controlled components)
+  const [person, setPerson] = useState({
+    name: "",
+    age: "",
+  });
+
+  // Handle form submission
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    // You can perform further actions with the form data here
+  };
+
   return (
-    <form className="form">
-      <input type="text" placeholder="Username" />
-      {!props.isRegistered && (
-        <input type="password" placeholder="Confirm Password" />
-      )}
-      <button type="submit">{props.isRegistered ? "Login" : "Register"}</button>
+    <form onSubmit={handleSubmit}>
+      <div className="mb-3">
+        {/* Input for Name */}
+        <label htmlFor="name" className="form-label">
+          Name
+        </label>
+        <input
+          value={person.name} //Controlled by state
+          onChange={(event) => {
+            // Update the 'name' property of the 'person' state using immer
+            setPerson(
+              produce((draft) => {
+                draft.name = event.target.value;
+              })
+            );
+          }}
+          id="name"
+          type="text"
+          className="form-control"
+        />
+
+        {/* Input for Age */}
+        <label htmlFor="age" className="form-label">
+          Age
+        </label>
+        <input
+          value={person.age} // Controlled by state
+          onChange={(event) => {
+            // Update the 'age' property of the 'person' state using immer
+            setPerson(
+              produce((draft) => {
+                draft.age = event.target.value;
+              })
+            );
+          }}
+          id="age"
+          type="number"
+          className="form-control"
+        />
+
+        {/* Submit Button */}
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
+      </div>
     </form>
+  );
+};
+
+export default Form;
+```
+
+### useState vs useRef
+
+`useState` and `useRef` are both React hooks, but they serve different purposes when it comes to forms.
+
+#### **useState**:
+
+1. **State Management:**
+
+   - `useState` is used to declare state variables in functional components.
+   - When you update the state using the setter function, the component re-renders.
+
+2. **Reactivity:**
+
+   - Changes to state trigger a re-render of the component, causing any part of the UI using that state to reflect the updated values.
+
+3. **Usage in Forms:**
+
+   - `useState` is commonly used to manage form input values.
+   - Example:
+
+     ```jsx
+     import React, { useState } from "react";
+
+     function MyForm() {
+       const [inputValue, setInputValue] = useState("");
+
+       const handleChange = (event) => {
+         setInputValue(event.target.value);
+       };
+
+       return <input type="text" value={inputValue} onChange={handleChange} />;
+     }
+     ```
+
+#### **useRef**:
+
+1. **Immutability:**
+
+   - `useRef` is useful for accessing and interacting with the DOM directly without causing re-renders.
+   - Changes to `useRef` do not trigger re-renders.
+
+2. **Preservation between Renders:**
+
+   - The value of a `useRef` persists across renders and component lifecycles.
+
+3. **Usage in Forms:**
+
+   - `useRef` is often used to reference form elements directly or to store mutable values without triggering re-renders.
+   - Example:
+
+     ```jsx
+     import React, { useRef } from "react";
+
+     function MyForm() {
+       const inputRef = useRef();
+
+       const handleClick = () => {
+         // Access and manipulate the input element directly using inputRef.current
+         inputRef.current.focus();
+       };
+
+       return (
+         <div>
+           <input ref={inputRef} type="text" />
+           <button onClick={handleClick}>Focus Input</button>
+         </div>
+       );
+     }
+     ```
+
+#### **Combining `useState` and `useRef`**:
+
+You can also use both `useState` and `useRef` together in certain scenarios. For example, you might use `useState` for managing the form input value and `useRef` to store a reference to the input element for direct manipulation.
+
+```jsx
+import React, { useState, useRef } from "react";
+
+function MyForm() {
+  const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef();
+
+  const handleChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleClick = () => {
+    // Access and manipulate the input element directly using inputRef.current
+    inputRef.current.focus();
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleChange}
+        ref={inputRef}
+      />
+      <button onClick={handleClick}>Focus Input</button>
+    </div>
   );
 }
 ```
+
+In this example, `useRef` is used to store a reference to the input element, allowing you to interact with it directly without causing a re-render. Meanwhile, `useState` manages the input value and triggers re-renders when the value changes.
+
+### Managing forms with React Hook Form (library)
+
+React Hook Form is a performant, flexible, and extensible form library for React. It provides an intuitive, feature-complete API that offers a seamless experience to developers when building forms. Here are some of its key features:
+
+- **HTML Standard**: It leverages existing HTML markup and validates your forms with a constraint-based validation API.
+- **Performance**: It minimizes the number of re-renders and validation computations, leading to faster mounting.
+- **Lightweight**: React Hook Form is a tiny library without any dependencies.
+- **Adoptable**: Since form state is inherently local, it can be easily adopted without other dependencies.
+- **User Experience (UX)**: It strives to provide the best user experience and brings consistent validation strategies.
+
+React Hook Form reduces the amount of code you need to write while removing unnecessary re-renders. It allows you to isolate component re-renders, which leads to better performance on your page or app. You also have the ability to subscribe to individual input and form state updates without re-rendering the entire form.
+
+**Installation**:
+
+```bash
+npm i react-hook-form
+```
+
+**Usage:**
+
+Here's a basic usage example:
+
+```jsx
+import { useForm, SubmitHandler } from "react-hook-form"
+
+type Inputs = {
+  example: string,
+  exampleRequired: string,
+}
+
+export default function App() {
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>()
+  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
+
+  console.log(watch("example")) // watch input value by passing the name of it
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input defaultValue="test" {...register("example")} />
+      <input {...register("exampleRequired", { required: true })} />
+      {errors.exampleRequired && <span>This field is required</span>}
+      <input type="submit" />
+    </form>
+  )
+}
+```
+
+In this example, `useForm` is a custom React Hook that initializes the form. The `register` function is used to register an input or select ref and apply form validation. The `handleSubmit` function is used to handle form submission..
 
 ## Important Links
 

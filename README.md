@@ -5,7 +5,7 @@ Welcome to the Developer Notes Repository! This repository serves as a collectio
 ## Table of Contents
 
 1. [JavaScript](language/JavaScript.md)
-2. [ReactJS](frontend/ReactJS.md)
+2. [ReactJS](frontend/React.md)
 3. [Authentication and Security (using Node.js)](cybersecurity/Authentication%20and%20Security.md)
 4. [Prompt Engineering](prompt_engineering/PromptEngineering.md)
 5. [Frontend Development](frontend/frontend_basics.md)
