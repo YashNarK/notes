@@ -72,6 +72,10 @@
       - [**useRef**:](#useref)
       - [**Combining `useState` and `useRef`**:](#combining-usestate-and-useref)
     - [Managing forms with React Hook Form (library)](#managing-forms-with-react-hook-form-library)
+  - [React Form Validation](#react-form-validation)
+    - [Installing Zod](#installing-zod)
+    - [To integrate react-hook-form with zod, we need @hookform/resolvers](#to-integrate-react-hook-form-with-zod-we-need-hookformresolvers)
+    - [Usage](#usage-1)
   - [Important Links](#important-links)
 - [Summary](#summary)
   - [Getting started with React](#getting-started-with-react)
@@ -2037,8 +2041,203 @@ export default function App() {
 }
 ```
 
-In this example, `useForm` is a custom React Hook that initializes the form. The `register` function is used to register an input or select ref and apply form validation. The `handleSubmit` function is used to handle form submission..
+In this example, `useForm` is a custom React Hook that initializes the form. The `register` function is used to register an input or select ref and apply form validation. The `handleSubmit` function is used to handle form submission.
 
+Another example,
+
+```tsx
+import { useForm } from "react-hook-form";
+
+interface FormData{
+  name:string;
+  age:number;
+}
+
+const Form = () => {
+  const { register, handleSubmit, formState } = useForm<FormData>();
+  console.log(formState.isValid);
+
+  return (
+    <form
+      className="w-75"
+      onSubmit={handleSubmit((data) => {
+        console.log(data);
+      })}
+    >
+      <div className="mb-3">
+        {/* Input for Name */}
+        <label htmlFor="name" className="form-label my-2">
+          Name
+        </label>
+        <input
+          {...register("name", { minLength: 3, required: true })}
+          id="name"
+          type="text"
+          className="form-control my-2"
+          autoComplete="off"
+        />
+        {formState.errors.name?.type === "required" && (
+          <div className="alert alert-warning">This field is required</div>
+        )}
+        {formState.errors.name?.type === "minLength" && (
+          <div className="alert alert-warning">
+            This field must have a minLength of 3
+          </div>
+        )}
+        {/* Input for Age */}
+        <label htmlFor="age" className="form-label my-2">
+          Age
+        </label>
+        <input
+          {...register("age", { required: true, min: 18 })}
+          id="age"
+          type="number"
+          className="form-control my-2"
+        />
+        {formState.errors.age?.type === "min" && (
+          <div className="alert alert-warning">
+            18+ only
+          </div>
+        )}
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className={"btn btn-primary  my-2"}
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  );
+};
+
+export default Form;
+
+```
+
+## React Form Validation
+
+- Although `react-hook-form` provides validation, it is better to have a schema based validation ratehr than validating everything line by line in the TSX part
+- Joi and Zod are two main validation libraries
+- Joi can be used for JS based projects
+- Zod is for TS based projects
+- Since we use react with typescript, we can do validation using Zod
+
+### Installing Zod
+```bash
+npm i zod
+```
+
+### To integrate react-hook-form with zod, we need @hookform/resolvers
+```bash
+npm i @hookform/resolvers
+# Actually this library provides integration with various schema based validation libraries like Zod, Joi, Yup et.,
+```
+
+### Usage
+
+```tsx
+// Import the 'useForm' hook from the 'react-hook-form' library
+import { useForm } from "react-hook-form";
+
+// Import the CSS module for styling
+import styles from "./ZodForm.module.css";
+
+// Import 'z' for creating Zod schemas
+import { z } from "zod";
+
+// Import 'zodResolver' from '@hookform/resolvers/zod' to use Zod with React Hook Form
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Define a Zod schema for form validation
+const schema = z.object({
+  // Define a 'name' field with validation rules
+  name: z.string().min(1, { message: "Name field is required" }).min(3),
+
+  // Define an 'age' field with validation rules
+  age: z
+    .number({ invalid_type_error: "Age field is required." })
+    .min(18, { message: "18+ only" }),
+});
+
+// Define a TypeScript type 'FormData' using the inferred type from the Zod schema
+type FormData = z.infer<typeof schema>;
+
+// Functional component 'ZodForm'
+const ZodForm = () => {
+  // Destructure the values returned from the 'useForm' hook
+  const {
+    register,      // Input registration function
+    handleSubmit,  // Function to handle form submission
+    formState: { errors },  // Form state, including validation errors
+    reset,         // Function to reset the form
+  } = useForm<FormData>({ resolver: zodResolver(schema) }); // Initialize the form with Zod schema validation
+
+  // Render the form
+  return (
+    <form
+      // Apply CSS classes to the form container
+      className={[styles.zodReactForm, "w-75"].join(" ")}
+      // Handle form submission
+      onSubmit={handleSubmit((data) => {
+        // Log form data to the console
+        console.log(data);
+        // Reset the form after submission
+        reset();
+      })}
+    >
+      <div className="heading">
+        <h2>Form using 'Zod' validation</h2>
+      </div>
+
+      {/* Input for 'name' field */}
+      <label htmlFor="name" className="form-label">
+        Name
+      </label>
+      <input
+        // Register 'name' input with React Hook Form
+        {...register("name")}
+        // Set input attributes
+        id="name"
+        type="text"
+        className="form-control"
+        autoComplete="off"
+      />
+      {/* Display validation error message if there is an error for 'name' */}
+      {errors.name && (
+        <div className="alert alert-warning">{errors.name.message}</div>
+      )}
+
+      {/* Input for 'age' field */}
+      <label htmlFor="age" className="form-label">
+        Age
+      </label>
+      <input
+        // Register 'age' input with React Hook Form, also convert input value to a number
+        {...register("age", { valueAsNumber: true })}
+        // Set input attributes
+        id="age"
+        type="number"
+        className="form-control"
+      />
+      {/* Display validation error message if there is an error for 'age' */}
+      {errors.age && (
+        <div className="alert alert-warning">{errors.age.message}</div>
+      )}
+
+      {/* Submit button */}
+      <button type="submit" className="btn btn-secondary">
+        Submit
+      </button>
+    </form>
+  );
+};
+
+// Export the 'ZodForm' component
+export default ZodForm;
+
+```
 ## Important Links
 
 1. [My Code Sample](https://codesandbox.io/s/introduction-to-jsx-forked-j5wyjn?file=/src/index.js)
