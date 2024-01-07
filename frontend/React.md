@@ -1,8 +1,8 @@
-# React JS
+# React
 
 ## Table of Contents
 
-- [React JS](#react-js)
+- [React](#react)
   - [Table of Contents](#table-of-contents)
   - [Useful VS Code extensions](#useful-vs-code-extensions)
   - [Useful browser extensions](#useful-browser-extensions)
@@ -10,7 +10,7 @@
   - [Icons for UI](#icons-for-ui)
     - [Installation](#installation)
     - [Usage](#usage)
-    - [Icon Props](#icon-props)
+    - [Icon Properties](#icon-properties)
   - [Preferred backend stacks](#preferred-backend-stacks)
   - [Setup Local Environment](#setup-local-environment)
     - [1. create-react-app](#1-create-react-app)
@@ -28,7 +28,21 @@
   - [State](#state)
     - [Declarative State Programming](#declarative-state-programming)
     - [Imperative State Programming](#imperative-state-programming)
-    - [React State](#react-state)
+  - [React State](#react-state)
+    - [**Understanding the state hook:**](#understanding-the-state-hook)
+    - [**Choosing the state structure:**](#choosing-the-state-structure)
+    - [**Keeping the components Pure:**](#keeping-the-components-pure)
+    - [**Understanding strictmode**](#understanding-strictmode)
+    - [**Updating state objects:**](#updating-state-objects)
+    - [**Updating nested state objects:**](#updating-nested-state-objects)
+    - [**Updating Array states:**](#updating-array-states)
+    - [**Updating Array of object:**](#updating-array-of-object)
+    - [**Simplify update Logics using immer library:**](#simplify-update-logics-using-immer-library)
+      - [**A quick example for comparison:**](#a-quick-example-for-comparison)
+      - [**Installing immer**](#installing-immer)
+      - [**Using immer with React**](#using-immer-with-react)
+    - [**Sharing state between component:**](#sharing-state-between-component)
+  - [Basic Overview of react state](#basic-overview-of-react-state)
   - [Props vs State](#props-vs-state)
   - [Hooks in React](#hooks-in-react)
   - [Event Handling in React](#event-handling-in-react)
@@ -53,6 +67,12 @@
     - [CSS modules](#css-modules)
     - [CSS in JS](#css-in-js)
     - [Inline Styling](#inline-styling)
+  - [Managing Component State](#managing-component-state)
+    - [Updating Objects](#updating-objects)
+    - [Updating nested objects](#updating-nested-objects)
+    - [Updating arrays](#updating-arrays)
+    - [Updating array of objects](#updating-array-of-objects)
+    - [Updating with Immer](#updating-with-immer)
 
 ## Useful VS Code extensions
 
@@ -88,12 +108,16 @@ npm install react-icons --save
 ```tsx
 import { FaBeer } from "react-icons/fa";
 
-function Question(){
-  return <h3>Let's go for a <FaBeer />?</h3>
+function Question() {
+  return (
+    <h3>
+      Let's go for a <FaBeer />?
+    </h3>
+  );
 }
 ```
 
-### Icon Props
+### Icon Properties
 
 | Key         | Default               | Notes                              |
 | ----------- | --------------------- | ---------------------------------- |
@@ -588,9 +612,543 @@ UI depends on the value of a state variable. Hooks help hook into state variable
 
 More primitive, used in early JS learning for frontend.
 
-### React State
+## React State
 
 In React, `state` is a fundamental concept that allows components to keep track of and manage their internal data. The `state` object is used to store and update information that can change over time, causing the component to re-render when the state is updated.
+
+### **Understanding the state hook:**
+
+- React updates states asynchronously
+- State is stored outside of components (in memory)
+- Use state hooks at the top level of your component
+
+### **Choosing the state structure:**
+
+- Avoid redundant state variables (eg: If you have firstname and lastname as states, don't go for a fullname state variable)
+- Group related variables inside an object
+- Avoid deeply nested structures
+
+### **Keeping the components Pure:**
+
+**Pure Function:**
+
+Given the same input, always returns the same result.
+
+**Pure Component:**
+
+Every time we give the same props, it must always return the same JSX.
+
+`To keep our components pure, we should keep our changes out of the render phase. We should not change any objects that existed before rendering. However, it is totally fine to update objects that are part of the rendering.`
+
+```tsx
+// Impure Component
+
+let count = 0;
+const Message = () => {
+  count++;
+  return <div>Message {count}</div>;
+};
+
+export default Message;
+```
+
+Output:
+
+```
+Message 2
+Message 4
+Message 6
+```
+
+```tsx
+// Pure Component
+
+const Message = () => {
+  let count = 0;
+  count++;
+  return <div>Message {count}</div>;
+};
+
+export default Message;
+```
+
+Output:
+
+```
+Message 1
+Message 1
+Message 1
+```
+
+### **Understanding strictmode**
+
+- main.tsx
+
+```
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { App } from './App'
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+```
+
+- The `<React.Strictmode>` components is a built in react component that doesn't have a visual representation.
+- It is only there to catch potential problems like impure components.
+- When this strict mode is enabled, react renders each component twice and takes only the results of second render.
+- Hence, we got Message 2, Message 4, Message 6
+- The first render is used for detecting and reporting potential issues within our code and only second render is used to update the user interface.
+
+### **Updating state objects:**
+
+- Just like props the objects and arrays must be treated as immutable
+- Example,
+
+```tsx
+import { useState } from "react";
+
+function App() {
+  const [drink, setDrink] = useState({
+    title: "cola",
+    price: 5,
+  });
+
+  return (
+    <div>
+      <button
+        onClick={() => {
+          // Only an object with all the properties can be passed to set state objects
+          // No partial updates available
+          // To prevent typing entire object again and again, one can use spread operator and type only those properties they wish to update
+          setDrink({ ...drink, price: 6 });
+        }}
+      >
+        Click Me
+      </button>
+    </div>
+  );
+}
+export default App;
+```
+
+### **Updating nested state objects:**
+
+- The spread operator `...` in JS is shallow.
+- It means that if we spread a nested object, the nested properties are referenced from the same memory space for both the old object and the new object (created by spreading)
+- We don't want that to happen in our react states
+- To avoid that we need to explicitly spread the nested objects within objects.
+- Example
+
+```tsx
+import { useState } from "react";
+
+function Employee() {
+  const [user, setUser] = useState({
+    name: "John",
+    address: {
+      street: "Baker Street",
+      city: "London",
+      zipCode: "94111",
+    },
+  });
+
+  // The more deeper our object structure is, the more complex the update logic becomes
+  const handleClick = () => {
+    setUser({ ...user, address: { ...user.address, street: "Church Street" } });
+  };
+
+  return (
+    <div>
+      <button onClick={handleClick}>Click Me</button>
+    </div>
+  );
+}
+export default App;
+```
+
+### **Updating Array states:**
+
+- Just like props the objects and arrays must be treated as immutable
+- Instead of using regular array's function like push, pop and splice, we must use special methods to handle insertion, updation and deletion.
+- Example
+
+```tsx
+import { useState } from "react";
+
+function App() {
+  const [tags, setTags] = useState(["happy", "cheerful"]);
+
+  const handleClick = () => {
+    // Add a tag called 'exciting'
+    setTags([...tags, "exciting"]);
+
+    // Remove cheerful tag
+    setTags(tags.filter((tag) => tag !== "cheerful"));
+
+    // Update happy tag to happiness
+    setTags(tags.map((tag) => (tag === "happy" ? "happiness" : tag)));
+  };
+  return (
+    <div>
+      <button onClick={handleClick}>Click Me</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### **Updating Array of object:**
+
+```tsx
+import { useState } from "react";
+
+function App() {
+  const [bugs, setBugs] = useState([
+    { id: 1, name: "UI Glitch", fixed: "false" },
+    { id: 2, name: "Biometric login failed", fixed: "false" },
+  ]);
+
+  const handleClick = () => {
+    // Fix the bug 1
+    setBugs(
+      bugs.map((bug) => (bug.id === 1 ? { ...bug, fixed: "true" } : bug))
+    );
+  };
+
+  return (
+    <div>
+      <button onClick={handleClick}>Click Me</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### **Simplify update Logics using immer library:**
+
+Immer can be used in any context in which immutable data structures need to be used. For example in combination with React state, React or Redux reducers, or configuration management. Immutable data structures allow for (efficient) change detection: if the reference to an object didn't change, the object itself did not change. In addition, it makes cloning relatively cheap: Unchanged parts of a data tree don't need to be copied and are shared in memory with older versions of the same state.
+
+Generally speaking, these benefits can be achieved by making sure you never change any property of an object, array or map, but by always creating an altered copy instead. In practice this can result in code that is quite cumbersome to write, and it is easy to accidentally violate those constraints. Immer will help you to follow the immutable data paradigm by addressing these pain points:
+
+1. Immer will detect accidental mutations and throw an error.
+2. Immer will remove the need for the typical boilerplate code that is needed when creating deep updates to immutable objects: Without Immer, object copies need to be made by hand at every level. Typically by using a lot of `...` spread operations. When using Immer, changes are made to a draft object, that records the changes and takes care of creating the necessary copies, without ever affecting the original object.
+3. When using Immer, you don't need to learn dedicated APIs or data structures to benefit from the paradigm. With Immer you'll use plain JavaScript data structures, and use the well-known mutable JavaScript APIs, but safely.
+
+#### **A quick example for comparison:**
+
+```tsx
+const baseState = [
+  {
+    title: "Learn TypeScript",
+    done: true,
+  },
+  {
+    title: "Try Immer",
+    done: false,
+  },
+];
+```
+
+Imagine we have the above base state, and we'll need to update the second todo, and add a third one. However, we don't want to mutate the original baseState, and we want to avoid deep cloning as well (to preserve the first todo).
+
+**Without Immer:**
+
+Without Immer, we'll have to carefully shallow copy every level of the state structure that is affected by our change:
+
+```tsx
+const nextState = baseState.slice(); // shallow clone the array
+nextState[1] = {
+  // replace element 1...
+  ...nextState[1], // with a shallow clone of element 1
+  done: true, // ...combined with the desired update
+};
+// since nextState was freshly cloned, using push is safe here,
+// but doing the same thing at any arbitrary time in the future would
+// violate the immutability principles and introduce a bug!
+nextState.push({ title: "Tweet about it" });
+```
+
+**With Immer**
+
+With Immer, this process is more straightforward. We can leverage the produce function, which takes as first argument the state we want to start from, and as second argument we pass a function, called the recipe, that is passed a draft to which we can apply straightforward mutations. Those mutations are recorded and used to produce the next state once the recipe is done. produce will take care of all the necessary copying, and protect against future accidental modifications as well by freezing the data.
+
+```tsx
+import { produce } from "immer";
+
+const nextState = produce(baseState, (draft) => {
+  draft[1].done = true;
+  draft.push({ title: "Tweet about it" });
+});
+```
+
+#### **Installing immer**
+
+```bash
+npm i immer
+```
+
+#### **Using immer with React**
+
+**useState + Immer**
+
+```tsx
+import React, { useCallback, useState } from "react";
+import {produce} from "immer";
+
+const TodoList = () => {
+  const [todos, setTodos] = useState([
+    {
+      id: "React",
+      title: "Learn React",
+      done: true
+    },
+    {
+      id: "Immer",
+      title: "Try Immer",
+      done: false
+    }
+  ]);
+
+  const handleToggle = useCallback((id) => {
+    setTodos(
+      produce((draft) => {
+        const todo = draft.find((todo) => todo.id === id);
+        todo.done = !todo.done;
+      })
+    );
+  }, []);
+
+  const handleAdd = useCallback(() => {
+    setTodos(
+      produce((draft) => {
+        draft.push({
+          id: "todo_" + Math.random(),
+          title: "A new todo",
+          done: false
+        });
+      })
+    );
+  }, []);
+
+  return (<div>{*/ See CodeSandbox */}</div>)
+}
+```
+
+**useImmer**
+
+Since all state updaters follow the same pattern where the update function is wrapped in produce, it is also possible to simplify the above by leveraging the use-immer package that will wrap updater functions in produce automatically:
+
+```tsx
+import React, { useCallback } from "react";
+import { useImmer } from "use-immer";
+
+const TodoList = () => {
+  const [todos, setTodos] = useImmer([
+    {
+      id: "React",
+      title: "Learn React",
+      done: true
+    },
+    {
+      id: "Immer",
+      title: "Try Immer",
+      done: false
+    }
+  ]);
+
+  const handleToggle = useCallback((id) => {
+    setTodos((draft) => {
+      const todo = draft.find((todo) => todo.id === id);
+      todo.done = !todo.done;
+    });
+  }, []);
+
+  const handleAdd = useCallback(() => {
+    setTodos((draft) => {
+      draft.push({
+        id: "todo_" + Math.random(),
+        title: "A new todo",
+        done: false
+      });
+    });
+  }, []);
+
+  // etc
+```
+
+**useReducer + Immer**
+Similarly to useState, useReducer combines neatly with Immer as well
+
+```tsx
+import React, { useCallback, useReducer } from "react";
+import { produce } from "immer";
+
+const TodoList = () => {
+  const [todos, dispatch] = useReducer(
+    produce((draft, action) => {
+      switch (action.type) {
+        case "toggle":
+          const todo = draft.find((todo) => todo.id === action.id);
+          todo.done = !todo.done;
+          break;
+        case "add":
+          draft.push({
+            id: action.id,
+            title: "A new todo",
+            done: false,
+          });
+          break;
+        default:
+          break;
+      }
+    }),
+    [
+      /* initial todos */
+    ]
+  );
+
+  const handleToggle = useCallback((id) => {
+    dispatch({
+      type: "toggle",
+      id,
+    });
+  }, []);
+
+  const handleAdd = useCallback(() => {
+    dispatch({
+      type: "add",
+      id: "todo_" + Math.random(),
+    });
+  }, []);
+
+  // etc
+};
+```
+
+**useImmerReducer**
+
+...which again, can be slightly shorted by useImmerReducer from the use-immer package:
+
+```tsx
+import React, { useCallback } from "react";
+import { useImmerReducer } from "use-immer";
+
+const TodoList = () => {
+  const [todos, dispatch] = useImmerReducer(
+    (draft, action) => {
+      switch (action.type) {
+        case "toggle":
+          const todo = draft.find((todo) => todo.id === action.id);
+          todo.done = !todo.done;
+          break;
+        case "add":
+          draft.push({
+            id: action.id,
+            title: "A new todo",
+            done: false
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    [ /* initial todos */ ]
+  );
+
+  //etc
+
+```
+
+### **Sharing state between component:**
+
+- when a state needs to be shared between two components A and B, then the state must be handled by the closest parent of both A and B.
+- The parent component can then send the states as props for the children components.
+- Only the parent component which has the state declared, must handle state changes. The children components must not change them as the props are immutable.
+- The children however an notify the parent with information as when to change the said state using functions in props.
+- Example
+- Parent component: App
+- Children: Cart and NavBar
+
+---
+
+- App.tsx
+
+```tsx
+import { useState } from "react";
+import NavBar from "./components/navBar";
+import Cart from "./components/Cart";
+
+function App() {
+  const [cartItems, setCartItems] = useState(["Dumbell", "Trimmer"]);
+
+  const handleClear = () => {
+    setCartitems([]);
+  };
+
+  return (
+    <>
+      <div>
+        <NavBar cartItemsCount={cartItems.length} />
+        <Cart cartItems={cartItems} onClear={handleClear} />
+      </div>
+    </>
+  );
+}
+```
+
+- Cart.tsx
+
+```tsx
+import React from "react";
+
+interface Props {
+  cartItems: string[];
+  onClear: () => void;
+}
+
+const Cart = ({ cartItems, onClear }: Props) => {
+  return (
+    <>
+      <div>Cart</div>
+      <ul>
+        {cartItems.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+      <button onClick={onClear}>Clear</button>;
+    </>
+  );
+};
+
+export default Cart;
+```
+
+- NavBar.tsx
+
+```tsx
+import React from "react";
+
+interface Props {
+  cartItemsCount: number;
+}
+
+const NavBar = ({ cartItemsCount }: Props) => {
+  return (
+    <>
+      <div>NavBar: {cartItemsCount}</div>;
+    </>
+  );
+};
+
+export default NavBar;
+```
+
+## Basic Overview of react state
 
 Here's a basic overview of how state works in React:
 
@@ -1158,6 +1716,8 @@ npm i @types/styled-components
 import styled from "styled-components";
 import { useState } from "react";
 
+const [selectedIndex, setSelectedIndex] = useState(-1);
+
 interface Props {
   items: string[];
   heading: string;
@@ -1167,8 +1727,6 @@ interface Props {
 interface ListItemProps {
   active: boolean;
 }
-
-const [selectedIndex, setSelectedIndex] = useState(-1);
 
 // styled contains all the HTML elements
 // This line returns a react component with the styles we defined
@@ -1284,3 +1842,165 @@ Inline styling in React refers to the practice of applying styles directly to in
    ```
 
 Inline styling is a convenient and flexible way to apply styles directly to React components, especially for smaller applications or components where the use of external stylesheets or CSS-in-JS libraries might be overkill. However, for larger projects, using external stylesheets or CSS-in-JS libraries is often recommended for better maintainability and organization.
+
+## Managing Component State
+
+- The state hook allows us to add state to function components.
+- Hooks can only be called at the top level of components.
+- State variables, unlike local variables in a function, stay in memory as long as the component is visible on the screen. This is because state is tied to the component instance, and React will destroy the component and its state when it is removed from the screen.
+- React updates state in an asynchronous manner, so updates are not applied immediately. Instead, they’re batched and applied at once after all event handlers have
+  finished execution. Once the state is updated, React re-renders our component.
+- Group related state variables into an object to keep them organized.
+- Avoid deeply nested state objects as they can be hard to update and maintain.
+- To keep state as minimal as possible, avoid redundant state variables that can be computed from existing variables.
+- A pure function is one that always returns the same result given the same input. Pure functions should not modify objects outside of the function.
+- React expects our function components to be pure. A pure component should always return the same JSX given the same input.
+- To keep our components pure, we should avoid making changes during the render phase.
+- Strict mode helps us catch potential problems such as impure components. Starting from React 18, it is enabled by default. It renders our components twice in development mode to detect any potential side effects.
+- When updating objects or arrays, we should treat them as immutable objects. Instead of mutating them, we should create new objects or arrays to update the state.
+- Immer is a library that can help us update objects and arrays in a more concise and mutable way.
+- To share state between components, we should lift the state up to the closest parent component and pass it down as props to child components.
+- The component that holds some state should be the one that updates it. If a child component needs to update some state, it should notify the parent component using a callback function passed down as a prop.
+
+### Updating Objects
+
+```tsx
+import { useState } from "react";
+
+function App() {
+  const [drink, setDrink] = useState({
+    title: "cola",
+    price: 5,
+  });
+
+  return (
+    <div>
+      <button
+        onClick={() => {
+          // Only an object with all the properties can be passed to set state objects
+          // No partial updates available
+          // To prevent typing entire object again and again, one can use spread operator and type only those properties they wish to update
+          setDrink({ ...drink, price: 6 });
+        }}
+      >
+        Click Me
+      </button>
+    </div>
+  );
+}
+export default App;
+```
+
+### Updating nested objects
+
+```tsx
+import { useState } from "react";
+
+function Employee() {
+  const [user, setUser] = useState({
+    name: "John",
+    address: {
+      street: "Baker Street",
+      city: "London",
+      zipCode: "94111",
+    },
+  });
+
+  // The more deeper our object structure is, the more complex the update logic becomes
+  const handleClick = () => {
+    setUser({ ...user, address: { ...user.address, street: "Church Street" } });
+  };
+
+  return (
+    <div>
+      <button onClick={handleClick}>Click Me</button>
+    </div>
+  );
+}
+export default App;
+```
+
+### Updating arrays
+
+```tsx
+import { useState } from "react";
+
+function App() {
+  const [tags, setTags] = useState(["happy", "cheerful"]);
+
+  const handleClick = () => {
+    // Add a tag called 'exciting'
+    setTags([...tags, "exciting"]);
+
+    // Remove cheerful tag
+    setTags(tags.filter((tag) => tag !== "cheerful"));
+
+    // Update happy tag to happiness
+    setTags(tags.map((tag) => (tag === "happy" ? "happiness" : tag)));
+  };
+  return (
+    <div>
+      <button onClick={handleClick}>Click Me</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### Updating array of objects
+
+```tsx
+import { useState } from "react";
+
+function App() {
+  const [bugs, setBugs] = useState([
+    { id: 1, name: "UI Glitch", fixed: "false" },
+    { id: 2, name: "Biometric login failed", fixed: "false" },
+  ]);
+
+  const handleClick = () => {
+    // Fix the bug 1
+    setBugs(
+      bugs.map((bug) => (bug.id === 1 ? { ...bug, fixed: "true" } : bug))
+    );
+  };
+
+  return (
+    <div>
+      <button onClick={handleClick}>Click Me</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### Updating with Immer
+
+```tsx
+import { produce } from "immer";
+
+function App() {
+  const [bugs, setBugs] = useState([
+    { id: 1, name: "UI Glitch", fixed: "false" },
+    { id: 2, name: "Biometric login failed", fixed: "false" },
+  ]);
+
+  const handleClick = () => {
+    // Fix the bug 1
+    setBugs(
+      produce((draft) => {
+        const bug = draft.find((bug) => bug.id === 1);
+        if (bug) bug.fixed = true;
+      })
+    );
+  };
+
+  return (
+    <div>
+      <button onClick={handleClick}>Click Me</button>
+    </div>
+  );
+}
+```
