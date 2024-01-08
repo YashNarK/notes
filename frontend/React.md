@@ -16,6 +16,7 @@
   - [React Form Libraries](#react-form-libraries)
   - [Validation Libraries](#validation-libraries)
     - [Joi vs Zod](#joi-vs-zod)
+  - [HTTP request library](#http-request-library)
   - [CSS in JS styling libraries](#css-in-js-styling-libraries)
   - [TS types for JS library variables](#ts-types-for-js-library-variables)
   - [Preferred backend stacks](#preferred-backend-stacks)
@@ -76,6 +77,15 @@
     - [Installing Zod](#installing-zod)
     - [To integrate react-hook-form with zod, we need @hookform/resolvers](#to-integrate-react-hook-form-with-zod-we-need-hookformresolvers)
     - [Usage](#usage-1)
+  - [Connecting to a backend](#connecting-to-a-backend)
+    - [Reusable API Client \& User Service](#reusable-api-client--user-service)
+      - [**api-client.ts**](#api-clientts)
+      - [**user-service.ts**](#user-servicets)
+      - [**App.tsx**](#apptsx)
+      - [Generic Http service](#generic-http-service)
+        - [http-service.ts](#http-servicets)
+        - [user-service.ts](#user-servicets-1)
+        - [App.tsx](#apptsx-1)
   - [Important Links](#important-links)
 - [Summary](#summary)
   - [Getting started with React](#getting-started-with-react)
@@ -208,6 +218,10 @@ On the other hand, **Zod** is a powerful validation library that shines in its a
 - Might add overhead for projects not using TypeScript.
 
 In conclusion, the choice between Joi and Zod depends on your project's requirements, familiarity with TypeScript, and the level of complexity your data validation demands.
+
+## HTTP request library
+
+1. [Axios](https://axios-http.com/)
 
 ## CSS in JS styling libraries
 
@@ -1525,7 +1539,7 @@ Here are some of the most commonly used React Hooks:
 
    - Enables performing side effects in functional components.
    - Takes a function that contains the code for the side effect.
-   - Can be used for tasks like data fetching, subscriptions, manual DOM manipulations, etc.
+   - Can be used for tasks like storing data in local storage, data fetching, subscriptions, manual DOM manipulations, etc.
 
    ```jsx
    import React, { useState, useEffect } from "react";
@@ -2048,9 +2062,9 @@ Another example,
 ```tsx
 import { useForm } from "react-hook-form";
 
-interface FormData{
-  name:string;
-  age:number;
+interface FormData {
+  name: string;
+  age: number;
 }
 
 const Form = () => {
@@ -2095,16 +2109,11 @@ const Form = () => {
           className="form-control my-2"
         />
         {formState.errors.age?.type === "min" && (
-          <div className="alert alert-warning">
-            18+ only
-          </div>
+          <div className="alert alert-warning">18+ only</div>
         )}
 
         {/* Submit Button */}
-        <button
-          type="submit"
-          className={"btn btn-primary  my-2"}
-        >
+        <button type="submit" className={"btn btn-primary  my-2"}>
           Submit
         </button>
       </div>
@@ -2113,7 +2122,6 @@ const Form = () => {
 };
 
 export default Form;
-
 ```
 
 ## React Form Validation
@@ -2125,11 +2133,13 @@ export default Form;
 - Since we use react with typescript, we can do validation using Zod
 
 ### Installing Zod
+
 ```bash
 npm i zod
 ```
 
 ### To integrate react-hook-form with zod, we need @hookform/resolvers
+
 ```bash
 npm i @hookform/resolvers
 # Actually this library provides integration with various schema based validation libraries like Zod, Joi, Yup et.,
@@ -2168,10 +2178,10 @@ type FormData = z.infer<typeof schema>;
 const ZodForm = () => {
   // Destructure the values returned from the 'useForm' hook
   const {
-    register,      // Input registration function
-    handleSubmit,  // Function to handle form submission
-    formState: { errors },  // Form state, including validation errors
-    reset,         // Function to reset the form
+    register, // Input registration function
+    handleSubmit, // Function to handle form submission
+    formState: { errors }, // Form state, including validation errors
+    reset, // Function to reset the form
   } = useForm<FormData>({ resolver: zodResolver(schema) }); // Initialize the form with Zod schema validation
 
   // Render the form
@@ -2236,8 +2246,614 @@ const ZodForm = () => {
 
 // Export the 'ZodForm' component
 export default ZodForm;
-
 ```
+
+## Connecting to a backend
+
+- For this example, we use a fake backend provided by https://jsonplaceholder.typicode.com/
+- This implementation is using `axios` for sending http requests
+- Not modular enough for being production ready, in further examples we can build a reusable API client.
+
+```tsx
+import axios, { AxiosError, CanceledError } from "axios";
+import { useState, useEffect } from "react";
+
+interface UserData {
+  id: number;
+  name: string;
+}
+
+const App = () => {
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [httpErrors, setHttpErrors] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Create an AbortController to cancel the fetch operation when the component is unmounted
+    const controller = new AbortController();
+
+    async function fetchUsers(): Promise<void> {
+      try {
+        setIsLoading(true);
+        // Simulate a delay for loading spinner (1 second)
+        const delay = (milliseconds: number) =>
+          new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+        await delay(1000);
+        // Make an HTTP GET request to fetch user data
+        const resp = await axios.get<UserData[]>(
+          "https://jsonplaceholder.typicode.com/users",
+          { signal: controller.signal }
+        );
+
+        // Update the state with fetched user data
+        setUsers(resp.data);
+        setHttpErrors("");
+      } catch (error) {
+        // Handle errors, including canceled requests
+        if (error instanceof CanceledError) return;
+        const err = error as AxiosError;
+        setHttpErrors(err.message);
+      } finally {
+        // Set loading state to false after the request is completed
+        setIsLoading(false);
+      }
+    }
+    // Invoke the fetchUsers function
+    fetchUsers();
+
+    // Cleanup: Abort the fetch operation when the component is unmounted
+    return () => controller.abort();
+  }, []); // Empty dependency array ensures the effect runs only once
+
+  // Function to handle deletion of a user
+  const handleDelete = async (user: UserData) => {
+    // Optimistic Update
+    // Update the UI, then call the server
+    const originalUsers = [...users];
+    setUsers(users.filter((x) => x.id !== user.id));
+    try {
+      // Make an HTTP DELETE request to delete the user
+      await axios.delete(
+        "https://jsonplaceholder.typicode.com/users/" + user.id
+      );
+    } catch (error) {
+      // Handle errors and revert to the original state on failure
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+      setUsers(originalUsers);
+    }
+
+    // Pessimistic Update
+    // Call the server, then Update the UI
+    // try {
+    //   await axios.delete(
+    //     "https://jsonplaceholder.typicode.com/users/" + user.id
+    //   );
+    //   setUsers(users.filter((x) => x.id !== user.id));
+    // } catch (error) {
+    //   const err = error as AxiosError;
+    //   setHttpErrors(err.message);
+    // }
+  };
+
+  // Function to handle addition of a new user
+  const handleAdd = async () => {
+    // usually we get the data from a form submit
+    // here we can omit it and hardcode the new user data
+    const newUser: UserData = {
+      id: 0,
+      name: "Naren",
+    };
+
+    // Pessimistic Update
+    // Because only server can provide ID
+    try {
+      // Make an HTTP POST request to add a new user
+      const resp = await axios.post<UserData>(
+        "https://jsonplaceholder.typicode.com/users",
+        newUser
+      );
+
+      // Update the state with the new user data
+      setUsers([...users, resp.data]);
+    } catch (error) {
+      // Handle errors on failure
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+    }
+  };
+
+  // Function to handle updating an existing user
+  const handleUpdate = async (modifiedUser: UserData) => {
+    // usually we get the data from a form submit
+    // here we can omit it and hardcode the user data for updation
+    try {
+      // put can be used if we do complete object replacement
+      // patch is for partial updates
+      // depending on the backend we work with, this may vary
+
+      // Make an HTTP PUT request to update an existing user
+      const resp = await axios.put<UserData>(
+        "https://jsonplaceholder.typicode.com/users/" + modifiedUser.id,
+        modifiedUser
+      );
+      // Update the state with the modified user data
+      setUsers(users.map((x) => (x.id === resp.data.id ? resp.data : x)));
+    } catch (error) {
+      // Handle errors on failure
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+    }
+  };
+
+  // JSX for rendering UI based on loading state
+  const returnData = !isLoading ? (
+    <div className="mx-5">
+      {httpErrors && <div className="alert alert-danger">{httpErrors}</div>}
+
+      <button onClick={handleAdd} className="btn btn-primary my-2">
+        Add
+      </button>
+      <ul className="list-group">
+        {users.map((user) => (
+          <li
+            className="list-group-item d-flex justify-content-between"
+            key={user.id}
+          >
+            <div>{user.id}</div>
+            <div>{user.name}</div>
+            <div>
+              <button
+                onClick={() => {
+                  // Simulate Form Modification of user data
+                  const modifiedUser = { ...user, name: "mod " + user.name };
+                  handleUpdate(modifiedUser);
+                }}
+                className="btn btn-outline-secondary mx-2"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => {
+                  handleDelete(user);
+                }}
+                className="btn btn-outline-danger mx-2"
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <>
+      <div className="w-100 d-flex flex-column align-items-center my-5">
+        <div className="spinner-border my-5"></div>
+
+        <div className="text-info">Loading...</div>
+      </div>
+    </>
+  );
+
+  return returnData;
+};
+
+export default App;
+```
+
+### Reusable API Client & User Service
+
+##### **api-client.ts**
+
+```ts
+// src\services\api-client.ts
+import axios from "axios";
+
+export default axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+  //   headers:{
+  //     'api-key':'...'}
+});
+```
+
+---
+
+##### **user-service.ts**
+
+```ts
+// src\services\user-service.ts
+import apiClient from "./api-client";
+
+export interface UserData {
+  id: number;
+  name: string;
+}
+
+class UserService {
+  async getAllUsers() {
+    const controller = new AbortController();
+    const resp = await apiClient.get<UserData[]>("/users", {
+      signal: controller.signal,
+    });
+    return {
+      resp,
+      cancel: () => {
+        controller.abort();
+      },
+    };
+  }
+  async getUserByID(userID: number) {
+    const resp = await apiClient.get<UserData>("/users/" + userID);
+    return resp;
+  }
+  async deleteUserByID(userID: number) {
+    await apiClient.delete("/users/" + userID);
+  }
+  async createUser(newUser: UserData) {
+    const resp = await apiClient.post<UserData>("/users", newUser);
+    return resp;
+  }
+
+  async updateUserByID(userID: number, modifiedUser: UserData) {
+    const resp = await apiClient.put<UserData>(
+      "/users/" + userID,
+      modifiedUser
+    );
+    return resp;
+  }
+}
+
+export default new UserService();
+```
+
+---
+
+##### **App.tsx**
+
+```tsx
+// src\App.tsx
+
+import { useState, useEffect } from "react";
+import { AxiosError, CanceledError } from "./services/api-client";
+import userService, { UserData } from "./services/user-service";
+
+const App = () => {
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [httpErrors, setHttpErrors] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let controllerAbort: () => void;
+
+    async function fetchUsers(): Promise<void> {
+      try {
+        setIsLoading(true);
+        const delay = (milliseconds: number) =>
+          new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+        await delay(1000);
+        const { resp, cancel } = await userService.getAllUsers();
+        controllerAbort = cancel;
+
+        setUsers(resp.data);
+        setHttpErrors("");
+      } catch (error) {
+        if (error instanceof CanceledError) return;
+        const err = error as AxiosError;
+        setHttpErrors(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchUsers();
+
+    return () => controllerAbort && controllerAbort();
+  }, []);
+
+  const handleDelete = async (user: UserData) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((x) => x.id !== user.id));
+    try {
+      await userService.deleteUserByID(user.id);
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+      setUsers(originalUsers);
+    }
+  };
+
+  const handleAdd = async () => {
+    const newUser: UserData = {
+      id: 0,
+      name: "Naren",
+    };
+
+    try {
+      const resp = await userService.createUser(newUser);
+      setUsers([...users, resp.data]);
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+    }
+  };
+
+  const handleUpdate = async (modifiedUser: UserData) => {
+    try {
+      const resp = await userService.updateUserByID(
+        modifiedUser.id,
+        modifiedUser
+      );
+      setUsers(users.map((x) => (x.id === resp.data.id ? resp.data : x)));
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+    }
+  };
+
+  const returnData = !isLoading ? (
+    <div className="mx-5">
+      {httpErrors && <div className="alert alert-danger">{httpErrors}</div>}
+
+      <button onClick={handleAdd} className="btn btn-primary my-2">
+        Add
+      </button>
+      <ul className="list-group">
+        {users.map((user) => (
+          <li
+            className="list-group-item d-flex justify-content-between"
+            key={user.id}
+          >
+            <div>{user.id}</div>
+            <div>{user.name}</div>
+            <div>
+              <button
+                onClick={() => {
+                  const modifiedUser = { ...user, name: "mod " + user.name };
+                  handleUpdate(modifiedUser);
+                }}
+                className="btn btn-outline-secondary mx-2"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => {
+                  handleDelete(user);
+                }}
+                className="btn btn-outline-danger mx-2"
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <>
+      <div className="w-100 d-flex flex-column align-items-center my-5">
+        <div className="spinner-border my-5"></div>
+
+        <div className="text-info">Loading...</div>
+      </div>
+    </>
+  );
+
+  return returnData;
+};
+
+export default App;
+```
+
+#### Generic Http service
+
+- Can be used for different endpoint like users, posts, etc
+- Write only once and it will work for multiple cases
+- Must be initiated with endpoint and requests must use data types explicitly based on the endpoint
+
+##### http-service.ts
+
+```ts
+// src\services\http-service.ts
+import apiClient from "./api-client";
+
+interface Entity {
+  id: number;
+}
+
+class HttpService {
+  endpoint: string;
+
+  constructor(endpoint: string) {
+    this.endpoint =
+      endpoint[endpoint.length - 1] === "/" ? endpoint : endpoint + "/";
+  }
+
+  async getAll<T>() {
+    const controller = new AbortController();
+    const resp = await apiClient.get<T[]>(this.endpoint, {
+      signal: controller.signal,
+    });
+    return {
+      resp,
+      cancel: () => {
+        controller.abort();
+      },
+    };
+  }
+  async getByID<T extends Entity>(entity: T) {
+    const resp = await apiClient.get<T>(this.endpoint + entity.id);
+    return resp;
+  }
+  async deleteByID<T extends Entity>(entity: T) {
+    await apiClient.delete(this.endpoint + entity.id);
+  }
+  async create<T extends Entity>(entity: T) {
+    const resp = await apiClient.post<T>(this.endpoint, entity);
+    return resp;
+  }
+
+  async updateByID<T extends Entity>(entity: T) {
+    const resp = await apiClient.put<T>(this.endpoint + entity.id, entity);
+    return resp;
+  }
+}
+
+const create = (endpoint: string) => new HttpService(endpoint);
+export default create;
+```
+
+---
+
+##### user-service.ts
+
+```ts
+// src\services\user-service.ts
+
+import create from "./http-service";
+
+export interface UserData {
+  id: number;
+  name: string;
+}
+
+export default create("/users");
+```
+
+##### App.tsx
+
+```tsx
+import { useState, useEffect } from "react";
+import { AxiosError, CanceledError } from "./services/api-client";
+import userService, { UserData } from "./services/user-service";
+
+const App = () => {
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [httpErrors, setHttpErrors] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let controllerAbort: () => void;
+
+    async function fetchUsers(): Promise<void> {
+      try {
+        setIsLoading(true);
+        const delay = (milliseconds: number) =>
+          new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+        await delay(1000);
+        const { resp, cancel } = await userService.getAll<UserData>();
+        controllerAbort = cancel;
+
+        setUsers(resp.data);
+        setHttpErrors("");
+      } catch (error) {
+        if (error instanceof CanceledError) return;
+        const err = error as AxiosError;
+        setHttpErrors(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchUsers();
+
+    return () => controllerAbort && controllerAbort();
+  }, []);
+
+  const handleDelete = async (user: UserData) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((x) => x.id !== user.id));
+    try {
+      await userService.deleteByID(user);
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+      setUsers(originalUsers);
+    }
+  };
+
+  const handleAdd = async () => {
+    const newUser: UserData = {
+      id: 0,
+      name: "Naren",
+    };
+
+    try {
+      const resp = await userService.create<UserData>(newUser);
+      setUsers([...users, resp.data]);
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+    }
+  };
+
+  const handleUpdate = async (modifiedUser: UserData) => {
+    try {
+      const resp = await userService.updateByID<UserData>(modifiedUser);
+      setUsers(users.map((x) => (x.id === resp.data.id ? resp.data : x)));
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+    }
+  };
+
+  const returnData = !isLoading ? (
+    <div className="mx-5">
+      {httpErrors && <div className="alert alert-danger">{httpErrors}</div>}
+
+      <button onClick={handleAdd} className="btn btn-primary my-2">
+        Add
+      </button>
+      <ul className="list-group">
+        {users.map((user) => (
+          <li
+            className="list-group-item d-flex justify-content-between"
+            key={user.id}
+          >
+            <div>{user.id}</div>
+            <div>{user.name}</div>
+            <div>
+              <button
+                onClick={() => {
+                  const modifiedUser = { ...user, name: "mod " + user.name };
+                  handleUpdate(modifiedUser);
+                }}
+                className="btn btn-outline-secondary mx-2"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => {
+                  handleDelete(user);
+                }}
+                className="btn btn-outline-danger mx-2"
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <>
+      <div className="w-100 d-flex flex-column align-items-center my-5">
+        <div className="spinner-border my-5"></div>
+
+        <div className="text-info">Loading...</div>
+      </div>
+    </>
+  );
+
+  return returnData;
+};
+
+export default App;
+```
+
 ## Important Links
 
 1. [My Code Sample](https://codesandbox.io/s/introduction-to-jsx-forked-j5wyjn?file=/src/index.js)
