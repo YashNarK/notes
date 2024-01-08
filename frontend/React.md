@@ -82,10 +82,13 @@
       - [**api-client.ts**](#api-clientts)
       - [**user-service.ts**](#user-servicets)
       - [**App.tsx**](#apptsx)
-      - [Generic Http service](#generic-http-service)
-        - [http-service.ts](#http-servicets)
-        - [user-service.ts](#user-servicets-1)
-        - [App.tsx](#apptsx-1)
+    - [Generic Http service](#generic-http-service)
+      - [**http-service.ts**](#http-servicets)
+      - [**user-service.ts**](#user-servicets-1)
+      - [**App.tsx**](#apptsx-1)
+    - [Custom data fetching (useUsers) hook for better state management](#custom-data-fetching-useusers-hook-for-better-state-management)
+      - [**useUsers.ts**](#useusersts)
+      - [**App.tsx**](#apptsx-2)
   - [Important Links](#important-links)
 - [Summary](#summary)
   - [Getting started with React](#getting-started-with-react)
@@ -2445,7 +2448,7 @@ export default App;
 
 ### Reusable API Client & User Service
 
-##### **api-client.ts**
+#### **api-client.ts**
 
 ```ts
 // src\services\api-client.ts
@@ -2460,7 +2463,7 @@ export default axios.create({
 
 ---
 
-##### **user-service.ts**
+#### **user-service.ts**
 
 ```ts
 // src\services\user-service.ts
@@ -2510,7 +2513,7 @@ export default new UserService();
 
 ---
 
-##### **App.tsx**
+#### **App.tsx**
 
 ```tsx
 // src\App.tsx
@@ -2647,13 +2650,13 @@ const App = () => {
 export default App;
 ```
 
-#### Generic Http service
+### Generic Http service
 
 - Can be used for different endpoint like users, posts, etc
 - Write only once and it will work for multiple cases
 - Must be initiated with endpoint and requests must use data types explicitly based on the endpoint
 
-##### http-service.ts
+#### **http-service.ts**
 
 ```ts
 // src\services\http-service.ts
@@ -2707,7 +2710,7 @@ export default create;
 
 ---
 
-##### user-service.ts
+#### **user-service.ts**
 
 ```ts
 // src\services\user-service.ts
@@ -2722,7 +2725,9 @@ export interface UserData {
 export default create("/users");
 ```
 
-##### App.tsx
+---
+
+#### **App.tsx**
 
 ```tsx
 import { useState, useEffect } from "react";
@@ -2763,6 +2768,169 @@ const App = () => {
     return () => controllerAbort && controllerAbort();
   }, []);
 
+  const handleDelete = async (user: UserData) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((x) => x.id !== user.id));
+    try {
+      await userService.deleteByID(user);
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+      setUsers(originalUsers);
+    }
+  };
+
+  const handleAdd = async () => {
+    const newUser: UserData = {
+      id: 0,
+      name: "Naren",
+    };
+
+    try {
+      const resp = await userService.create<UserData>(newUser);
+      setUsers([...users, resp.data]);
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+    }
+  };
+
+  const handleUpdate = async (modifiedUser: UserData) => {
+    try {
+      const resp = await userService.updateByID<UserData>(modifiedUser);
+      setUsers(users.map((x) => (x.id === resp.data.id ? resp.data : x)));
+    } catch (error) {
+      const err = error as AxiosError;
+      setHttpErrors(err.message);
+    }
+  };
+
+  const returnData = !isLoading ? (
+    <div className="mx-5">
+      {httpErrors && <div className="alert alert-danger">{httpErrors}</div>}
+
+      <button onClick={handleAdd} className="btn btn-primary my-2">
+        Add
+      </button>
+      <ul className="list-group">
+        {users.map((user) => (
+          <li
+            className="list-group-item d-flex justify-content-between"
+            key={user.id}
+          >
+            <div>{user.id}</div>
+            <div>{user.name}</div>
+            <div>
+              <button
+                onClick={() => {
+                  const modifiedUser = { ...user, name: "mod " + user.name };
+                  handleUpdate(modifiedUser);
+                }}
+                className="btn btn-outline-secondary mx-2"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => {
+                  handleDelete(user);
+                }}
+                className="btn btn-outline-danger mx-2"
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <>
+      <div className="w-100 d-flex flex-column align-items-center my-5">
+        <div className="spinner-border my-5"></div>
+
+        <div className="text-info">Loading...</div>
+      </div>
+    </>
+  );
+
+  return returnData;
+};
+
+export default App;
+```
+
+### Custom data fetching (useUsers) hook for better state management
+
+- If we have another component apart from App.tsx where we have to fetch the list of users, then the current implementation of useState s and useEffect s will require repititions.
+- To avoid this we can define a custom hook which is just a function with all the current hooks implemented in App.tsx
+- Custom Hooks can be used to share functionality across different components
+
+#### **useUsers.ts**
+
+```ts
+// src\hooks\useUsers.ts
+import { useEffect, useState } from "react";
+import userService, { UserData } from "../services/user-service";
+import { AxiosError, CanceledError } from "../services/api-client";
+
+const useUsers = () => {
+  const [users, setUsers] = useState<UserData[]>([]);
+  const [httpErrors, setHttpErrors] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let controllerAbort: () => void;
+
+    async function fetchUsers(): Promise<void> {
+      try {
+        setIsLoading(true);
+        const delay = (milliseconds: number) =>
+          new Promise((resolve) => setTimeout(resolve, milliseconds));
+
+        await delay(1000);
+        const { resp, cancel } = await userService.getAll<UserData>();
+        controllerAbort = cancel;
+
+        setUsers(resp.data);
+        setHttpErrors("");
+      } catch (error) {
+        if (error instanceof CanceledError) return;
+        const err = error as AxiosError;
+        setHttpErrors(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchUsers();
+
+    return () => controllerAbort && controllerAbort();
+  }, []);
+
+  return {
+    users,
+    httpErrors,
+    isLoading,
+    setUsers,
+    setHttpErrors,
+    setIsLoading,
+  };
+};
+
+export default useUsers;
+```
+
+---
+
+#### **App.tsx**
+
+```tsx
+import { AxiosError } from "./services/api-client";
+import userService, { UserData } from "./services/user-service";
+import useUsers from "./hooks/useUsers";
+
+const App = () => {
+  const { users, isLoading, httpErrors, setUsers, setHttpErrors } = useUsers();
   const handleDelete = async (user: UserData) => {
     const originalUsers = [...users];
     setUsers(users.filter((x) => x.id !== user.id));
