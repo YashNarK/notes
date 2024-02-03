@@ -20,6 +20,7 @@
   - [CSS in JS styling libraries](#css-in-js-styling-libraries)
   - [TS types for JS library variables](#ts-types-for-js-library-variables)
   - [Preferred backend stacks](#preferred-backend-stacks)
+  - [Deploying app in GitHub Pages](#deploying-app-in-github-pages)
   - [Setup Local Environment](#setup-local-environment)
     - [1. create-react-app](#1-create-react-app)
     - [2. Vite](#2-vite)
@@ -140,6 +141,7 @@ After installing above extensions, at preference > settings of VS Code, make def
 1. [Bootstrap](https://getbootstrap.com/)
 2. [Material UI](https://mui.com/material-ui/)
 3. [Tailwind CSS](https://tailwindcss.com/)
+4. [Chakra UI](https://chakra-ui.com/)
 
 ## Icons for UI
 
@@ -241,6 +243,28 @@ In conclusion, the choice between Joi and Zod depends on your project's requirem
 1. Node + Express
 2. C#/ASP.NET
 3. Firebase
+
+## Deploying app in GitHub Pages
+
+- Install the gh-pages npm package and designate it as a development dependency
+
+```bash
+npm install gh-pages --save-dev
+```
+
+- Add the deployment commands in package.json > scripts
+
+```json
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+```
+
+- After successfully developing the app to a certain release version, build and deploy using below commands (we assume you already connected the local repo to a remote repo in GitHub)
+
+```bash
+npm run predeploy
+npm run deploy
+```
 
 ## Setup Local Environment
 
