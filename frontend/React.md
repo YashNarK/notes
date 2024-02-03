@@ -621,6 +621,12 @@ React is often used in conjunction with other libraries or frameworks (such as R
 Out of all the above concerns, react has opinion on only the UI part.
 Also, react is agnostic to whether the app is web app (ReactDOM) or mobile (React Native).
 
+- HTTP requets are handled by Axios
+- Form validation using Zod
+- Caching and data management (auto retry, auto refresh, paginated queries, infinite queries) is done with help of React Query
+- Global State Management with help of Reducers, Context, Providers, Zustand (actually Redux is no longer necessary with where React is now)
+- Routing is done using React Router (for multi page apps)
+
 ## React Elements
 
 In React, elements are the smallest building blocks of a React application. They are plain JavaScript objects that represent what you want to see on the screen. A React element is an immutable description of what to render.
