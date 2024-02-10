@@ -19,7 +19,7 @@
   - [HTTP request library](#http-request-library)
   - [CSS in JS styling libraries](#css-in-js-styling-libraries)
   - [TS types for JS library variables](#ts-types-for-js-library-variables)
-  - [Cache and global state maintanence library](#cache-and-global-state-maintanence-library)
+  - [Cache, Retry AJAX, Infinite Scrolling/Pagination library](#cache-retry-ajax-infinite-scrollingpagination-library)
     - [Installation](#installation-1)
     - [Additional dev tools](#additional-dev-tools)
   - [Infinite scrolling library - (to use with useInifiniteQuery of react-query)](#infinite-scrolling-library---to-use-with-useinifinitequery-of-react-query)
@@ -123,6 +123,10 @@
       - [**Persisting Offline mutations**](#persisting-offline-mutations)
     - [TanStack Query - Example 1 - fetch the data](#tanstack-query---example-1---fetch-the-data)
     - [Tanstack Query - Example 2 - Fetch the data using a custom hook and dependecies](#tanstack-query---example-2---fetch-the-data-using-a-custom-hook-and-dependecies)
+  - [Global State Management](#global-state-management)
+    - [Reducer](#reducer)
+    - [Sharing a state](#sharing-a-state)
+    - [Sharing a state/data using React context](#sharing-a-statedata-using-react-context)
   - [React Query DevTools](#react-query-devtools)
     - [Installation](#installation-4)
     - [Usage](#usage-2)
@@ -274,13 +278,13 @@ In conclusion, the choice between Joi and Zod depends on your project's requirem
 
 1. @types
 
-## Cache and global state maintanence library
+## Cache, Retry AJAX, Infinite Scrolling/Pagination library
 
 1. [Tanstack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
 
 ### Installation
 
-``` bash
+```bash
 npm i @tanstack/react-query
 # or
 pnpm add @tanstack/react-query
@@ -289,6 +293,7 @@ yarn add @tanstack/react-query
 ```
 
 ### Additional dev tools
+
 1. [@tanstack/react-query-devtools](https://tanstack.com/query/latest/docs/framework/react/devtools)
 
 - **Installation**
@@ -304,7 +309,7 @@ yarn add @tanstack/react-query-devtools
 - **Usage**
 
 ```tsx
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 function App() {
   return (
@@ -312,7 +317,7 @@ function App() {
       {/* The rest of your application */}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  )
+  );
 }
 ```
 
@@ -3462,6 +3467,7 @@ function Projects() {
 ### useMutation and Invalidate Cache, optimistic and pessimistic approaches
 
 - Pessimistic
+
 ```tsx
 import { FormEvent, useRef } from "react";
 
@@ -3497,7 +3503,7 @@ const queryClient = useQueryClient();
     });
 
     // Approach 2 : Update Cache
-    
+
     // IMPORTANT: IF WE UPDATE THE CACHE IN ON SUCCESS THEN IT IS PESSIMISTIC APPROACH
     // ELSE IF WE UPDATE CACHE IN ON MUTATE THEN IT IS OPTIMISTIC APPROACH
 
@@ -3531,7 +3537,7 @@ const queryClient = useQueryClient();
   };
 
   return (
-<>    
+<>
 {addPerson.error && <div  class='alert alert-danger'>{addperson.error.message}</div>}
 <form onSubmit={handleSubmit}>
       <div className="mb-3">
@@ -3556,7 +3562,9 @@ const queryClient = useQueryClient();
 
 export default Form;
 ```
+
 - Optimistic
+
 ```tsx
 import { FormEvent, useRef } from "react";
 
@@ -3623,7 +3631,7 @@ const queryClient = useQueryClient();
   };
 
   return (
-<>    
+<>
 {addPerson.error && <div  class='alert alert-danger'>{addperson.error.message}</div>}
 <form onSubmit={handleSubmit}>
       <div className="mb-3">
@@ -4278,6 +4286,154 @@ const useData = <T>(
 
 export default useData;
 ```
+
+## Global State Management
+
+### Reducer
+
+A function that allows us to centralize state updates in a component
+
+- Example:
+- before reducer
+
+```tsx
+// App.tsx
+// without any reducers
+import { useState } from "react";
+
+const Counter = () => {
+  const [value, setValue] = useState(0);
+  return (
+    <div>
+      Counter ({value})
+      <button onClick={() => setValue(value + 1)}>Increment</button>
+      <button onClick={() => setValue(value - 1)}>Decrement</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+- after reducer
+
+```ts
+// CounterReducer.ts
+interface Action {
+  type: "INCREMENT" | "DECREMENT";
+}
+
+const counterReducer = (state: number, action: Action): number => {
+  if (action.type === "INCREMENT") return state + 1;
+  if (action.type === "DECREMENT") return state - 1;
+  throw new Error("Action is not supported");
+};
+
+export default counterReducer;
+```
+
+```tsx
+// App.tsx
+import { useReducer, useState } from "react";
+import counterReducer from "./example";
+
+const Counter = () => {
+  //   const [value, setValue] = useState(0);
+  const [value, dispatch] = useReducer(counterReducer, 0);
+  return (
+    <div>
+      Counter ({value})
+      <button onClick={() => dispatch({ type: "INCREMENT" })}>Increment</button>
+      <button onClick={() => dispatch({ type: "DECREMENT" })}>Decrement</button>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+- Example 2 : Complex actions
+
+```ts
+// authReducer.ts
+interface LoginAction {
+  type: "LOGIN";
+  user: string;
+}
+interface LogoutAction {
+  type: "LOGOUT";
+}
+type AuthAction = LoginAction | LogoutAction;
+
+const authReducer = (state: string, action: AuthAction): string => {
+  switch (action.type) {
+    case "LOGIN":
+      return action.user;
+    case "LOGOUT":
+      return "";
+    default:
+      return state;
+  }
+};
+
+export default authReducer;
+
+
+```
+
+```tsx
+// App.tsx
+
+import React, { useReducer, useState } from "react";
+import authReducer from "./example";
+
+const LoginStatus = () => {
+  //   const [user, setUser] = useState("");
+  const [user, userDispatch] = useReducer(authReducer, "");
+  if (user)
+    return (
+      <>
+        <div>
+          <span>{user}</span>
+          <a
+            href="#"
+            onClick={() => {
+              userDispatch({ type: "LOGOUT" });
+            }}
+          >
+            Logout
+          </a>
+        </div>
+      </>
+    );
+
+  return (
+    <div>
+      <a
+        href="#"
+        onClick={() => {
+          userDispatch({ type: "LOGIN", user: "Narendran A I" });
+        }}
+      >
+        Login
+      </a>
+    </div>
+  );
+};
+
+export default LoginStatus;
+
+```
+
+### Sharing a state
+
+Lift the state up to the closest parent and pass it down as props to child components.
+
+However, in a complex app with many components becoming child to the top component, we need to set state at top and pass them down as props (again and again) until we reach the bottom component. This creates so much repition in code. This issue is known as `Prop Drilling`
+
+### Sharing a state/data using React context
+
+Allows sharing data without passing it down through many components in the middle.
 
 ## React Query DevTools
 
