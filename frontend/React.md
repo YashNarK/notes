@@ -24,6 +24,9 @@
     - [Additional dev tools](#additional-dev-tools)
   - [Infinite scrolling library - (to use with useInifiniteQuery of react-query)](#infinite-scrolling-library---to-use-with-useinifinitequery-of-react-query)
     - [Installation](#installation-2)
+  - [Client State Management library](#client-state-management-library)
+    - [Installation](#installation-3)
+    - [Additional Dev Tools](#additional-dev-tools-1)
   - [Preferred backend stacks](#preferred-backend-stacks)
   - [Deploying app in GitHub Pages](#deploying-app-in-github-pages)
   - [Setup Local Environment](#setup-local-environment)
@@ -102,7 +105,7 @@
     - [Redux - should we use it ?](#redux---should-we-use-it-)
     - [Caching](#caching)
     - [Problems with useEffect and direct Axios queries](#problems-with-useeffect-and-direct-axios-queries)
-    - [Installation](#installation-3)
+    - [Installation](#installation-4)
     - [Core Concepts of React (TanStack) Query:](#core-concepts-of-react-tanstack-query)
     - [QueryClient and QueryClientProvider](#queryclient-and-queryclientprovider)
     - [useQuery Hook](#usequery-hook)
@@ -124,7 +127,7 @@
     - [TanStack Query - Example 1 - fetch the data](#tanstack-query---example-1---fetch-the-data)
     - [Tanstack Query - Example 2 - Fetch the data using a custom hook and dependecies](#tanstack-query---example-2---fetch-the-data-using-a-custom-hook-and-dependecies)
   - [React Query DevTools](#react-query-devtools)
-    - [Installation](#installation-4)
+    - [Installation](#installation-5)
     - [Usage](#usage-2)
   - [Global State Management](#global-state-management)
     - [Reducer](#reducer)
@@ -137,6 +140,10 @@
     - [Redux](#redux)
     - [React Context](#react-context)
     - [Conclusion](#conclusion)
+  - [Zustand](#zustand)
+    - [Zustand Example 1:](#zustand-example-1)
+    - [Zustand - preventing unecessary re renders](#zustand---preventing-unecessary-re-renders)
+  - [Simple Zustand Dev Tools](#simple-zustand-dev-tools)
   - [Important Links](#important-links)
 - [React Summary](#react-summary)
 
@@ -321,6 +328,27 @@ function App() {
 
   yarn add react-infinite-scroll-component
 
+```
+
+## Client State Management library
+
+1. [Zustand](https://github.com/pmndrs/zustand)
+
+### Installation
+
+```bash
+npm install zustand
+# or yarn add zustand or pnpm add zustand
+```
+
+### Additional Dev Tools
+
+1. [simple-zustand-devtools](https://github.com/beerose/simple-zustand-devtools#readme)
+
+**Installation**
+
+```bash
+npm i simple-zustand-devtools
 ```
 
 ## Preferred backend stacks
@@ -4956,6 +4984,218 @@ Adjust the context names and state/data according to your specific use case.
     - Share it with context
     - Consolidate state logic with a reducer
     - Use a simpler state management tool (like Zustand)
+
+## Zustand
+
+**Zustand** is a **lightweight and straightforward state management library** for **React**. It provides an alternative to more complex solutions like **Redux**. Let's dive into what Zustand is and how it works:
+
+1. **What is Zustand?**
+
+   - Zustand is built on top of the **Context API** and uses the concept of **stores** to manage state.
+   - A **store** is a container for a specific piece of state and any functions that modify that state.
+   - Unlike Redux, Zustand doesn't require you to write complex reducers or action creators.
+
+2. **Creating a Store:**
+
+   - To use Zustand, you start by creating a store.
+   - A store holds your application's state and provides methods for updating it.
+   - Here's an example of creating a simple store with an initial state of `{ count: 0 }`:
+
+     ```javascript
+     import create from "zustand";
+
+     const useCountStore = create((set) => ({
+       count: 0,
+     }));
+     ```
+
+     The `useCountStore` now holds the state with an initial count of 0.
+
+3. **Updating State:**
+
+   - You can update the state using the `set` method provided by the store.
+   - The `set` method takes a function that receives the current state and returns the new state.
+   - For example, to increment the count:
+     ```javascript
+     useCountStore.set((state) => ({
+       count: state.count + 1,
+     }));
+     ```
+
+4. **Consuming State:**
+
+   - To access the state in your React components, use the `useStore` hook provided by Zustand.
+   - The `useStore` hook takes a function that receives the current state and returns the state values you want to access.
+   - Example:
+
+     ```javascript
+     import { useStore } from "zustand";
+
+     function MyComponent() {
+       const count = useStore((state) => state.count);
+       return <div>{count}</div>;
+     }
+     ```
+
+     In this example, we display the `count` value from the store.
+
+5. **Benefits of Zustand:**
+   - **Lightweight**: Zustand is minimalistic and doesn't introduce unnecessary complexity.
+   - **Fast**: It performs well due to its simplicity.
+   - **Easy to Learn**: Zustand's straightforward API makes it beginner-friendly.
+
+In summary, Zustand simplifies global state management in React without sacrificing performance or readability.
+
+### Zustand Example 1:
+
+- An example of a **Zustand store** where we define functions while creating the store:
+
+```javascript
+import create from "zustand";
+
+// Define the store type
+type Store = {
+  count: number,
+  increment: () => void,
+  decrement: () => void,
+};
+
+// Create the Zustand store
+const useStore =
+  create <
+  Store >
+  ((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+    decrement: () => set((state) => ({ count: state.count - 1 })),
+  }));
+
+export default useStore;
+```
+
+In this example:
+
+- We create a store with a `count` state variable and two functions: `increment` and `decrement`.
+- The `increment` function increases the count by 1, and the `decrement` function decreases it by 1.
+- We use the `create` function from Zustand, passing in a function that receives a `set` function as its argument.
+- The `set` function is used to update the state, and we use ES6 arrow function syntax to define the increment and decrement functions.
+
+You can now use this store in your components like this:
+
+```javascript
+import useStore from "./useStore";
+
+function Counter() {
+  const { count, increment, decrement } = useStore();
+
+  return (
+    <div>
+      <button onClick={decrement}>-</button>
+      <span>{count}</span>
+      <button onClick={increment}>+</button>
+    </div>
+  );
+}
+
+export default Counter;
+```
+
+In the `Counter` component, we import the `useStore` hook and use it to access the `count` state variable and the `increment` and `decrement` functions. These values are then used in the JSX to render a simple counter component.
+
+### Zustand - preventing unecessary re renders
+
+To prevent unnecessary re-renders in your React app when using Zustand, you can leverage **selectors** and **shallow comparison**.
+
+1. **Selectors in Zustand**:
+
+   - When you need to subscribe to a computed state from a store, the recommended way is to use a **selector**.
+   - A selector allows you to pick specific values from the store state.
+   - The computed selector will cause a re-render if the output has changed according to `Object.is`.
+   - To avoid unnecessary re-renders, you can use the `useShallow` hook.
+
+2. **Shallow Comparison**:
+
+   - Shallow comparison ensures that only relevant components re-render when specific state values change.
+   - By default, Zustand compares picks by identity, which can lead to unnecessary re-renders.
+   - To use shallow comparison, pass a shallow comparison function as the second argument to your selector.
+   - For example:
+
+     ```javascript
+     import { useStore } from "zustand";
+     import shallow from "zustand/shallow";
+
+     function MyComponent() {
+       const { bears, increment } = useStore(
+         (state) => ({ bears: state.bears, increment: state.increment }),
+         shallow
+       );
+
+       // Your component logic here...
+     }
+     ```
+
+     In this example, only the relevant parts of the state (`bears` and `increment`) will trigger re-renders.
+
+3. **Utility Function for Selectors** (Optional):
+
+   - If you want to create a custom utility function for selectors, you can do so.
+   - Here's an example of creating a `createStoreWithSelectors` function:
+
+     ```javascript
+     import { create } from "zustand";
+
+     const bearStore = create((set) => ({
+       bears: 0,
+       increment: () => set((state) => ({ bears: state.bears + 1 })),
+       // Other state and actions...
+     }));
+
+     export const createStoreWithSelectors = (store) => (keys) => {
+       const useStore = (keys) => {
+         return store((state) => {
+           const selectedState = keys.reduce((acc, cur) => {
+             acc[cur] = state[cur];
+             return acc;
+           }, {});
+           return selectedState;
+         }, shallow);
+       };
+       return useStore(keys);
+     };
+
+     export const useBearStore = createStoreWithSelectors(bearStore);
+     ```
+
+     Now you can use `useBearStore(['bears', 'increment'])` in your components.
+
+The shallow comparison helps optimize performance by preventing unnecessary re-renders.
+
+## Simple Zustand Dev Tools
+
+- Usage Example
+
+```ts
+import create from "zustand";
+import { mountStoreDevtool } from "simple-zustand-devtools";
+
+// Define the store type
+type Store = {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+};
+
+// Create the Zustand store
+const useStore = create<Store>((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+  decrement: () => set((state) => ({ count: state.count - 1 })),
+}));
+
+if (process.env.NODE_ENV === "development")
+  mountStoreDevtool("Counter Store", useStore);
+export default useStore;
+```
 
 ## Important Links
 
