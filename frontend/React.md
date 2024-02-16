@@ -27,6 +27,7 @@
   - [Client State Management library](#client-state-management-library)
     - [Installation](#installation-3)
     - [Additional Dev Tools](#additional-dev-tools-1)
+  - [Routing Library](#routing-library)
   - [Preferred backend stacks](#preferred-backend-stacks)
   - [Deploying app in GitHub Pages](#deploying-app-in-github-pages)
   - [Setup Local Environment](#setup-local-environment)
@@ -144,6 +145,12 @@
     - [Zustand Example 1:](#zustand-example-1)
     - [Zustand - preventing unecessary re renders](#zustand---preventing-unecessary-re-renders)
   - [Simple Zustand Dev Tools](#simple-zustand-dev-tools)
+  - [React Router DOM](#react-router-dom)
+    - [Some Important Hooks of react-router-dom](#some-important-hooks-of-react-router-dom)
+      - [**1. useLocation**](#1-uselocation)
+      - [**2. useNavigate**](#2-usenavigate)
+      - [**3. useParams**](#3-useparams)
+      - [**5. useRouteError**](#5-userouteerror)
   - [Important Links](#important-links)
 - [React Summary](#react-summary)
 
@@ -349,6 +356,16 @@ npm install zustand
 
 ```bash
 npm i simple-zustand-devtools
+```
+
+## Routing Library
+
+1. [react-router-dom](https://github.com/remix-run/react-router#readme)
+
+**Installation:**
+
+```bash
+npm i react-router-dom
 ```
 
 ## Preferred backend stacks
@@ -5170,6 +5187,24 @@ To prevent unnecessary re-renders in your React app when using Zustand, you can 
 
 The shallow comparison helps optimize performance by preventing unnecessary re-renders.
 
+```plaintext
+Make a note:
+Each project is different and depending on the project we may have to change our global state management aproach.
+If the project has components that are reusable, then we have to go with props and useReducer hooks to maintain and pass local states.
+If the components are specific to the project and won't be re used, then a store like solution (eg: Zustand, Redux) can make the life simpler.
+
+Avoid React Context most of the time.
+Go with store like client state management or local states only.
+
+For server state React Query already does wonders, so stick to it.
+
+
+However, Redux can prove as a single stop solution for all of this, but bring alot of complexity and boiler plate codes.
+Unless, we need to move stores from React to Anguler or perform some exception Redux based implementation, don't go for it.
+
+Simply put, if you don't use advanced concepts of redux in your project, then redux is not for your project.
+```
+
 ## Simple Zustand Dev Tools
 
 - Usage Example
@@ -5195,6 +5230,290 @@ const useStore = create<Store>((set) => ({
 if (process.env.NODE_ENV === "development")
   mountStoreDevtool("Counter Store", useStore);
 export default useStore;
+```
+
+## React Router DOM
+
+- [react-router-dom Website](https://reactrouter.com/en/main)
+- `react-router-dom` is an npm package that provides bindings for using React Router in web applications. It enables you to implement dynamic routing in a web application. This allows you to create and manage routes, navigate, and access history in your React web app.
+- Usage
+
+```tsx
+// src\pages\Layout.tsx
+
+import NavBar from "../components/NavBar";
+import { Outlet } from "react-router-dom";
+const Layout = () => {
+  return (
+    <>
+      <NavBar />
+      <Outlet />
+    </>
+  );
+};
+
+export default Layout;
+```
+
+```tsx
+// src\pages\HomePage.tsx
+import { Box, Grid, GridItem, Show, Stack } from "@chakra-ui/react";
+import Footer from "../components/Footer";
+import GameGrid from "../components/GameGrid";
+import GenreList from "../components/GenreList";
+import Pagination from "../components/Pagination";
+import ClearButton from "../components/ClearButton";
+import Gameheading from "../components/GameHeading";
+import OrderSelector from "../components/OrderSelector";
+import PlatformSelector from "../components/PlatformSelector";
+
+const HomePage = () => {
+  return (
+    <>
+      {" "}
+      <Box>
+        <Stack
+          display={"flex"}
+          justifyContent={"space-between"}
+          w={{
+            base: "100%",
+            md: "95%",
+            lg: "80%",
+            xl: "70%",
+            "2xl": "60%",
+          }}
+          direction={{
+            base: "column",
+            md: "row",
+          }}
+          gap={2}
+          mx={"auto"}
+          my={3}
+          px={2}
+        >
+          <OrderSelector />
+          <Box
+            display={"flex"}
+            justifyContent={"space-between"}
+            flexWrap={"wrap"}
+          >
+            <PlatformSelector />
+            <ClearButton />
+          </Box>
+        </Stack>
+        <Box m={4} textAlign={"center"}>
+          <Gameheading />
+        </Box>
+      </Box>
+      <Grid
+        templateAreas={{
+          base: ` "main main" "footer footer"`,
+          md: ` "aside main" "footer footer"`,
+        }}
+        gridTemplateColumns={{
+          base: "180px 1fr",
+          lg: "200px 1fr",
+          xl: "200px 1fr",
+          "2xl": "250px 1fr",
+        }}
+      >
+        <Show above="md">
+          <GridItem
+            area={"aside"}
+            px={3}
+            mb={"1cm"}
+            position="sticky"
+            left="0"
+            top="212"
+            zIndex="98" // Ensure it's behind the NavBar
+            height="70vh"
+            overflowY={"auto"}
+          >
+            <GenreList />
+          </GridItem>
+        </Show>
+        <GridItem area={"main"} px={5} overflowY="auto">
+          <GameGrid />
+        </GridItem>
+
+        <GridItem area="footer">
+          <Pagination />
+          <Footer />
+        </GridItem>
+      </Grid>
+    </>
+  );
+};
+
+export default HomePage;
+```
+
+```tsx
+// src\routes.tsx
+
+import { createBrowserRouter } from "react-router-dom";
+import Layout from "./pages/Layout";
+import HomePage from "./pages/HomePage";
+import GameDetailsPage from "./pages/GameDetailsPage";
+import ErrorPage from "./pages/ErrorPage";
+
+const router = createBrowserRouter([
+  {
+    path: "/game-hub",
+    element: <Layout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "games/:slug", element: <GameDetailsPage /> },
+    ],
+  },
+]);
+
+export default router;
+```
+
+```tsx
+// src\main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
+import "./index.css";
+import theme from "./theme.ts";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { RouterProvider } from "react-router-dom";
+import router from "./routes.tsx";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      staleTime: 1000 * 60 * 10,
+      gcTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      refetchOnMount: true,
+    },
+  },
+});
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <ChakraProvider theme={theme}>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+    </ChakraProvider>
+  </React.StrictMode>
+);
+```
+
+### Some Important Hooks of react-router-dom
+
+#### **1. useLocation**
+
+This hook returns the current location object. This can be useful if you'd like to perform some side effect whenever the current location changes.
+
+```tsx
+import * as React from 'react';
+import { useLocation } from 'react-router-dom';
+
+function App() {
+  let location = useLocation();
+
+  React.useEffect(() => {
+    // Google Analytics
+    ga('send', 'pageview');
+  }, [location]);
+
+  return (
+    // ...
+  );
+}
+```
+
+#### **2. useNavigate**
+
+The useNavigate hook returns a function that lets you navigate programmatically, for example in an effect:
+
+```tsx
+import { useNavigate } from "react-router-dom";
+
+function useLogoutTimer() {
+  const userIsInactive = useFakeInactiveUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userIsInactive) {
+      fake.logout();
+      navigate("/session-timed-out");
+    }
+  }, [userIsInactive]);
+}
+```
+
+The navigate function has two signatures:
+
+- Either pass a To value (same type as <Link to>) with an optional second options argument (similar to the props you can pass to <Link>), or
+- Pass the delta you want to go in the history stack. For example, navigate(-1) is equivalent to hitting the back button
+
+#### **3. useParams**
+The useParams hook returns an object of key/value pairs of the dynamic params from the current URL that were matched by the <Route path>. Child routes inherit all params from their parent routes.
+
+```tsx
+import * as React from 'react';
+import { Routes, Route, useParams } from 'react-router-dom';
+
+function ProfilePage() {
+  // Get the userId param from the URL.
+  let { userId } = useParams();
+  // ...
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="users">
+        <Route path=":userId" element={<ProfilePage />} />
+        <Route path="me" element={...} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+#### **5. useRouteError**
+
+Inside of an errorElement, this hook returns anything thrown during an action, loader, or rendering. Note that thrown responses have special treatment, see isRouteErrorResponse for more information.
+
+This feature only works if using a data router, see [Picking a Router](https://reactrouter.com/en/main/routers/picking-a-router)
+
+```tsx
+import { Box, Heading, Text } from "@chakra-ui/react";
+import { isRouteErrorResponse, useRouteError } from "react-router-dom";
+import NavBar from "../components/NavBar";
+
+const ErrorPage = () => {
+  const error = useRouteError();
+  return (
+    <>
+      <NavBar />
+      <Box textAlign={"center"}>
+        <Heading>Oops! </Heading>
+        <Text>
+          {isRouteErrorResponse(error)
+            ? "This page does not exist"
+            : "An unexpected error occured"}
+        </Text>
+      </Box>
+    </>
+  );
+};
+
+export default ErrorPage;
+
 ```
 
 ## Important Links
