@@ -3,6 +3,7 @@
 ## Table of contents
 - [CSS Notes](#css-notes)
   - [Table of contents](#table-of-contents)
+  - [Box Model](#box-model)
   - [Display Properties](#display-properties)
     - [Block](#block)
     - [Inline](#inline)
@@ -30,7 +31,7 @@
   - [Resources](#resources)
   - [Stacking Order](#stacking-order)
     - [Z-index](#z-index)
-  - [Box Model](#box-model)
+  - [Box Model](#box-model-1)
   - [Responsive Design](#responsive-design)
   - [Transitions and Animations](#transitions-and-animations)
   - [Pseudo-classes and Pseudo-elements](#pseudo-classes-and-pseudo-elements)
@@ -45,6 +46,40 @@
     - [4. Toggle Dark Mode with JavaScript (Optional)](#4-toggle-dark-mode-with-javascript-optional)
     - [5. Test and Refine](#5-test-and-refine)
 
+
+## Box Model
+
+The CSS Box Model is a fundamental concept in CSS layout and design. It describes the structure of elements on a webpage as a rectangular box, which consists of the content area, padding, border, and margin. Each of these components plays a role in determining the overall size and spacing of an element.
+
+Here's a breakdown of each component:
+
+1. **Content**: The actual content of the box, such as text, images, or other media. Its dimensions are determined by the `width` and `height` properties.
+
+2. **Padding**: The space between the content and the border. Padding is transparent by default and can be set using the `padding` property. It can be adjusted individually for each side using properties like `padding-top`, `padding-right`, `padding-bottom`, and `padding-left`.
+
+3. **Border**: The border surrounds the content and padding. It is specified using the `border` property, which includes the border width, style, and color. Similar to padding, you can set individual properties for each side using `border-top`, `border-right`, `border-bottom`, and `border-left`.
+
+4. **Margin**: The space outside the border, which separates the element from other elements in the layout. Margins are transparent areas used for spacing. You can set margins using the `margin` property or individual properties like `margin-top`, `margin-right`, `margin-bottom`, and `margin-left`.
+
+Here's a visual representation of the CSS Box Model:
+
+```
+ ________________________
+|  Margin                |
+|  ____________________  |
+| |  Border            | |
+| |  ________________  | |
+| | |  Padding       | | |
+| | |  ____________  | | |
+| | | |  Content   | | | |
+| | | |            | | | |
+| | | |____________| | | |
+| | |________________| | |
+| |____________________| |
+|________________________|
+```
+
+Understanding the box model is crucial for designing and laying out web pages effectively. It helps in controlling spacing, alignment, and sizing of elements on a webpage. Additionally, it's important to note that the actual size of an element on the webpage is calculated as the sum of the content width/height, padding, border, and margin.
 
 ## Display Properties
 
