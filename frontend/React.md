@@ -73,10 +73,21 @@
   - [Basic Overview of react state](#basic-overview-of-react-state)
   - [Props vs State](#props-vs-state)
   - [Hooks in React](#hooks-in-react)
+    - [1. **useState**:](#1-usestate)
+    - [2. **useEffect**:](#2-useeffect)
+    - [3. **useContext**:](#3-usecontext)
+    - [4. **useReducer**:](#4-usereducer)
+    - [5. **useRef**:](#5-useref)
+    - [6. **useCallback**:](#6-usecallback)
+    - [7. **useMemo**:](#7-usememo)
+    - [8. **useLayoutEffect**:](#8-uselayouteffect)
   - [Event Handling in React](#event-handling-in-react)
     - [Using class components](#using-class-components)
     - [Using functions components](#using-functions-components)
   - [React Event Pooling](#react-event-pooling)
+  - [Life Cycle of a React Component](#life-cycle-of-a-react-component)
+    - [Life cycle implementation in Functional Component](#life-cycle-implementation-in-functional-component)
+  - [Memoizing](#memoizing)
   - [React Form](#react-form)
     - [Controlled Components](#controlled-components)
     - [useState vs useRef](#usestate-vs-useref)
@@ -1680,108 +1691,79 @@ State management is crucial for building dynamic and interactive user interfaces
 Functions starting with 'use' are Hooks.
 React Hooks are functions that allow functional components to use state and lifecycle features that were previously only available in class components. Introduced in React 16.8, Hooks provide a more direct way to interact with React's features in functional components, making it easier to reuse stateful logic and manage side effects.
 
-Here are some of the most commonly used React Hooks:
+React Hooks are functions that enable functional components to use state, lifecycle methods, and other React features without writing a class. Here are some of the most important React Hooks and their uses:
 
-1. **useState:**
+### 1. **useState**: 
+This hook allows functional components to manage local state.
+   - Usage: `const [state, setState] = useState(initialState);`
+   - Example: `const [count, setCount] = useState(0);`
 
-   - Allows functional components to have local state.
-   - Returns an array with two elements: the current state value and a function to update it.
-
-   ```jsx
-   import React, { useState } from "react";
-
-   function Example() {
-     const [count, setCount] = useState(0);
-
-     return (
-       <div>
-         <p>You clicked {count} times</p>
-         <button onClick={() => setCount(count + 1)}>Click me</button>
-       </div>
-     );
-   }
-   ```
-
-2. **useEffect:**
-
-   - Enables performing side effects in functional components.
-   - Takes a function that contains the code for the side effect.
-   - Can be used for tasks like storing data in local storage, data fetching, subscriptions, manual DOM manipulations, etc.
-
-   ```jsx
-   import React, { useState, useEffect } from "react";
-
-   function Example() {
-     const [count, setCount] = useState(0);
-
+### 2. **useEffect**: 
+This hook allows performing side effects in functional components, such as data fetching, subscriptions, or manually changing the DOM.
+   - Usage: `useEffect(() => { // side effect code }, [dependencies]);`
+   - Example: 
+     ```jsx
      useEffect(() => {
        document.title = `You clicked ${count} times`;
-     }, [count]); // Run the effect only when count changes
+     }, [count]);
+     ```
 
-     return (
-       <div>
-         <p>You clicked {count} times</p>
-         <button onClick={() => setCount(count + 1)}>Click me</button>
-       </div>
-     );
-   }
-   ```
+### 3. **useContext**: 
+This hook allows functional components to consume a context created by the `React.createContext` API.
+   - Usage: `const value = useContext(MyContext);`
+   - Example: 
+     ```jsx
+     const theme = useContext(ThemeContext);
+     ```
 
-3. **useContext:**
-
-   - Allows functional components to consume values from the React context.
-   - Takes a context object (created by `React.createContext`) and returns the current context value.
-
-   ```jsx
-   import React, { useContext } from "react";
-   import MyContext from "./MyContext";
-
-   function MyComponent() {
-     const contextValue = useContext(MyContext);
-
-     return <p>{contextValue}</p>;
-   }
-   ```
-
-4. **useReducer:**
-
-   - Provides an alternative to `useState` when dealing with more complex state logic.
-   - Takes a reducer function and an initial state, returning the current state and a dispatch function.
-
-   ```jsx
-   import React, { useReducer } from "react";
-
-   const initialState = { count: 0 };
-
-   function reducer(state, action) {
-     switch (action.type) {
-       case "increment":
-         return { count: state.count + 1 };
-       case "decrement":
-         return { count: state.count - 1 };
-       default:
-         return state;
-     }
-   }
-
-   function Counter() {
+### 4. **useReducer**: 
+This hook is an alternative to `useState` for managing more complex state logic. It accepts a reducer function and an initial state, and returns the current state and a dispatch function.
+   - Usage: `const [state, dispatch] = useReducer(reducer, initialState);`
+   - Example: 
+     ```jsx
      const [state, dispatch] = useReducer(reducer, initialState);
+     ```
 
-     return (
-       <div>
-         Count: {state.count}
-         <button onClick={() => dispatch({ type: "increment" })}>
-           Increment
-         </button>
-         <button onClick={() => dispatch({ type: "decrement" })}>
-           Decrement
-         </button>
-       </div>
-     );
-   }
-   ```
+### 5. **useRef**: 
+This hook returns a mutable ref object whose `.current` property is initialized to the passed argument (initial value).
+   - Usage: `const refContainer = useRef(initialValue);`
+   - Example: 
+     ```jsx
+     const inputRef = useRef();
+     ```
 
-These are just a few examples of the many hooks available in React. Hooks provide a more concise and readable way to work with state and side effects in functional components, promoting better code organization and reusability.
+### 6. **useCallback**: 
+This hook returns a memoized callback function that only changes if one of the dependencies has changed.
+   - Usage: `const memoizedCallback = useCallback(() => { // callback }, [dependencies]);`
+   - Example: 
+     ```jsx
+     const memoizedCallback = useCallback(() => {
+       doSomething(a, b);
+     }, [a, b]);
+     ```
+
+### 7. **useMemo**: 
+This hook returns a memoized value that only recalculates when one of the dependencies has changed.
+   - Usage: `const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);`
+   - Example: 
+     ```jsx
+     const memoizedValue = useMemo(() => {
+       return computeExpensiveValue(a, b);
+     }, [a, b]);
+     ```
+
+### 8. **useLayoutEffect**: 
+This hook is similar to `useEffect`, but it fires synchronously after all DOM mutations. It can be useful for measuring DOM elements.
+   - Usage: `useLayoutEffect(() => { // layout effect code }, [dependencies]);`
+   - Example: 
+     ```jsx
+     useLayoutEffect(() => {
+       const rect = inputRef.current.getBoundingClientRect();
+       console.log('Rect:', rect);
+     }, [inputRef]);
+     ```
+
+These are some of the most commonly used React Hooks, but React provides many more hooks for various purposes, such as custom hooks (`useCustomHook`) and hooks for working with forms, animations, and more. Understanding and mastering these hooks can significantly enhance your productivity and enable you to build powerful and maintainable React applications.
 
 ## Event Handling in React
 
@@ -1959,6 +1941,126 @@ function handleChange(e) {
   }, 100);
 }
 ```
+
+## Life Cycle of a React Component
+
+In React, the lifecycle of a component refers to the series of methods that are invoked at different stages of a component's existence, from its creation to its removal from the DOM. These lifecycle methods allow you to perform actions such as initializing state, fetching data, updating the UI, and cleaning up resources.
+
+Here's an overview of the lifecycle methods in a React component:
+
+1. **Mounting**:
+
+   - These methods are called when an instance of a component is being created and inserted into the DOM.
+   - `constructor(props)`: This method is called before a component is mounted. It's used for initializing state and binding event handlers. Avoid side effects or asynchronous tasks in the constructor.
+   - `static getDerivedStateFromProps(props, state)`: This static method is called right before rendering when new props or state are received. It returns an object to update the state, or null to indicate no state update is necessary.
+   - `render()`: This method is required and must return JSX or null. It describes what the UI of the component should look like based on its props and state.
+   - `componentDidMount()`: This method is called after the component is mounted to the DOM. It's a good place to perform tasks like fetching data from a remote endpoint, setting up subscriptions, or initializing third-party libraries.
+
+2. **Updating**:
+
+   - These methods are called when a component is being re-rendered due to changes in props or state.
+   - `static getDerivedStateFromProps(props, state)`: Similar to the mounting phase, this method is called right before rendering when new props or state are received. It returns an object to update the state, or null to indicate no state update is necessary.
+   - `shouldComponentUpdate(nextProps, nextState)`: This method is called before rendering when new props or state are received. It returns a boolean value that determines whether the component should re-render. By default, it returns true.
+   - `render()`: This method is required and must return JSX or null. It describes what the UI of the component should look like based on its props and state.
+   - `getSnapshotBeforeUpdate(prevProps, prevState)`: This method is called right before changes from the virtual DOM are reflected in the DOM. It allows the component to capture some information from the DOM before it is potentially changed. The value returned by this method will be passed as a third parameter to `componentDidUpdate()`.
+   - `componentDidUpdate(prevProps, prevState, snapshot)`: This method is called after the component is updated in the DOM. It's a good place to perform side effects in response to props or state changes, such as updating the DOM or making network requests.
+
+3. **Unmounting**:
+   - These methods are called when a component is being removed from the DOM.
+   - `componentWillUnmount()`: This method is called immediately before a component is unmounted from the DOM. It's a good place to perform cleanup tasks like canceling network requests, clearing timers, or unsubscribing from event listeners.
+
+Additionally, React provides methods like `componentDidCatch()` for handling errors within a component tree, and `getDerivedStateFromError()` for updating state in response to an error.
+
+It's important to note that some lifecycle methods, such as `componentWillReceiveProps()` and `componentWillUpdate()`, have been deprecated in recent versions of React, and you should use their replacements (`static getDerivedStateFromProps()` and `getSnapshotBeforeUpdate()`) instead.
+
+Understanding the lifecycle of a React component allows you to control its behavior and optimize performance by performing tasks at the appropriate stages of its existence.
+
+### Life cycle implementation in Functional Component
+
+In React functional components, you can achieve similar functionality to lifecycle methods in class components using React Hooks. Here's an example demonstrating how to replicate common lifecycle behavior using useEffect:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+
+const MyComponent = () => {
+  const [count, setCount] = useState(0);
+
+  // componentDidMount equivalent
+  useEffect(() => {
+    console.log('Component mounted');
+    // Cleanup function (componentWillUnmount equivalent)
+    return () => {
+      console.log('Component will unmount');
+    };
+  }, []); // Empty dependency array means this effect runs only once after initial render
+
+  // componentDidUpdate equivalent
+  useEffect(() => {
+    console.log('Component updated');
+    // Effect cleanup function (componentWillUnmount equivalent)
+    return () => {
+      console.log('Effect cleanup on update');
+    };
+  }); // No dependency array, so this effect runs on every update after render
+
+  // componentWillUnmount equivalent
+  useEffect(() => {
+    return () => {
+      console.log('Component will unmount');
+    };
+  }, []); // Empty dependency array means this effect runs only once when component unmounts
+
+  // componentDidUpdate with specific prop change
+  useEffect(() => {
+    console.log('Count changed:', count);
+    // Effect cleanup function (componentWillUnmount equivalent)
+    return () => {
+      console.log('Effect cleanup on count change');
+    };
+  }, [count]); // Runs when count state changes
+
+  const handleClick = () => {
+    setCount(prevCount => prevCount + 1);
+  };
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={handleClick}>Increment Count</button>
+    </div>
+  );
+};
+
+export default MyComponent;
+```
+
+In this example:
+- `useEffect` with an empty dependency array (`[]`) acts like `componentDidMount`, running once after the initial render.
+- `useEffect` without a dependency array runs on every update after render, acting like `componentDidUpdate`.
+- `useEffect` with a cleanup function can be used to perform cleanup when the component unmounts, similar to `componentWillUnmount`.
+- By passing a dependency array to `useEffect`, you can trigger the effect only when certain dependencies change, mimicking `componentDidUpdate` with specific prop changes.
+
+These `useEffect` hooks replicate common lifecycle behavior in functional components.
+
+## Memoizing
+
+Memoizing is a technique used in computer science and software engineering to optimize the performance of functions by caching the results of expensive function calls and returning the cached result when the same inputs occur again. The term "memoization" is derived from the word "memo," which means to remember or note down.
+
+Here's how memoization works:
+
+1. **Function Call**: When a function is called with certain inputs, it performs some computation and returns a result.
+
+2. **Caching**: Before returning the result, the function checks if it has already computed and stored the result for the same inputs.
+
+3. **Cache Hit**: If the function finds that the result for the given inputs is already cached, it returns the cached result instead of re-computing it.
+
+4. **Cache Miss**: If the function doesn't find the result for the given inputs in the cache, it performs the computation, stores the result in the cache, and then returns the result.
+
+Memoization can significantly improve the performance of functions that are called frequently with the same inputs, as it avoids redundant computations by reusing previously computed results. It's particularly useful for functions with expensive computations or calculations.
+
+In JavaScript, memoization is often implemented using techniques like caching results in an object or using higher-order functions to wrap the original function and manage the cache. Libraries like Lodash provide utility functions for memoization, and in the context of React, hooks like `useMemo` can be used to memoize values within functional components.
+
+Overall, memoization is a powerful optimization technique that can help improve the efficiency and responsiveness of applications by reducing unnecessary computations and improving performance.
 
 ## React Form
 
@@ -5460,6 +5562,7 @@ The navigate function has two signatures:
 - Pass the delta you want to go in the history stack. For example, navigate(-1) is equivalent to hitting the back button
 
 #### **3. useParams**
+
 The useParams hook returns an object of key/value pairs of the dynamic params from the current URL that were matched by the <Route path>. Child routes inherit all params from their parent routes.
 
 ```tsx
@@ -5513,7 +5616,6 @@ const ErrorPage = () => {
 };
 
 export default ErrorPage;
-
 ```
 
 ## Important Links
