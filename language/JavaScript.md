@@ -64,6 +64,7 @@
       - [4. **Rest Operator and Arguments:**](#4-rest-operator-and-arguments)
       - [5. **Default Values for Parameters:**](#5-default-values-for-parameters)
       - [6. **Magic Function:**](#6-magic-function)
+      - [7. **IIFE - Immediately Invoked Function Expression**:](#7-iife---immediately-invoked-function-expression)
   - [Getters and Setters](#getters-and-setters)
     - [Getters:](#getters)
     - [Setters:](#setters)
@@ -1083,6 +1084,57 @@ console.log(square(3)); // Outputs: 8
 - The `magicFunction` returns another function that calculates the power of a base number. It showcases the concept of closures.
 
 Understanding these aspects of functions in JavaScript is crucial for effective programming, as functions play a central role in structuring code and implementing logic.
+
+#### 7. **IIFE - Immediately Invoked Function Expression**:
+
+An **Immediately Invoked Function Expression (IIFE)** is a unique JavaScript construct that combines the power of function expressions, closures, and immediate execution. Let's break it down:
+
+1. **Definition**:
+   - An IIFE is a function expression that is defined and invoked immediately after its declaration.
+   - It's pronounced "iffy," which stands for "Immediately Invoked Function Expression."
+
+2. **Syntax**:
+   - The basic syntax for an IIFE looks like this:
+
+    ```javascript
+    (function () {
+        // Your code here
+    })();
+    ```
+
+   - Alternatively, you can use an arrow function for concise syntax:
+
+    ```javascript
+    (() => {
+        // Your code here
+    })();
+    ```
+
+3. **Why Use IIFEs?**:
+   - **Encapsulation**: IIFEs create a new scope, allowing you to encapsulate variables and functions.
+   - **Avoid Global Pollution**: Variables declared inside an IIFE are not added to the global scope, preventing unintended global pollution.
+   - **Module-Like Behavior**: Before ES modules, IIFEs were commonly used for modular programming in JavaScript.
+
+4. **Example**:
+   Suppose you want to create a counter that increments each time the page loads. You can use an IIFE like this:
+
+    ```javascript
+    (function () {
+        let count = 0;
+
+        function incrementCounter() {
+            count++;
+            console.log(`Counter: ${count}`);
+        }
+
+        incrementCounter();
+    })();
+    ```
+
+   The `count` variable and `incrementCounter` function are scoped within the IIFE, keeping them private and preventing conflicts with other code.
+
+Remember, IIFEs are less common nowadays due to the widespread adoption of ES modules, but understanding their behavior is still valuable! 
+
 
 ## Getters and Setters
 
