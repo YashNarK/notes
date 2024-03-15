@@ -783,69 +783,84 @@ Replace `YourModel` with the actual Mongoose model you're working with, and adju
 Here are examples for each of the field update operators:
 
 1. **$currentDate**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
   { $currentDate: { lastModified: true } }
 );
 ```
+
 This will set the value of the "lastModified" field to the current date for the document with the specified ID.
 
 2. **$inc**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
   { $inc: { quantity: 5 } }
 );
 ```
+
 This will increment the value of the "quantity" field by 5 for the document with the specified ID.
 
 3. **$min**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
   { $min: { price: 10 } }
 );
 ```
+
 This will update the "price" field to 10 only if the existing value is greater than 10 for the document with the specified ID.
 
 4. **$max**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
   { $max: { price: 20 } }
 );
 ```
+
 This will update the "price" field to 20 only if the existing value is less than 20 for the document with the specified ID.
 
 5. **$mul**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
   { $mul: { quantity: 2 } }
 );
 ```
+
 This will multiply the value of the "quantity" field by 2 for the document with the specified ID.
 
 6. **$rename**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
-  { $rename: { "oldFieldName": "newFieldName" } }
+  { $rename: { oldFieldName: "newFieldName" } }
 );
 ```
+
 This will rename the field "oldFieldName" to "newFieldName" for the document with the specified ID.
 
 7. **$set**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
   { $set: { status: "active" } }
 );
 ```
+
 This will set the value of the "status" field to "active" for the document with the specified ID.
 
 8. **$setOnInsert**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
@@ -853,15 +868,156 @@ const result = await YourModel.updateOne(
   { upsert: true }
 );
 ```
+
 This will set the value of the "createdAt" field to the current date if the update operation results in an insert of a document.
 
 9. **$unset**:
+
 ```javascript
 const result = await YourModel.updateOne(
   { _id: documentId },
   { $unset: { status: "" } }
 );
 ```
+
 This will remove the "status" field from the document with the specified ID.
+
+Replace `YourModel` with the actual Mongoose model you're working with, `documentId` with the ID of the document you want to update, and adjust the field names and values accordingly.
+
+# Array Update Operators
+
+Here are examples for each of the array update operators:
+
+1. **$**:
+
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId, "arrayField.element": { $gt: 5 } },
+  { $set: { "arrayField.$.status": "updated" } }
+);
+```
+
+This will update the first element in the "arrayField" array where "element" is greater than 5 to have a "status" of "updated".
+
+2. **$[]**:
+
+```javascript
+const result = await YourModel.updateMany(
+  { arrayField: { $exists: true } },
+  { $set: { "arrayField.$[].status": "updated" } }
+);
+```
+
+This will update all elements in the "arrayField" array to have a "status" of "updated".
+
+3. **$[<identifier>]**:
+
+```javascript
+const result = await YourModel.updateMany(
+  { _id: documentId },
+  { $set: { "arrayField.$[elem].status": "updated" } },
+  { arrayFilters: [{ "elem.element": { $gt: 5 } }] }
+);
+```
+
+This will update all elements in the "arrayField" array where "element" is greater than 5 to have a "status" of "updated".
+
+4. **$addToSet**:
+
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $addToSet: { arrayField: "newValue" } }
+);
+```
+
+This will add "newValue" to the "arrayField" array only if it doesn't already exist in the array.
+
+5. **$pop**:
+
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $pop: { arrayField: 1 } }
+);
+```
+
+This will remove the last item of the "arrayField" array.
+
+6. **$pull**:
+
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $pull: { arrayField: { $gt: 5 } } }
+);
+```
+
+This will remove all elements from the "arrayField" array where the element is greater than 5.
+
+7. **$push**:
+
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $push: { arrayField: "newValue" } }
+);
+```
+
+This will add "newValue" to the end of the "arrayField" array.
+
+8. **$pullAll**:
+
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $pullAll: { arrayField: ["value1", "value2"] } }
+);
+```
+
+This will remove all occurrences of "value1" and "value2" from the "arrayField" array.
+
+Replace `YourModel` with the actual Mongoose model you're working with, `documentId` with the ID of the document you want to update, and adjust the field names and values accordingly.
+
+## Array Update Operator Modifiers
+
+Here are examples for each of the update operator modifiers:
+
+1. **$each**:
+```javascript
+const itemsToAdd = ["item1", "item2", "item3"];
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $push: { arrayField: { $each: itemsToAdd } } }
+);
+```
+This will append multiple items from the `itemsToAdd` array to the end of the "arrayField" array.
+
+2. **$position**:
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $push: { arrayField: { $each: ["newItem"], $position: 0 } } }
+);
+```
+This will add "newItem" to the beginning of the "arrayField" array.
+
+3. **$slice**:
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $push: { arrayField: { $each: ["newItem"], $slice: -3 } } }
+);
+```
+This will add "newItem" to the end of the "arrayField" array and limit the array to the last 3 elements.
+
+4. **$sort**:
+```javascript
+const result = await YourModel.updateOne(
+  { _id: documentId },
+  { $push: { arrayField: { $each: ["newItem"], $sort: { fieldToSort: -1 } } } }
+);
+```
+This will add "newItem" to the end of the "arrayField" array and sort the array based on the value of "fieldToSort" in descending order.
 
 Replace `YourModel` with the actual Mongoose model you're working with, `documentId` with the ID of the document you want to update, and adjust the field names and values accordingly.
