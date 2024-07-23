@@ -1,6 +1,7 @@
 # CSS Notes
 
 ## Table of contents
+
 - [CSS Notes](#css-notes)
   - [Table of contents](#table-of-contents)
   - [Box Model](#box-model)
@@ -24,14 +25,14 @@
     - [Relative](#relative)
     - [Absolute](#absolute)
     - [Fixed](#fixed)
-    - [Centering Contents](#centering-contents)
+    - [Sticky](#sticky)
+  - [Centering Contents](#centering-contents)
   - [Units](#units)
   - [Flexbox](#flexbox)
   - [Float Property](#float-property)
   - [Resources](#resources)
   - [Stacking Order](#stacking-order)
     - [Z-index](#z-index)
-  - [Box Model](#box-model-1)
   - [Responsive Design](#responsive-design)
   - [Transitions and Animations](#transitions-and-animations)
   - [Pseudo-classes and Pseudo-elements](#pseudo-classes-and-pseudo-elements)
@@ -45,7 +46,25 @@
     - [3. Implement Dark Mode with Media Query](#3-implement-dark-mode-with-media-query)
     - [4. Toggle Dark Mode with JavaScript (Optional)](#4-toggle-dark-mode-with-javascript-optional)
     - [5. Test and Refine](#5-test-and-refine)
-
+  - [CSS Grids](#css-grids)
+    - [Basic Concepts](#basic-concepts)
+      - [Grid Container](#grid-container)
+    - [Grid Items](#grid-items)
+    - [Defining Columns and Rows](#defining-columns-and-rows)
+    - [Grid Gap](#grid-gap)
+    - [Placing Items](#placing-items)
+    - [Advanced Techniques](#advanced-techniques)
+      - [Grid Template Areas](#grid-template-areas)
+    - [Example](#example)
+    - [Responsive Design with CSS Grid](#responsive-design-with-css-grid)
+    - [Grid Properties Summary](#grid-properties-summary)
+    - [Using `fr` Units](#using-fr-units)
+      - [Basic Example](#basic-example)
+      - [Explanation](#explanation)
+      - [Visualizing `fr` Units](#visualizing-fr-units)
+      - [Complex Layouts with `fr` Units](#complex-layouts-with-fr-units)
+      - [Auto-Fit and Auto-Fill with `fr`](#auto-fit-and-auto-fill-with-fr)
+      - [Conclusion](#conclusion)
 
 ## Box Model
 
@@ -84,6 +103,7 @@ Understanding the box model is crucial for designing and laying out web pages ef
 ## Display Properties
 
 ### Block
+
 Block elements take the full width of the page and can be modified in terms of width. Examples include `h1..h6`, `ol`, `ul`, `li`, and `p`.
 
 ```css
@@ -94,6 +114,7 @@ Block elements take the full width of the page and can be modified in terms of w
 ```
 
 ### Inline
+
 Inline elements do not take the full width and can sit next to each other. Examples include `span` and `img`.
 
 ```css
@@ -103,6 +124,7 @@ Inline elements do not take the full width and can sit next to each other. Examp
 ```
 
 ### Inline-Block
+
 Inline-Block elements can sit next to each other while allowing their width to be changed.
 
 ```css
@@ -113,6 +135,7 @@ Inline-Block elements can sit next to each other while allowing their width to b
 ```
 
 ### None
+
 The `none` display type will make the element disappear.
 
 ```css
@@ -139,18 +162,23 @@ Use Adobe Color for making color combinations.
 ## Fonts
 
 ### Serif Family
+
 Traditional, Stable, Respectable.
 
 ### Sans-Serif Family
+
 Sensible, Simple, Straightforward.
 
 ### Script Family
+
 Personal, Creative, Elegant.
 
 ### Display Family
+
 Friendly, Loud, Amusing.
 
 ### Modern Family
+
 Stylish, Chic, Smart.
 
 Always avoid fonts like Comic Sans, Kristen, Eubon, Curlz, Viner, Papyrus.
@@ -172,9 +200,11 @@ Use F Layout or Z Layout.
 ## Position Property
 
 ### Static
+
 All HTML elements are static by default.
 
 ### Relative
+
 Relative positioning means the position of the element will be relative to its static position. The space it leaves by positioning does not get affected.
 
 ```css
@@ -186,6 +216,7 @@ Relative positioning means the position of the element will be relative to its s
 ```
 
 ### Absolute
+
 Absolute positioning uses coordinates. Elements are positioned relative to their parents. The space it leaves behind gets affected by other elements. The preferred parent is the closest parent with a relative layout.
 
 ```css
@@ -197,6 +228,7 @@ Absolute positioning uses coordinates. Elements are positioned relative to their
 ```
 
 ### Fixed
+
 Fixed positioning provides a fixed element position even when scrolling through the page, useful for navigation bars.
 
 ```css
@@ -207,7 +239,19 @@ Fixed positioning provides a fixed element position even when scrolling through 
 }
 ```
 
-### Centering Contents
+### Sticky
+
+Sticky positioning is a hybrid of relative and fixed positioning. Elements with sticky positioning behave like relative elements until they reach a specified scroll position, after which they become fixed.
+
+```css
+.sticky-element {
+  position: sticky;
+  top: 0;
+}
+```
+
+## Centering Contents
+
 Use text-align in the parent container or margin for center alignment.
 
 ```css
@@ -245,22 +289,12 @@ The topmost HTML element is the bottommost in the stack. As we progress down the
 
 ### Z-index
 
-`z-index` is a CSS property used to modify stacking order. It works only if the affected elements are positioned as static, absolute, or fixed. Default `z-index` is 0 for all elements.
-
-
-## Box Model
-
-The CSS box model consists of content, padding, border, and margin. Understanding and manipulating these properties are crucial for layout design.
-
-```css
-.box-model-example {
-  box-sizing: border-box;
-  width: 200px;
-  padding: 20px;
-  border: 1px solid #333;
-  margin: 10px;
-}
-```
+- `z-index` is a CSS property used to modify stacking order.
+- Default `z-index` is 0 for all elements.
+- `z-index` only works on positioned elements (position: absolute, relative, fixed, or sticky).
+- The higher the `z-index` value, the closer the element is to the user.
+- Negative `z-index` values can be used to place elements behind others.
+- Elements with the same `z-index` value follow the order they appear in the HTML (the latter ones appear on top).
 
 ## Responsive Design
 
@@ -450,7 +484,7 @@ If you want to provide users with the option to toggle dark mode manually, you c
 
 ```javascript
 function toggleDarkMode() {
-  document.body.classList.toggle('dark-mode');
+  document.body.classList.toggle("dark-mode");
 }
 ```
 
@@ -461,3 +495,336 @@ In this example, clicking the "Toggle Dark Mode" button will add or remove the `
 Test your implementation across different browsers and devices to ensure a consistent experience. Refine the styles and adjust the color variables as needed to achieve the desired appearance in both light and dark modes.
 
 By following these steps, you can create a dark mode implementation in your web project that provides a more visually comfortable experience for users, especially in low-light environments.
+
+## CSS Grids
+
+CSS Grid Layout is a powerful 2-dimensional system that allows you to create complex layouts on the web. Here’s a detailed guide on how to use CSS Grid, including properties, examples, and advanced techniques.
+
+### Basic Concepts
+
+#### Grid Container
+
+A grid container is the parent element that contains grid items.
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: 100px 100px 100px;
+  grid-template-rows: 100px 100px;
+}
+```
+
+- `display: grid;` turns an element into a grid container.
+- `grid-template-columns` and `grid-template-rows` define the columns and rows of the grid.
+
+### Grid Items
+
+Grid items are the children of a grid container.
+
+```html
+<div class="container">
+  <div class="item">1</div>
+  <div class="item">2</div>
+  <div class="item">3</div>
+  <div class="item">4</div>
+  <div class="item">5</div>
+  <div class="item">6</div>
+</div>
+```
+
+### Defining Columns and Rows
+
+You can define the number and size of columns and rows using `grid-template-columns` and `grid-template-rows`.
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: 100px 200px auto;
+  grid-template-rows: 100px 200px;
+}
+```
+
+- `100px 200px auto`: The first column is 100px wide, the second is 200px, and the third column takes up the remaining space.
+
+### Grid Gap
+
+The `grid-gap` property sets the spacing between rows and columns.
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: 100px 100px 100px;
+  grid-template-rows: 100px 100px;
+  grid-gap: 10px;
+}
+```
+
+### Placing Items
+
+You can place items in specific rows and columns using the `grid-column` and `grid-row` properties.
+
+```css
+.item1 {
+  grid-column: 1 / 3; /* spans from column 1 to column 3 */
+  grid-row: 1 / 2; /* spans from row 1 to row 2 */
+}
+```
+
+### Advanced Techniques
+
+#### Grid Template Areas
+
+You can use named grid areas to simplify layout definitions.
+
+```css
+.container {
+  display: grid;
+  grid-template-areas:
+    "header header header"
+    "sidebar content content"
+    "footer footer footer";
+  grid-template-rows: 50px 1fr 50px;
+  grid-template-columns: 100px 1fr;
+}
+
+.header {
+  grid-area: header;
+}
+
+.sidebar {
+  grid-area: sidebar;
+}
+
+.content {
+  grid-area: content;
+}
+
+.footer {
+  grid-area: footer;
+}
+```
+
+### Example
+
+Here’s a complete example demonstrating CSS Grid Layout:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Grid Layout</title>
+    <style>
+      .container {
+        display: grid;
+        grid-template-areas:
+          "header header header"
+          "sidebar content content"
+          "footer footer footer";
+        grid-template-rows: 50px 1fr 50px;
+        grid-template-columns: 100px 1fr;
+        grid-gap: 10px;
+        height: 100vh;
+      }
+
+      .header {
+        grid-area: header;
+        background-color: lightcoral;
+      }
+
+      .sidebar {
+        grid-area: sidebar;
+        background-color: lightblue;
+      }
+
+      .content {
+        grid-area: content;
+        background-color: lightgreen;
+      }
+
+      .footer {
+        grid-area: footer;
+        background-color: lightgoldenrodyellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">Header</div>
+      <div class="sidebar">Sidebar</div>
+      <div class="content">Content</div>
+      <div class="footer">Footer</div>
+    </div>
+  </body>
+</html>
+```
+
+### Responsive Design with CSS Grid
+
+You can create responsive layouts using CSS Grid combined with media queries.
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  grid-gap: 10px;
+}
+
+@media (min-width: 600px) {
+  .container {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+@media (min-width: 900px) {
+  .container {
+    grid-template-columns: 1fr 3fr 1fr;
+  }
+}
+```
+
+### Grid Properties Summary
+
+- **Grid Container Properties**:
+
+  - `display: grid | inline-grid`
+  - `grid-template-columns`
+  - `grid-template-rows`
+  - `grid-template-areas`
+  - `grid-gap`
+  - `grid-column-gap`
+  - `grid-row-gap`
+  - `justify-items`
+  - `align-items`
+  - `justify-content`
+  - `align-content`
+  - `grid-auto-columns`
+  - `grid-auto-rows`
+  - `grid-auto-flow`
+
+- **Grid Item Properties**:
+  - `grid-column-start`
+  - `grid-column-end`
+  - `grid-row-start`
+  - `grid-row-end`
+  - `grid-column`
+  - `grid-row`
+  - `grid-area`
+  - `justify-self`
+  - `align-self`
+
+CSS Grid is a robust layout system that can handle most layout tasks you encounter, providing a lot of flexibility and control over your design.
+
+### Using `fr` Units
+
+In CSS Grid Layout, the `fr` unit stands for "fraction of available space." It is used to allocate portions of the remaining space in the grid container. The `fr` unit is particularly useful for creating flexible and responsive grid layouts where the exact dimensions of the columns or rows aren't fixed.
+
+#### Basic Example
+
+Here is a basic example of how to use `fr` units in a grid container:
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: 100px 200px;
+}
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Grid fr Unit</title>
+    <style>
+      .container {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        grid-template-rows: 100px 200px;
+        gap: 10px;
+        height: 100vh;
+      }
+
+      .item {
+        background-color: lightblue;
+        padding: 20px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="item">1</div>
+      <div class="item">2</div>
+      <div class="item">3</div>
+      <div class="item">4</div>
+      <div class="item">5</div>
+      <div class="item">6</div>
+    </div>
+  </body>
+</html>
+```
+
+#### Explanation
+
+1. **Container**:
+
+   - `display: grid;`: Sets the container to use grid layout.
+   - `grid-template-columns: 1fr 2fr 1fr;`: Defines three columns. The first and third columns each take up one fraction of the available space, while the second column takes up two fractions of the available space.
+   - `grid-template-rows: 100px 200px;`: Defines two rows with fixed heights of 100px and 200px.
+   - `gap: 10px;`: Sets a 10px gap between grid items.
+
+2. **Grid Items**:
+   - The `.item` class styles each grid item with a light blue background, 20px padding, and centered text.
+
+#### Visualizing `fr` Units
+
+- The total available space is divided into four fractions (1fr + 2fr + 1fr = 4fr).
+- The first and third columns each get 1/4 of the available space.
+- The second column gets 2/4 (or 1/2) of the available space.
+
+#### Complex Layouts with `fr` Units
+
+You can mix `fr` units with other units like `px`, `%`, `em`, etc., for more complex layouts:
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: 100px 1fr 2fr 3fr;
+  grid-template-rows: auto 1fr;
+}
+```
+
+In this example:
+
+- The first column has a fixed width of 100px.
+- The second column takes up one fraction of the remaining space.
+- The third column takes up two fractions of the remaining space.
+- The fourth column takes up three fractions of the remaining space.
+- The first row automatically adjusts to the height of its content.
+- The second row takes up the remaining available space.
+
+#### Auto-Fit and Auto-Fill with `fr`
+
+You can also use `fr` units with the `auto-fit` and `auto-fill` functions to create responsive layouts:
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+```
+
+In this example:
+
+- `repeat(auto-fit, minmax(100px, 1fr));` creates as many columns as will fit in the container, each at least 100px wide, but can grow to take up available space.
+- `gap: 10px;` sets a 10px gap between grid items.
+
+#### Conclusion
+
+The `fr` unit is a powerful tool in CSS Grid for creating flexible, responsive layouts. By understanding and using `fr` units, you can design layouts that adapt to different screen sizes and content amounts, providing a more dynamic user experience.
