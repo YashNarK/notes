@@ -1,3 +1,38 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Redux](#redux)
+  - [Installation](#installation)
+- [Pros and Cons of using Redux](#pros-and-cons-of-using-redux)
+  - [Pros:](#pros)
+  - [Cons:](#cons)
+- [When should we not use Redux ?](#when-should-we-not-use-redux-)
+- [Redux and Functional Programming](#redux-and-functional-programming)
+- [Programming Paradigms](#programming-paradigms)
+- [Functional Programming](#functional-programming)
+  - [Higher Order Function](#higher-order-function)
+  - [Function Composition](#function-composition)
+    - [Composition using Lodash](#composition-using-lodash)
+    - [Currying](#currying)
+  - [Pure Functions](#pure-functions)
+  - [Immutability](#immutability)
+    - [Immutability using Immer](#immutability-using-immer)
+- [Redux Architecture](#redux-architecture)
+- [Important Redux functions](#important-redux-functions)
+  - [createStore()](#createstore)
+  - [configureStore()](#configurestore)
+- [Redux Implementation Steps:](#redux-implementation-steps)
+  - [1. Create features and Reducer slice](#1-create-features-and-reducer-slice)
+    - [Feature 1: Metamask](#feature-1-metamask)
+    - [Feature 2: Info](#feature-2-info)
+  - [2. Create a store and combine different features/slices](#2-create-a-store-and-combine-different-featuresslices)
+  - [3. Create a custom hooks file](#3-create-a-custom-hooks-file)
+    - [Why Use Custom Hooks?](#why-use-custom-hooks)
+  - [4. Provide the redux store as a Provider in main.tsx or app.tsx](#4-provide-the-redux-store-as-a-provider-in-maintsx-or-apptsx)
+  - [5. Consume the state and actions in the components](#5-consume-the-state-and-actions-in-the-components)
+    - [Component 1: Info](#component-1-info)
+    - [Component 2: Header](#component-2-header)
+
 # Redux
 
 Redux is an open-source JavaScript library primarily used for managing the state of applications. It is commonly used with libraries/frameworks like React, though it can be integrated with any JavaScript framework or library.
@@ -547,153 +582,488 @@ In summary, if you're starting a new Redux project or migrating an existing one,
 
 # Redux Implementation Steps:
 
-1. Design the store
-2. Define the actions
-3. Create one or more reducers
-4. Setup the store
+## 1. Create features and Reducer slice
 
-## Design the Store
+### Feature 1: Metamask
 
 ```ts
-// src\interface\Store.type.ts
+// src/features/metamask/metamaskSlice.ts
 
-export type TStore = {
-  bugs: TBug[];
-  currentUser: TUser;
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface MetamaskState {
+  ethBalance: number;
+  fdtBalance: number;
+  lpTokenBalance: number;
+  address: string;
+  network: string;
+}
+const name = "metamask";
+const initialState: MetamaskState = {
+  ethBalance: 0,
+  fdtBalance: 0,
+  lpTokenBalance: 0,
+  address: "Connect Your Wallet for more info",
+  network: "",
 };
 
-export type TBug = {
-  id: number;
-  description: string;
-  resolved: boolean;
+const reducers = {
+  setBalances(
+    state: MetamaskState,
+    action: PayloadAction<Omit<MetamaskState, "address" | "network">>
+  ) {
+    state.ethBalance = action.payload.ethBalance;
+    state.fdtBalance = action.payload.fdtBalance;
+    state.lpTokenBalance = action.payload.lpTokenBalance;
+  },
+  setNetwork(
+    state: MetamaskState,
+    action: PayloadAction<Pick<MetamaskState, "network">>
+  ) {
+    state.network = action.payload.network;
+  },
+  setAddress(
+    state: MetamaskState,
+    action: PayloadAction<Pick<MetamaskState, "address">>
+  ) {
+    state.address = action.payload.address;
+  },
+  resetMetamask(): MetamaskState {
+    return initialState;
+  },
 };
 
-export type TUser = {
-  id: number;
-  username: string;
-};
+const metamaskSlice = createSlice({
+  name,
+  initialState,
+  reducers,
+});
+
+export const { setBalances, setAddress, setNetwork, resetMetamask } =
+  metamaskSlice.actions;
+
+const metamaskReducer = metamaskSlice.reducer;
+export default metamaskReducer;
 ```
 
-## Define the actions
-
-- **Only related to bugs**
-
-1. Add a bug
-2. Mark as resolved
-3. Delete a bug
-
-Make sure that our payload of action has only minimial information to perform the action.
+### Feature 2: Info
 
 ```ts
-// src\interface\Store.type.ts
+// src/features/info/infoSlice.ts
 
-export type TStore = {
-  bugs: TBug[];
-  currentUser: TUser;
-};
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type TBug = {
-  id: number;
-  description: string;
-  resolved: boolean;
-};
-
-export type TUser = {
-  id: number;
-  username: string;
-};
-
-export type TActions =
-  | { type: "bugAdded"; payload: Omit<TBug, "id" | "resolved"> }
-  | { type: "bugRemoved"; payload: Pick<TBug, "id"> }
-  | { type: "bugResolved"; payload: Pick<TBug, "id"> };
-```
-
-## Create Reducer
-
-- **Without using Immer**
-
-```ts
-// src\reducers\StoreReducer.ts
-import { TActions, TBug } from "../interface/Store.type";
-
-let bugIdCounter = 0;
-function generateBugId(): number {
-  return ++bugIdCounter;
+export interface InfoState {
+  lpTokenInCirculation: number;
+  ethPerToken: number;
+  tokenPerEth: number;
 }
 
-const initialState: TBug[] = []; // Initialize with an empty array
+const name = "info";
 
-const storeReducer = (
-  state: TBug[] = initialState,
-  action: TActions
-): TBug[] => {
-  if (action.type === "bugAdded") {
-    const newBug: TBug = {
-      id: generateBugId(),
-      description: action.payload.description,
-      resolved: false,
-    };
-    return [...state, newBug];
-  }
-
-  if (action.type === "bugRemoved") {
-    return state.filter((bug) => bug.id !== action.payload.id);
-  }
-
-  if (action.type === "bugResolved") {
-    return state.map((bug) =>
-      bug.id === action.payload.id ? { ...bug, resolved: true } : bug
-    );
-  }
-
-  throw new Error(`Action not supported. Current state:${state}`);
+const initialState: InfoState = {
+  lpTokenInCirculation: 0,
+  ethPerToken: 0,
+  tokenPerEth: 0,
 };
 
-export default storeReducer;
+const reducers = {
+  setInfo(state: InfoState, action: PayloadAction<Partial<InfoState>>) {
+    return { ...state, ...action.payload };
+  },
+  resetInfo(): InfoState {
+    return initialState;
+  },
+};
+
+const infoSlice = createSlice({
+  name,
+  initialState,
+  reducers,
+});
+
+export const { setInfo, resetInfo } = infoSlice.actions;
+
+const infoReducer = infoSlice.reducer;
+export default infoReducer;
 ```
 
-- **With Immer**
+## 2. Create a store and combine different features/slices
 
 ```ts
-// src\reducers\StoreReducer.ts
-import { produce } from "immer";
-import { TActions, TBug } from "../interface/Store.type";
+// src\store.ts
 
-let bugIdCounter = 0;
-function generateBugId(): number {
-  return ++bugIdCounter;
-}
+// Import necessary functions and reducers from Redux Toolkit
+import { configureStore } from "@reduxjs/toolkit";
+import metamaskReducer from "./features/metamask/metamaskSlice";
+import infoReducer from "./features/info/infoSlice";
 
-const initialState: TBug[] = []; // Initialize with an empty array
+// Configure the Redux store with reducers for different state slices
+const store = configureStore({
+  reducer: {
+    metamask: metamaskReducer, // Metamask state slice
+    info: infoReducer, // Info state slice
+  },
+});
 
-const storeReducer = (
-  state: TBug[] = initialState,
-  action: TActions
-): TBug[] => {
-  if (action.type === "bugAdded") {
-    const newBug: TBug = {
-      id: generateBugId(),
-      description: action.payload.description,
-      resolved: false,
-    };
-    return [...state, newBug];
-  }
+// Define the RootState type, representing the entire state tree
+export type RootState = ReturnType<typeof store.getState>;
 
-  if (action.type === "bugRemoved") {
-    return state.filter((bug) => bug.id !== action.payload.id);
-  }
+// Define the AppDispatch type, representing the dispatch function
+export type AppDispatch = typeof store.dispatch;
 
-  if (action.type === "bugResolved") {
-    return produce(state, (draft) => {
-      draft.map((bug) =>
-        bug.id === action.payload.id ? (bug.resolved = false) : bug
+// Export the configured store
+export default store;
+```
+
+## 3. Create a custom hooks file
+
+```ts
+// src\hooks.ts
+// Import the necessary hooks from react-redux
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+// Import types for the application's dispatch function and root state
+import { AppDispatch, RootState } from "./store";
+
+// Create a custom hook for dispatching actions
+// This hook is typed to use the AppDispatch type, ensuring type safety
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+
+// Create a custom hook for selecting state from the store
+// This hook is typed to use the RootState type, ensuring type safety
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+```
+
+### Why Use Custom Hooks?
+
+1. **Type Safety**:
+
+   - These custom hooks ensure that the types of dispatched actions and selected state slices are checked at compile time.
+   - This reduces the risk of runtime errors due to type mismatches.
+
+2. **Code Consistency**:
+
+   - By using these custom hooks, you enforce a consistent way of using `dispatch` and `selector` throughout your application.
+   - This makes the code easier to understand and maintain.
+
+3. **Improved Developer Experience**:
+   - With better TypeScript support, you get improved autocompletion and inline documentation in your IDE.
+   - This makes development faster and more efficient.
+
+## 4. Provide the redux store as a Provider in main.tsx or app.tsx
+
+```ts
+// src\main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
+import { ChakraProvider } from "@chakra-ui/react";
+import { Provider } from "react-redux";
+import store from "./store.ts";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    </Provider>
+  </React.StrictMode>
+);
+```
+
+## 5. Consume the state and actions in the components
+
+### Component 1: Info
+
+```tsx
+import {
+  Box,
+  Code,
+  Divider,
+  Flex,
+  Heading,
+  Stat,
+  StatLabel,
+  StatNumber,
+} from "@chakra-ui/react";
+import { useAppSelector } from "../../hooks";
+
+// Define the props type for CryptoStat component
+type CryptoStatPropsType = {
+  label: string;
+  number: string | number;
+};
+
+// CryptoStat component to display individual statistics
+const CryptoStat = ({ label, number }: CryptoStatPropsType) => {
+  return (
+    <Box
+      border={"1px"}
+      borderColor={"lavender"}
+      borderRadius={"2xl"}
+      flex={1}
+      py={"10px"}
+    >
+      <Stat>
+        <StatLabel>{label}</StatLabel>
+        <StatNumber>{number}</StatNumber>
+      </Stat>
+    </Box>
+  );
+};
+
+// Info component to display wallet and DEX information
+const Info = () => {
+  // Select state slices using useAppSelector hook
+  const { ethPerToken, tokenPerEth, lpTokenInCirculation } = useAppSelector(
+    (state) => state.info
+  );
+  const { ethBalance, lpTokenBalance, fdtBalance, address, network } =
+    useAppSelector((state) => state.metamask);
+
+  return (
+    <Box
+      borderRadius={"2xl"}
+      border={"1px"}
+      borderColor={"Highlight"}
+      p={"10px"}
+      textAlign={"center"}
+      h={"100%"}
+      alignContent={"center"}
+    >
+      {/* Wallet Information */}
+      <Heading as={"h2"} my={"10px"} color={"steelblue"}>
+        Your Wallet Information
+      </Heading>
+      <Flex
+        flexDir={{
+          base: "column",
+          md: "row",
+        }}
+        justifyContent={"center"}
+        gap={"10px"}
+      >
+        {" "}
+        <Code
+          my={"10px"}
+          fontSize={{
+            base: "sm",
+            md: "xl",
+          }}
+        >
+          {address}
+        </Code>
+        {network && (
+          <Code
+            colorScheme={"blue"}
+            my={"10px"}
+            fontSize={{
+              base: "sm",
+              md: "xl",
+            }}
+          >
+            {network}
+          </Code>
+        )}
+      </Flex>
+      <Flex
+        flexDir={{
+          base: "column",
+          md: "row",
+        }}
+        justifyContent={"space-around"}
+        my={"10px"}
+        gap={"5px"}
+      >
+        <CryptoStat label="ETH in Wallet" number={ethBalance} />
+        <CryptoStat label="FDT in Wallet" number={fdtBalance} />
+        <CryptoStat label="LP Tokens in Wallet" number={lpTokenBalance} />
+      </Flex>
+
+      <Divider my={"10px"} />
+
+      {/* DEX Information */}
+      <Heading as={"h2"} my={"10px"} color={"steelblue"}>
+        DEX Information
+      </Heading>
+      <Flex
+        flexDir={{
+          base: "column",
+          md: "row",
+        }}
+        justifyContent={"space-around"}
+        my={"10px"}
+        gap={"5px"}
+      >
+        <CryptoStat label="ETH per FDT" number={ethPerToken} />
+        <CryptoStat label="FDT per ETH" number={tokenPerEth} />
+        <CryptoStat
+          label="LP Tokens in circulation"
+          number={lpTokenInCirculation}
+        />
+      </Flex>
+    </Box>
+  );
+};
+
+export default Info;
+```
+
+### Component 2: Header
+
+```tsx
+import { Box, Button, Icon } from "@chakra-ui/react";
+import styles from "./Header.module.css";
+import { SiWalletconnect } from "react-icons/si";
+import { useState } from "react";
+import { useAppDispatch } from "../../hooks";
+import useCustomToast from "../../hooks/useCustomToast";
+import { ethers } from "ethers";
+import {
+  setAddress,
+  setBalances,
+  setNetwork,
+} from "../../features/metamask/metamaskSlice";
+import {
+  FDT_CONTRACT_ABI,
+  FDT_CONTRACT_ADDRESS,
+  SIMPLE_DEX_ABI,
+  SIMPLE_DEX_ADDRESS,
+} from "../../blockchainData/blockchainData";
+
+const Header = () => {
+  // hooks
+
+  const [error, setError] = useState<string>("");
+  const dispatch = useAppDispatch();
+  const toast = useCustomToast();
+  const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
+
+  // helper functions
+
+  const onWalletConnect = async () => {
+    try {
+      // If metamask is not installed
+      if (!window.ethereum) {
+        const errorMessage = "Metamask is not installed";
+        setError(errorMessage);
+        toast({
+          status: "error",
+          title: error,
+        });
+        return;
+      }
+
+      // If installed
+      // Request account access
+
+      // WALLET DATA
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+
+      // ETHER DATA
+      const balance = await provider.getBalance(address);
+      const ethBalance = ethers.formatEther(balance);
+      const networkObject = await provider.getNetwork();
+      const network = `${networkObject.name} (${networkObject.chainId})`;
+
+      // CUSTOM TOKEN DATA
+      // Create a new instance of the FDT contract
+      const fdtContract = new ethers.Contract(
+        FDT_CONTRACT_ADDRESS,
+        FDT_CONTRACT_ABI,
+        signer
       );
-    });
-  }
+      const fdtBalanceBigNumber = await fdtContract.balanceOf(address);
+      const fdtBalance = ethers.formatUnits(fdtBalanceBigNumber, 18); // Assuming FDT has 18 decimals
 
-  throw new Error(`Action not supported. Current state:${state}`);
+      // LP TOKEN DATA
+      // Create a new instance of the SimpleDEX contract
+      const simpleDexContract = new ethers.Contract(
+        SIMPLE_DEX_ADDRESS,
+        SIMPLE_DEX_ABI,
+        signer
+      );
+
+      // Get the balance of LP tokens for the user
+      const lpTokenBalanceBigNumber = await simpleDexContract.balanceOf(
+        address
+      );
+      const lpTokenBalance = ethers.formatUnits(lpTokenBalanceBigNumber, 18); // Assuming LP tokens have 18 decimals
+
+      // DISPATCH ACTIONS
+      // Dispatch the address and balance to Redux store
+      dispatch(setAddress({ address }));
+      dispatch(
+        setBalances({
+          ethBalance: parseFloat(ethBalance),
+          fdtBalance: parseFloat(fdtBalance),
+          lpTokenBalance: parseFloat(lpTokenBalance),
+        })
+      );
+      dispatch(setNetwork({ network }));
+
+      toast({
+        status: "success",
+        title: "Connected",
+        description: `Connected to MetaMask: ${address}`,
+      });
+      setError("");
+      setIsWalletConnected(true);
+    } catch (err) {
+      // Check if the error is of type Error
+      if (err instanceof Error) {
+        setError(err.message);
+        toast({
+          status: "error",
+          title: "Connection Error",
+          description: err.message,
+        });
+      } else {
+        setError("An unknown error occurred.");
+        toast({
+          status: "error",
+          title: "Unknown Error",
+          description: "An unknown error occurred.",
+        });
+      }
+      console.error("Error connecting to MetaMask", err);
+    }
+  };
+
+  // component
+
+  return (
+    <Box
+      w={"100%"}
+      textColor={"slategray"}
+      fontSize={"large"}
+      fontWeight={"bold"}
+      textAlign={"center"}
+      fontFamily={"cursive"}
+    >
+      <p>
+        {" "}
+        Simple DEX - <span className={styles.italicsText}>
+          A Decentralized Exchange for Sepolia network
+        </span>
+      </p>
+      {!isWalletConnected && (
+        <Box my={"10px"}>
+          {" "}
+          <Button colorScheme="yellow" onClick={onWalletConnect}>
+            <Icon as={SiWalletconnect} fontSize={"large"} m={"5px"} /> Connect
+            Metamask
+          </Button>
+        </Box>
+      )}
+    </Box>
+  );
 };
 
-export default storeReducer;
+export default Header;
 ```
