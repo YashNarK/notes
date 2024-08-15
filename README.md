@@ -10,7 +10,7 @@ Welcome to the Developer Notes Repository! This repository serves as a collectio
     - [1. JavaScript](#1-javascript)
     - [2. React with TypeScript](#2-react-with-typescript)
     - [3. Redux (React-Redux Toolkit)](#3-redux-react-redux-toolkit)
-    - [4. \[Authentication and Security (using Node.js)\](cybersecurity/Authentication and Security.md)](#4-authentication-and-security-using-nodejscybersecurityauthentication-and-securitymd)
+    - [4. Authentication and Security (using Node.js)](#4-authentication-and-security-using-nodejs)
     - [5. Prompt Engineering](#5-prompt-engineering)
     - [6. Frontend Development](#6-frontend-development)
     - [7. WSL Basics](#7-wsl-basics)
@@ -37,7 +37,7 @@ Feel free to explore the notes and enhance your understanding of these topics.
 - Latest Redux toolkit DUCKS pattern
 - Type defined approach for dispatch and selector hooks
 
-### 4. [Authentication and Security (using Node.js)](cybersecurity/Authentication and Security.md)
+### 4. [Authentication and Security (using Node.js)](cybersecurity/Authentication%20and%20Security.md)
 
 - Implementing user authentication in Node.js applications.
 - Ensuring security best practices, handling sessions, and protecting against common vulnerabilities.
