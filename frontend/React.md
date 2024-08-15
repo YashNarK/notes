@@ -1,9 +1,7 @@
-# React
 
-## Table of Contents
-
-- [React](#react)
-  - [Table of Contents](#table-of-contents)
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+- [General Programming Concepts \& Libraries](#general-programming-concepts--libraries)
   - [Cohesion and Coupling](#cohesion-and-coupling)
   - [Useful VS Code extensions](#useful-vs-code-extensions)
   - [Useful browser extensions](#useful-browser-extensions)
@@ -30,12 +28,13 @@
   - [Routing Library](#routing-library)
   - [Preferred backend stacks](#preferred-backend-stacks)
   - [Deploying app in GitHub Pages](#deploying-app-in-github-pages)
-  - [Setup Local Environment](#setup-local-environment)
-    - [1. create-react-app](#1-create-react-app)
-    - [2. Vite](#2-vite)
   - [Angular vs React](#angular-vs-react)
   - [JSX](#jsx)
   - [TSX](#tsx)
+- [Setup Local Environment](#setup-local-environment)
+  - [1. create-react-app](#1-create-react-app)
+  - [2. Vite](#2-vite)
+- [JavaScript Concepts](#javascript-concepts)
   - [Useful JS Functions](#useful-js-functions)
     - [1. Map Function:](#1-map-function)
     - [2. Filter Function:](#2-filter-function)
@@ -46,6 +45,7 @@
     - [JS Short Circuiting:](#js-short-circuiting)
     - [Truthy/Falsy Properties:](#truthyfalsy-properties)
     - [React example](#react-example)
+- [React Basics](#react-basics)
   - [What is React?](#what-is-react)
   - [Opinions of React](#opinions-of-react)
   - [React Elements](#react-elements)
@@ -54,159 +54,172 @@
     - [Props](#props)
       - [**Passing function via a prop**](#passing-function-via-a-prop)
       - [**Passing children via prop**](#passing-children-via-prop)
-  - [State](#state)
-    - [Declarative State Programming](#declarative-state-programming)
-    - [Imperative State Programming](#imperative-state-programming)
-  - [React State](#react-state)
-    - [**Understanding the state hook:**](#understanding-the-state-hook)
-    - [**Choosing the state structure:**](#choosing-the-state-structure)
-    - [**Keeping the components Pure:**](#keeping-the-components-pure)
-    - [**Understanding strictmode**](#understanding-strictmode)
-    - [**Updating state objects:**](#updating-state-objects)
-    - [**Updating nested state objects:**](#updating-nested-state-objects)
-    - [**Updating Array states:**](#updating-array-states)
-    - [**Updating Array of object:**](#updating-array-of-object)
-    - [**Simplify update Logics using immer library:**](#simplify-update-logics-using-immer-library)
-      - [**A quick example for comparison:**](#a-quick-example-for-comparison)
-      - [**Installing immer**](#installing-immer)
-      - [**Using immer with React**](#using-immer-with-react)
-    - [**Sharing state between component:**](#sharing-state-between-component)
+- [State](#state)
+  - [Declarative State Programming](#declarative-state-programming)
+  - [Imperative State Programming](#imperative-state-programming)
+- [State in React](#state-in-react)
+  - [**Understanding the state hook:**](#understanding-the-state-hook)
+  - [**Choosing the state structure:**](#choosing-the-state-structure)
+  - [**Keeping the components Pure:**](#keeping-the-components-pure)
+  - [**Understanding strictmode**](#understanding-strictmode)
+  - [**Updating state objects:**](#updating-state-objects)
+  - [**Updating nested state objects:**](#updating-nested-state-objects)
+  - [**Updating Array states:**](#updating-array-states)
+  - [**Updating Array of object:**](#updating-array-of-object)
+  - [**Simplify update Logics using immer library:**](#simplify-update-logics-using-immer-library)
+    - [**A quick example for comparison:**](#a-quick-example-for-comparison)
+    - [**Installing immer**](#installing-immer)
+    - [**Using immer with React**](#using-immer-with-react)
+  - [**Sharing state between component:**](#sharing-state-between-component)
   - [Basic Overview of react state](#basic-overview-of-react-state)
-  - [Props vs State](#props-vs-state)
-  - [Hooks in React](#hooks-in-react)
-    - [1. **useState**:](#1-usestate)
-    - [2. **useEffect**:](#2-useeffect)
-    - [3. **useContext**:](#3-usecontext)
-    - [4. **useReducer**:](#4-usereducer)
-    - [5. **useRef**:](#5-useref)
-    - [6. **useCallback**:](#6-usecallback)
-    - [7. **useMemo**:](#7-usememo)
-    - [8. **useLayoutEffect**:](#8-uselayouteffect)
-  - [Event Handling in React](#event-handling-in-react)
-    - [Using class components](#using-class-components)
-    - [Using functions components](#using-functions-components)
-  - [React Event Pooling](#react-event-pooling)
-  - [Life Cycle of a React Component](#life-cycle-of-a-react-component)
-    - [Life cycle implementation in Functional Component](#life-cycle-implementation-in-functional-component)
-  - [Uni directional data flow](#uni-directional-data-flow)
-    - [How Unidirectional Data Flow Works in React](#how-unidirectional-data-flow-works-in-react)
-    - [Benefits of Unidirectional Data Flow](#benefits-of-unidirectional-data-flow)
-    - [**What happens when we use callback function as props?**](#what-happens-when-we-use-callback-function-as-props)
-      - [How Callbacks Maintain Unidirectional Data Flow](#how-callbacks-maintain-unidirectional-data-flow)
-      - [Example:](#example)
-      - [Explanation:](#explanation)
-      - [Data Flow:](#data-flow)
-      - [Key Points:](#key-points)
-      - [Summary](#summary)
-    - [**What happens when someone uses Redux?**](#what-happens-when-someone-uses-redux)
-      - [Data Flow in Redux:](#data-flow-in-redux)
-      - [Key Points:](#key-points-1)
-    - [Conclusion](#conclusion)
-  - [Memoizing](#memoizing)
-  - [React Form](#react-form)
-    - [1. **Controlled Components**](#1-controlled-components)
-      - [Example of a Simple Controlled Form:](#example-of-a-simple-controlled-form)
-    - [2. **Uncontrolled Components**](#2-uncontrolled-components)
-      - [Example of an Uncontrolled Form:](#example-of-an-uncontrolled-form)
-    - [3. **Form Libraries**](#3-form-libraries)
-      - [Example with Formik:](#example-with-formik)
-      - [Example with React Hook Form:](#example-with-react-hook-form)
-    - [Summary](#summary-1)
-    - [Controlled Components](#controlled-components)
-    - [useState vs useRef](#usestate-vs-useref)
-      - [**useState**:](#usestate)
-      - [**useRef**:](#useref)
+- [Props vs State](#props-vs-state)
+- [Hooks in React](#hooks-in-react)
+  - [1. **useState**:](#1-usestate)
+  - [2. **useEffect**:](#2-useeffect)
+  - [3. **useContext**:](#3-usecontext)
+  - [4. **useReducer**:](#4-usereducer)
+  - [5. **useRef**:](#5-useref)
+  - [6. **useCallback**:](#6-usecallback)
+  - [7. **useMemo**:](#7-usememo)
+  - [8. **useLayoutEffect**:](#8-uselayouteffect)
+- [Event Handling in React](#event-handling-in-react)
+  - [Using class components](#using-class-components)
+  - [Using functions components](#using-functions-components)
+- [React Event Pooling](#react-event-pooling)
+- [Life Cycle of a React Component](#life-cycle-of-a-react-component)
+  - [Life cycle implementation in Functional Component](#life-cycle-implementation-in-functional-component)
+- [Uni directional data flow](#uni-directional-data-flow)
+  - [How Unidirectional Data Flow Works in React](#how-unidirectional-data-flow-works-in-react)
+  - [Benefits of Unidirectional Data Flow](#benefits-of-unidirectional-data-flow)
+  - [**What happens when we use callback function as props?**](#what-happens-when-we-use-callback-function-as-props)
+    - [How Callbacks Maintain Unidirectional Data Flow](#how-callbacks-maintain-unidirectional-data-flow)
+    - [Example:](#example)
+    - [Explanation:](#explanation)
+    - [Data Flow:](#data-flow)
+    - [Key Points:](#key-points)
+    - [Summary](#summary)
+  - [**What happens when someone uses Redux?**](#what-happens-when-someone-uses-redux)
+    - [Data Flow in Redux:](#data-flow-in-redux)
+    - [Key Points:](#key-points-1)
+  - [Conclusion](#conclusion)
+- [Memoizing](#memoizing)
+- [React Form](#react-form)
+  - [1. **Controlled Components**](#1-controlled-components)
+    - [Example of a Simple Controlled Form:](#example-of-a-simple-controlled-form)
+  - [2. **Uncontrolled Components**](#2-uncontrolled-components)
+    - [Example of an Uncontrolled Form:](#example-of-an-uncontrolled-form)
+  - [3. **Form Libraries**](#3-form-libraries)
+    - [Example with Formik:](#example-with-formik)
+    - [Example with React Hook Form:](#example-with-react-hook-form)
+  - [Summary](#summary-1)
+  - [Controlled Components](#controlled-components)
+  - [useState vs useRef](#usestate-vs-useref)
+    - [**useState**:](#usestate)
+    - [**useRef**:](#useref)
       - [**Combining `useState` and `useRef`**:](#combining-usestate-and-useref)
-    - [Managing forms with React Hook Form (library)](#managing-forms-with-react-hook-form-library)
-  - [React Form Validation](#react-form-validation)
-    - [1. **Manual Validation**](#1-manual-validation)
-      - [Example of Manual Validation:](#example-of-manual-validation)
-    - [2. **Using Formik**](#2-using-formik)
-      - [Example with Formik:](#example-with-formik-1)
-    - [3. **Using React Hook Form**](#3-using-react-hook-form)
-      - [Example with React Hook Form:](#example-with-react-hook-form-1)
-    - [Summary](#summary-2)
-    - [Installing Zod](#installing-zod)
-    - [To integrate react-hook-form with zod, we need @hookform/resolvers](#to-integrate-react-hook-form-with-zod-we-need-hookformresolvers)
-    - [Usage](#usage-1)
-  - [Connecting to a backend](#connecting-to-a-backend)
-    - [Reusable API Client \& User Service](#reusable-api-client--user-service)
-      - [**api-client.ts**](#api-clientts)
-      - [**user-service.ts**](#user-servicets)
-      - [**App.tsx**](#apptsx)
-    - [Generic Http service](#generic-http-service)
-      - [**http-service.ts**](#http-servicets)
-      - [**user-service.ts**](#user-servicets-1)
-      - [**App.tsx**](#apptsx-1)
-    - [Custom data fetching (useUsers) hook for better state management](#custom-data-fetching-useusers-hook-for-better-state-management)
-      - [**useUsers.ts**](#useusersts)
-      - [**App.tsx**](#apptsx-2)
-  - [TanStack Query](#tanstack-query)
-    - [What is **`Redux?`**](#what-is-redux)
-    - [Redux vs TanStack Query](#redux-vs-tanstack-query)
-    - [Redux - should we use it ?](#redux---should-we-use-it-)
-    - [Caching](#caching)
-    - [Problems with useEffect and direct Axios queries](#problems-with-useeffect-and-direct-axios-queries)
-    - [Installation](#installation-4)
-    - [Core Concepts of React (TanStack) Query:](#core-concepts-of-react-tanstack-query)
-    - [QueryClient and QueryClientProvider](#queryclient-and-queryclientprovider)
-    - [useQuery Hook](#usequery-hook)
-    - [useQuery and Pagination](#usequery-and-pagination)
-    - [useInfiniteQuery and Infinite loading queries](#useinfinitequery-and-infinite-loading-queries)
-    - [useMutation and Invalidate Cache, optimistic and pessimistic approaches](#usemutation-and-invalidate-cache-optimistic-and-pessimistic-approaches)
-    - [Query Basics](#query-basics)
-      - [**FetchStatus**](#fetchstatus)
-      - [**Why two different states?**](#why-two-different-states)
-    - [Mutation basics](#mutation-basics)
-      - [**Resetting Mutation State**](#resetting-mutation-state)
-      - [**Mutation Side Effects**](#mutation-side-effects)
-      - [**onMutate Side Effect**](#onmutate-side-effect)
-      - [**Consecutive mutations**](#consecutive-mutations)
-      - [**Promises**](#promises)
-      - [**Retry**](#retry)
-      - [**Persist mutations**](#persist-mutations)
-      - [**Persisting Offline mutations**](#persisting-offline-mutations)
-    - [TanStack Query - Example 1 - fetch the data](#tanstack-query---example-1---fetch-the-data)
-    - [Tanstack Query - Example 2 - Fetch the data using a custom hook and dependecies](#tanstack-query---example-2---fetch-the-data-using-a-custom-hook-and-dependecies)
-  - [React Query DevTools](#react-query-devtools)
-    - [Installation](#installation-5)
-    - [Usage](#usage-2)
-  - [Global State Management](#global-state-management)
-    - [Reducer](#reducer)
-    - [Sharing a state](#sharing-a-state)
-      - [**Sharing a state/data using React context**](#sharing-a-statedata-using-react-context)
-      - [**Custom Providers - React Context**](#custom-providers---react-context)
-      - [**Custom Hooks to access context providers**](#custom-hooks-to-access-context-providers)
-      - [**Notes on React-Context:**](#notes-on-react-context)
-  - [Context vs Redux](#context-vs-redux)
-    - [Redux](#redux)
-    - [React Context](#react-context)
-    - [Conclusion](#conclusion-1)
-  - [Zustand](#zustand)
-    - [Zustand Example 1:](#zustand-example-1)
-    - [Zustand - preventing unecessary re renders](#zustand---preventing-unecessary-re-renders)
+  - [Managing forms with React Hook Form (library)](#managing-forms-with-react-hook-form-library)
+- [React Form Validation](#react-form-validation)
+  - [1. **Manual Validation**](#1-manual-validation)
+    - [Example of Manual Validation:](#example-of-manual-validation)
+  - [2. **Using Formik**](#2-using-formik)
+    - [Example with Formik:](#example-with-formik-1)
+  - [3. **Using React Hook Form**](#3-using-react-hook-form)
+    - [Example with React Hook Form:](#example-with-react-hook-form-1)
+  - [Summary](#summary-2)
+  - [Installing Zod](#installing-zod)
+  - [To integrate react-hook-form with zod, we need @hookform/resolvers](#to-integrate-react-hook-form-with-zod-we-need-hookformresolvers)
+  - [Usage](#usage-1)
+- [Connecting to a backend](#connecting-to-a-backend)
+  - [Reusable API Client \& User Service](#reusable-api-client--user-service)
+    - [**api-client.ts**](#api-clientts)
+    - [**user-service.ts**](#user-servicets)
+    - [**App.tsx**](#apptsx)
+  - [Generic Http service](#generic-http-service)
+    - [**http-service.ts**](#http-servicets)
+    - [**user-service.ts**](#user-servicets-1)
+    - [**App.tsx**](#apptsx-1)
+  - [Custom data fetching (useUsers) hook for better state management](#custom-data-fetching-useusers-hook-for-better-state-management)
+    - [**useUsers.ts**](#useusersts)
+    - [**App.tsx**](#apptsx-2)
+- [TanStack Query](#tanstack-query)
+  - [What is **`Redux?`**](#what-is-redux)
+  - [Redux vs TanStack Query](#redux-vs-tanstack-query)
+  - [Redux - should we use it ?](#redux---should-we-use-it-)
+  - [Caching](#caching)
+  - [Problems with useEffect and direct Axios queries](#problems-with-useeffect-and-direct-axios-queries)
+  - [Installation](#installation-4)
+  - [Core Concepts of React (TanStack) Query:](#core-concepts-of-react-tanstack-query)
+  - [QueryClient and QueryClientProvider](#queryclient-and-queryclientprovider)
+  - [useQuery Hook](#usequery-hook)
+  - [useQuery and Pagination](#usequery-and-pagination)
+  - [useInfiniteQuery and Infinite loading queries](#useinfinitequery-and-infinite-loading-queries)
+  - [useMutation and Invalidate Cache, optimistic and pessimistic approaches](#usemutation-and-invalidate-cache-optimistic-and-pessimistic-approaches)
+  - [Query Basics](#query-basics)
+    - [**FetchStatus**](#fetchstatus)
+    - [**Why two different states?**](#why-two-different-states)
+  - [Mutation basics](#mutation-basics)
+    - [**Resetting Mutation State**](#resetting-mutation-state)
+    - [**Mutation Side Effects**](#mutation-side-effects)
+    - [**onMutate Side Effect**](#onmutate-side-effect)
+    - [**Consecutive mutations**](#consecutive-mutations)
+    - [**Promises**](#promises)
+    - [**Retry**](#retry)
+    - [**Persist mutations**](#persist-mutations)
+    - [**Persisting Offline mutations**](#persisting-offline-mutations)
+  - [TanStack Query - Example 1 - fetch the data](#tanstack-query---example-1---fetch-the-data)
+  - [Tanstack Query - Example 2 - Fetch the data using a custom hook and dependecies](#tanstack-query---example-2---fetch-the-data-using-a-custom-hook-and-dependecies)
+- [React Query DevTools](#react-query-devtools)
+  - [Installation](#installation-5)
+  - [Usage](#usage-2)
+- [Global State Management](#global-state-management)
+  - [Reducer](#reducer)
+  - [Sharing a state](#sharing-a-state)
+    - [**Sharing a state/data using React context**](#sharing-a-statedata-using-react-context)
+    - [**Custom Providers - React Context**](#custom-providers---react-context)
+    - [**Custom Hooks to access context providers**](#custom-hooks-to-access-context-providers)
+    - [**Notes on React-Context:**](#notes-on-react-context)
+- [Context vs Redux](#context-vs-redux)
+  - [Redux](#redux)
+  - [React Context](#react-context)
+  - [Conclusion](#conclusion-1)
+- [Zustand](#zustand)
+  - [Zustand Example 1:](#zustand-example-1)
+  - [Zustand - preventing unecessary re renders](#zustand---preventing-unecessary-re-renders)
   - [Simple Zustand Dev Tools](#simple-zustand-dev-tools)
-  - [React Router DOM](#react-router-dom)
-    - [Some Important Hooks of react-router-dom](#some-important-hooks-of-react-router-dom)
-      - [**1. useLocation**](#1-uselocation)
-      - [**2. useNavigate**](#2-usenavigate)
-      - [**3. useParams**](#3-useparams)
-      - [**5. useRouteError**](#5-userouteerror)
-  - [Optimization in React](#optimization-in-react)
-    - [1. **Memoization**:](#1-memoization)
-    - [2. **Code Splitting**:](#2-code-splitting)
-      - [**Benefits of Code Splitting**](#benefits-of-code-splitting)
-      - [**How to Implement Code Splitting in React**](#how-to-implement-code-splitting-in-react)
-    - [3. **Virtualization**:](#3-virtualization)
-    - [4. **Avoid Anonymous Functions in JSX**:](#4-avoid-anonymous-functions-in-jsx)
-    - [5. **Use Production Build**:](#5-use-production-build)
-    - [6. **Optimize Images and Assets**:](#6-optimize-images-and-assets)
-    - [7. **Efficient State Management**:](#7-efficient-state-management)
-    - [8. **Debounce and Throttle**:](#8-debounce-and-throttle)
-    - [9. **Use React Profiler**:](#9-use-react-profiler)
-    - [10. **Avoid Reconciliation Pitfalls**:](#10-avoid-reconciliation-pitfalls)
-  - [Important Links](#important-links)
+- [What is Routing ?](#what-is-routing-)
+  - [Example in Express.js](#example-in-expressjs)
+- [Types of routing](#types-of-routing)
+  - [1. **Path-Based Routing**](#1-path-based-routing)
+  - [2. **Hash-Based Routing**](#2-hash-based-routing)
+  - [3. **History-Based Routing (HTML5 PushState)**](#3-history-based-routing-html5-pushstate)
+  - [4. **Query-Based Routing**](#4-query-based-routing)
+  - [5. **Static vs. Dynamic Routing**](#5-static-vs-dynamic-routing)
+  - [6. **Nested Routing**](#6-nested-routing)
+  - [7. **Conditional Routing**](#7-conditional-routing)
+- [React Router DOM](#react-router-dom)
+  - [Some Important Hooks of react-router-dom](#some-important-hooks-of-react-router-dom)
+    - [**1. useLocation**](#1-uselocation)
+    - [**2. useNavigate**](#2-usenavigate)
+    - [**3. useParams**](#3-useparams)
+    - [**5. useRouteError**](#5-userouteerror)
+- [Optimization in React](#optimization-in-react)
+  - [1. **Memoization**:](#1-memoization)
+  - [2. **Code Splitting**:](#2-code-splitting)
+    - [**Benefits of Code Splitting**](#benefits-of-code-splitting)
+    - [**How to Implement Code Splitting in React**](#how-to-implement-code-splitting-in-react)
+  - [3. **Virtualization**:](#3-virtualization)
+  - [4. **Avoid Anonymous Functions in JSX**:](#4-avoid-anonymous-functions-in-jsx)
+  - [5. **Use Production Build**:](#5-use-production-build)
+  - [6. **Optimize Images and Assets**:](#6-optimize-images-and-assets)
+  - [7. **Efficient State Management**:](#7-efficient-state-management)
+  - [8. **Debounce and Throttle**:](#8-debounce-and-throttle)
+  - [9. **Use React Profiler**:](#9-use-react-profiler)
+  - [10. **Avoid Reconciliation Pitfalls**:](#10-avoid-reconciliation-pitfalls)
+- [Important Links](#important-links)
 - [React Summary](#react-summary)
+
+
+# General Programming Concepts & Libraries
 
 ## Cohesion and Coupling
 
@@ -449,97 +462,38 @@ npm install gh-pages --save-dev
 npm run predeploy
 npm run deploy
 ```
-
-## Setup Local Environment
-
-1. Install Node LTS.
-2. Install VS Code and extensions like "sublime babel" and "vscode icons."
-3. Create a React app & run it in dev server mode using the command:
-
-There are two ways to create react app
-
-### 1. create-react-app
-
-React's official tool.
-
-```bash
-npx create-react-app my-app
-cd my-app
-npm start
-```
-
-With the above commands we get a development server, Webpack and Babel with zero configurations needed from our side.
-
-However, one can edit the configurations using below command
-
-```bash
-npm run eject
-```
-
-When ejected, all hidden dependencies (maintained by create-react-app) will be exposed in package.json and can be edited as per our preference.
-
-### 2. Vite
-
-Vite (French word for "quick", pronounced [`/vit/`](https://cdn.jsdelivr.net/gh/vitejs/vite@main/docs/public/vite.mp3), like "veet") is a new breed of frontend build tooling that significantly improves the frontend development experience. It consists of two major parts:
-
-- A dev server that serves your source files over [native ES modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules), with [rich built-in features](https://vitejs.dev/guide/features.html) and astonishingly fast [Hot Module Replacement (HMR)](https://vitejs.dev/guide/features.html#hot-module-replacement).
-
-- A [build command](https://vitejs.dev/guide/build.html) that bundles your code with [Rollup](https://rollupjs.org), pre-configured to output highly optimized static assets for production.
-
-In addition, Vite is highly extensible via its [Plugin API](https://vitejs.dev/guide/api-plugin.html) and [JavaScript API](https://vitejs.dev/guide/api-javascript.html) with full typing support.
-
-[Read the Docs to Learn More](https://vitejs.dev).
-
-```bash
-npm create vite@latest
-# Then choose your project name and technology etc.,
-
-# Change working directory to your root
-cd my-first-react-vite-app
-
-# Initialize git
-git init
-
-# Install dependencies
-npm install
-
-# Start the dev server
-npm run dev
-```
-
 ## Angular vs React
 
-| Aspect                | Angular                                    | React                                      |
-|-----------------------|--------------------------------------------|--------------------------------------------|
-| **Type**              | Framework                                  | Library                                    |
-| **Developed by**      | Google                                      | Facebook                                   |
-| **Initial Release**   | 2010 (AngularJS), 2016 (Angular 2+)         | 2013                                       |
-| **Latest Version**    | Angular 12+ (as of 2023)                    | React 18+ (as of 2023)                     |
-| **Language**          | TypeScript (superset of JavaScript)         | JavaScript (with optional TypeScript)      |
-| **Architecture**      | MVC (Model-View-Controller)                 | Component-based                            |
-| **DOM Handling**      | Real DOM                                    | Virtual DOM                                |
-| **Data Binding**      | Two-way data binding                        | One-way data binding                       |
-| **State Management**  | Built-in with Services and RxJS             | External libraries (e.g., Redux, MobX)     |
-| **Component Communication** | @Input, @Output decorators              | Props and state                            |
-| **Performance**       | Slightly slower due to real DOM             | Faster due to virtual DOM                  |
-| **Learning Curve**    | Steeper due to comprehensive features       | Easier to get started, but more tools needed for full functionality |
-| **Size**              | Larger bundle size                          | Smaller core, but can increase with libraries |
-| **Templating**        | HTML templates with Angular directives      | JSX (JavaScript XML)                       |
-| **Dependency Injection** | Built-in                                    | Not built-in, achieved through libraries   |
-| **Routing**           | Built-in with Angular Router                | External libraries (e.g., React Router)    |
-| **Forms**             | Template-driven and Reactive Forms          | Controlled and Uncontrolled components     |
-| **Testing**           | Comprehensive testing tools (Karma, Jasmine) | Requires additional tools (Jest, Enzyme)   |
-| **Build System**      | Angular CLI (Command Line Interface)        | Create React App (CRA), Next.js, custom setups |
-| **Ecosystem**         | Rich, integrated tools and libraries        | Rich, but relies on third-party libraries  |
-| **Community Support** | Strong, with extensive documentation        | Strong, with extensive documentation       |
-| **Backward Compatibility** | Breaking changes between major versions  | Generally maintains backward compatibility |
-| **Learning Resources** | Plentiful tutorials, official documentation | Plentiful tutorials, official documentation |
-| **Usage**             | Enterprise-level applications, SPAs         | Wide range of applications, SPAs           |
-| **Development Speed** | Slower initially due to configuration       | Faster initially due to minimal setup      |
-| **Customization**     | Less flexible due to framework constraints  | Highly flexible, can choose libraries      |
-| **Mobile Development**| NativeScript, Ionic                          | React Native                               |
-| **Server-side Rendering** | Angular Universal                           | Next.js                                    |
-
+| Aspect                      | Angular                                      | React                                                               |
+| --------------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
+| **Type**                    | Framework                                    | Library                                                             |
+| **Developed by**            | Google                                       | Facebook                                                            |
+| **Initial Release**         | 2010 (AngularJS), 2016 (Angular 2+)          | 2013                                                                |
+| **Latest Version**          | Angular 12+ (as of 2023)                     | React 18+ (as of 2023)                                              |
+| **Language**                | TypeScript (superset of JavaScript)          | JavaScript (with optional TypeScript)                               |
+| **Architecture**            | MVC (Model-View-Controller)                  | Component-based                                                     |
+| **DOM Handling**            | Real DOM                                     | Virtual DOM                                                         |
+| **Data Binding**            | Two-way data binding                         | One-way data binding                                                |
+| **State Management**        | Built-in with Services and RxJS              | External libraries (e.g., Redux, MobX)                              |
+| **Component Communication** | @Input, @Output decorators                   | Props and state                                                     |
+| **Performance**             | Slightly slower due to real DOM              | Faster due to virtual DOM                                           |
+| **Learning Curve**          | Steeper due to comprehensive features        | Easier to get started, but more tools needed for full functionality |
+| **Size**                    | Larger bundle size                           | Smaller core, but can increase with libraries                       |
+| **Templating**              | HTML templates with Angular directives       | JSX (JavaScript XML)                                                |
+| **Dependency Injection**    | Built-in                                     | Not built-in, achieved through libraries                            |
+| **Routing**                 | Built-in with Angular Router                 | External libraries (e.g., React Router)                             |
+| **Forms**                   | Template-driven and Reactive Forms           | Controlled and Uncontrolled components                              |
+| **Testing**                 | Comprehensive testing tools (Karma, Jasmine) | Requires additional tools (Jest, Enzyme)                            |
+| **Build System**            | Angular CLI (Command Line Interface)         | Create React App (CRA), Next.js, custom setups                      |
+| **Ecosystem**               | Rich, integrated tools and libraries         | Rich, but relies on third-party libraries                           |
+| **Community Support**       | Strong, with extensive documentation         | Strong, with extensive documentation                                |
+| **Backward Compatibility**  | Breaking changes between major versions      | Generally maintains backward compatibility                          |
+| **Learning Resources**      | Plentiful tutorials, official documentation  | Plentiful tutorials, official documentation                         |
+| **Usage**                   | Enterprise-level applications, SPAs          | Wide range of applications, SPAs                                    |
+| **Development Speed**       | Slower initially due to configuration        | Faster initially due to minimal setup                               |
+| **Customization**           | Less flexible due to framework constraints   | Highly flexible, can choose libraries                               |
+| **Mobile Development**      | NativeScript, Ionic                          | React Native                                                        |
+| **Server-side Rendering**   | Angular Universal                            | Next.js                                                             |
 
 ## JSX
 
@@ -652,6 +606,67 @@ Goto https://babeljs.io/repl for converting JSX to vanilla JS which any browser 
    - Many libraries and tools in the React ecosystem support TypeScript, making it easier for developers to adopt TypeScript in their React projects.
 
 In summary, TSX in React refers to using TypeScript with JSX syntax. It enhances React development by providing static typing, improved tooling, and early error detection, making it a popular choice for developers building robust and scalable React applications.
+
+
+
+# Setup Local Environment
+
+1. Install Node LTS.
+2. Install VS Code and extensions like "sublime babel" and "vscode icons."
+3. Create a React app & run it in dev server mode using the command:
+
+There are two ways to create react app
+
+## 1. create-react-app
+
+React's official tool.
+
+```bash
+npx create-react-app my-app
+cd my-app
+npm start
+```
+
+With the above commands we get a development server, Webpack and Babel with zero configurations needed from our side.
+
+However, one can edit the configurations using below command
+
+```bash
+npm run eject
+```
+
+When ejected, all hidden dependencies (maintained by create-react-app) will be exposed in package.json and can be edited as per our preference.
+
+## 2. Vite
+
+Vite (French word for "quick", pronounced [`/vit/`](https://cdn.jsdelivr.net/gh/vitejs/vite@main/docs/public/vite.mp3), like "veet") is a new breed of frontend build tooling that significantly improves the frontend development experience. It consists of two major parts:
+
+- A dev server that serves your source files over [native ES modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules), with [rich built-in features](https://vitejs.dev/guide/features.html) and astonishingly fast [Hot Module Replacement (HMR)](https://vitejs.dev/guide/features.html#hot-module-replacement).
+
+- A [build command](https://vitejs.dev/guide/build.html) that bundles your code with [Rollup](https://rollupjs.org), pre-configured to output highly optimized static assets for production.
+
+In addition, Vite is highly extensible via its [Plugin API](https://vitejs.dev/guide/api-plugin.html) and [JavaScript API](https://vitejs.dev/guide/api-javascript.html) with full typing support.
+
+[Read the Docs to Learn More](https://vitejs.dev).
+
+```bash
+npm create vite@latest
+# Then choose your project name and technology etc.,
+
+# Change working directory to your root
+cd my-first-react-vite-app
+
+# Initialize git
+git init
+
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+```
+
+# JavaScript Concepts
 
 ## Useful JS Functions
 
@@ -805,6 +820,8 @@ function Form(props) {
   );
 }
 ```
+
+# React Basics
 
 ## What is React?
 
@@ -1113,35 +1130,35 @@ function App() {
 export default App;
 ```
 
-## State
+# State
 
 State makes UI interactive. UI = f(state). There are declarative and imperative approaches.
 
-### Declarative State Programming
+## Declarative State Programming
 
 UI depends on the value of a state variable. Hooks help hook into state variables and read/modify them.
 
-### Imperative State Programming
+## Imperative State Programming
 
 More primitive, used in early JS learning for frontend.
 
-## React State
+# State in React
 
 In React, `state` is a fundamental concept that allows components to keep track of and manage their internal data. The `state` object is used to store and update information that can change over time, causing the component to re-render when the state is updated.
 
-### **Understanding the state hook:**
+## **Understanding the state hook:**
 
 - React updates states asynchronously
 - State is stored outside of components (in memory)
 - Use state hooks at the top level of your component
 
-### **Choosing the state structure:**
+## **Choosing the state structure:**
 
 - Avoid redundant state variables (eg: If you have firstname and lastname as states, don't go for a fullname state variable)
 - Group related variables inside an object
 - Avoid deeply nested structures
 
-### **Keeping the components Pure:**
+## **Keeping the components Pure:**
 
 **Pure Function:**
 
@@ -1193,7 +1210,7 @@ Message 1
 Message 1
 ```
 
-### **Understanding strictmode**
+## **Understanding strictmode**
 
 - main.tsx
 
@@ -1215,7 +1232,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 - Hence, we got Message 2, Message 4, Message 6
 - The first render is used for detecting and reporting potential issues within our code and only second render is used to update the user interface.
 
-### **Updating state objects:**
+## **Updating state objects:**
 
 - Just like props the objects and arrays must be treated as immutable
 - Example,
@@ -1247,7 +1264,7 @@ function App() {
 export default App;
 ```
 
-### **Updating nested state objects:**
+## **Updating nested state objects:**
 
 - The spread operator `...` in JS is shallow.
 - It means that if we spread a nested object, the nested properties are referenced from the same memory space for both the old object and the new object (created by spreading)
@@ -1282,7 +1299,7 @@ function Employee() {
 export default App;
 ```
 
-### **Updating Array states:**
+## **Updating Array states:**
 
 - Just like props the objects and arrays must be treated as immutable
 - Instead of using regular array's function like push, pop and splice, we must use special methods to handle insertion, updation and deletion.
@@ -1314,7 +1331,7 @@ function App() {
 export default App;
 ```
 
-### **Updating Array of object:**
+## **Updating Array of object:**
 
 ```tsx
 import { useState } from "react";
@@ -1342,7 +1359,7 @@ function App() {
 export default App;
 ```
 
-### **Simplify update Logics using immer library:**
+## **Simplify update Logics using immer library:**
 
 Immer can be used in any context in which immutable data structures need to be used. For example in combination with React state, React or Redux reducers, or configuration management. Immutable data structures allow for (efficient) change detection: if the reference to an object didn't change, the object itself did not change. In addition, it makes cloning relatively cheap: Unchanged parts of a data tree don't need to be copied and are shared in memory with older versions of the same state.
 
@@ -1352,7 +1369,7 @@ Generally speaking, these benefits can be achieved by making sure you never chan
 2. Immer will remove the need for the typical boilerplate code that is needed when creating deep updates to immutable objects: Without Immer, object copies need to be made by hand at every level. Typically by using a lot of `...` spread operations. When using Immer, changes are made to a draft object, that records the changes and takes care of creating the necessary copies, without ever affecting the original object.
 3. When using Immer, you don't need to learn dedicated APIs or data structures to benefit from the paradigm. With Immer you'll use plain JavaScript data structures, and use the well-known mutable JavaScript APIs, but safely.
 
-#### **A quick example for comparison:**
+### **A quick example for comparison:**
 
 ```tsx
 const baseState = [
@@ -1399,13 +1416,13 @@ const nextState = produce(baseState, (draft) => {
 });
 ```
 
-#### **Installing immer**
+### **Installing immer**
 
 ```bash
 npm i immer
 ```
 
-#### **Using immer with React**
+### **Using immer with React**
 
 **useState + Immer**
 
@@ -1577,7 +1594,7 @@ const TodoList = () => {
 
 ```
 
-### **Sharing state between component:**
+## **Sharing state between component:**
 
 - when a state needs to be shared between two components A and B, then the state must be handled by the closest parent of both A and B.
 - The parent component can then send the states as props for the children components.
@@ -1754,7 +1771,7 @@ Here's a basic overview of how state works in React:
 
 State management is crucial for building dynamic and interactive user interfaces in React. By using state, components can respond to user interactions, data changes, and other events, providing a dynamic and responsive user experience.
 
-## Props vs State
+# Props vs State
 
 | Props                       | State                       |
 | --------------------------- | --------------------------- |
@@ -1763,21 +1780,21 @@ State management is crucial for building dynamic and interactive user interfaces
 | Immutable                   | Mutable                     |
 | Cause a re-render           | Cause a re-render           |
 
-## Hooks in React
+# Hooks in React
 
 Functions starting with 'use' are Hooks.
 React Hooks are functions that allow functional components to use state and lifecycle features that were previously only available in class components. Introduced in React 16.8, Hooks provide a more direct way to interact with React's features in functional components, making it easier to reuse stateful logic and manage side effects.
 
 React Hooks are functions that enable functional components to use state, lifecycle methods, and other React features without writing a class. Here are some of the most important React Hooks and their uses:
 
-### 1. **useState**:
+## 1. **useState**:
 
 This hook allows functional components to manage local state.
 
 - Usage: `const [state, setState] = useState(initialState);`
 - Example: `const [count, setCount] = useState(0);`
 
-### 2. **useEffect**:
+## 2. **useEffect**:
 
 This hook allows performing side effects in functional components, such as data fetching, subscriptions, or manually changing the DOM.
 
@@ -1789,7 +1806,7 @@ This hook allows performing side effects in functional components, such as data 
   }, [count]);
   ```
 
-### 3. **useContext**:
+## 3. **useContext**:
 
 This hook allows functional components to consume a context created by the `React.createContext` API.
 
@@ -1799,7 +1816,7 @@ This hook allows functional components to consume a context created by the `Reac
   const theme = useContext(ThemeContext);
   ```
 
-### 4. **useReducer**:
+## 4. **useReducer**:
 
 This hook is an alternative to `useState` for managing more complex state logic. It accepts a reducer function and an initial state, and returns the current state and a dispatch function.
 
@@ -1809,7 +1826,7 @@ This hook is an alternative to `useState` for managing more complex state logic.
   const [state, dispatch] = useReducer(reducer, initialState);
   ```
 
-### 5. **useRef**:
+## 5. **useRef**:
 
 This hook returns a mutable ref object whose `.current` property is initialized to the passed argument (initial value).
 
@@ -1819,7 +1836,7 @@ This hook returns a mutable ref object whose `.current` property is initialized 
   const inputRef = useRef();
   ```
 
-### 6. **useCallback**:
+## 6. **useCallback**:
 
 This hook returns a memoized callback function that only changes if one of the dependencies has changed.
 
@@ -1831,7 +1848,7 @@ This hook returns a memoized callback function that only changes if one of the d
   }, [a, b]);
   ```
 
-### 7. **useMemo**:
+## 7. **useMemo**:
 
 This hook returns a memoized value that only recalculates when one of the dependencies has changed.
 
@@ -1843,7 +1860,7 @@ This hook returns a memoized value that only recalculates when one of the depend
   }, [a, b]);
   ```
 
-### 8. **useLayoutEffect**:
+## 8. **useLayoutEffect**:
 
 This hook is similar to `useEffect`, but it fires synchronously after all DOM mutations. It can be useful for measuring DOM elements.
 
@@ -1858,11 +1875,11 @@ This hook is similar to `useEffect`, but it fires synchronously after all DOM mu
 
 These are some of the most commonly used React Hooks, but React provides many more hooks for various purposes, such as custom hooks (`useCustomHook`) and hooks for working with forms, animations, and more. Understanding and mastering these hooks can significantly enhance your productivity and enable you to build powerful and maintainable React applications.
 
-## Event Handling in React
+# Event Handling in React
 
 In React, event handling is similar to handling events in HTML but with some differences due to the nature of React components. React provides a consistent way to handle events across different browsers and abstracts away some of the complexities.
 
-### Using class components
+## Using class components
 
 `Class Components are not used much anymore. Look much into function components`
 Here's a basic overview of handling events in React:
@@ -1979,7 +1996,7 @@ Here's a basic overview of handling events in React:
 
 These are some basic patterns for event handling in React. Remember to be cautious when using arrow functions in JSX, as they can lead to unnecessary re-renders if used in render methods. Using class methods or binding functions in the constructor can help mitigate this issue.
 
-### Using functions components
+## Using functions components
 
 ```tsx
 import { MouseEvent } from "react";
@@ -1994,7 +2011,7 @@ const MyButton = () => {
 };
 ```
 
-## React Event Pooling
+# React Event Pooling
 
 - [Official Documentation](https://legacy.reactjs.org/docs/legacy-event-pooling.html)
 
@@ -2035,7 +2052,7 @@ function handleChange(e) {
 }
 ```
 
-## Life Cycle of a React Component
+# Life Cycle of a React Component
 
 In React, the lifecycle of a component refers to the series of methods that are invoked at different stages of a component's existence, from its creation to its removal from the DOM. These lifecycle methods allow you to perform actions such as initializing state, fetching data, updating the UI, and cleaning up resources.
 
@@ -2068,7 +2085,7 @@ It's important to note that some lifecycle methods, such as `componentWillReceiv
 
 Understanding the lifecycle of a React component allows you to control its behavior and optimize performance by performing tasks at the appropriate stages of its existence.
 
-### Life cycle implementation in Functional Component
+## Life cycle implementation in Functional Component
 
 In React functional components, you can achieve similar functionality to lifecycle methods in class components using React Hooks. Here's an example demonstrating how to replicate common lifecycle behavior using useEffect:
 
@@ -2136,11 +2153,11 @@ In this example:
 
 These `useEffect` hooks replicate common lifecycle behavior in functional components.
 
-## Uni directional data flow
+# Uni directional data flow
 
 In React, the data flow is **uni-directional**. This means that data flows in a single direction, from parent components to child components. This unidirectional data flow is a core concept in React and helps to maintain a predictable data flow and application state.
 
-### How Unidirectional Data Flow Works in React
+## How Unidirectional Data Flow Works in React
 
 1. **Props:**
 
@@ -2186,7 +2203,7 @@ In this example:
 - The `Child` component receives the `message` prop and renders it.
 - When the button in the `Parent` component is clicked, it updates the `message` state, causing the `Parent` to re-render and pass the new message down to the `Child`.
 
-### Benefits of Unidirectional Data Flow
+## Benefits of Unidirectional Data Flow
 
 1. **Predictability:**
 
@@ -2203,13 +2220,13 @@ In this example:
 4. **Maintainability:**
    - Applications are easier to maintain because the flow of data is clear and consistent.
 
-### **What happens when we use callback function as props?**
+## **What happens when we use callback function as props?**
 
 You can pass callback functions as props to child components, allowing data to be sent from child components back to the parent components. However, this mechanism still adheres to the principle of unidirectional data flow in React.
 
 Here's why:
 
-#### How Callbacks Maintain Unidirectional Data Flow
+### How Callbacks Maintain Unidirectional Data Flow
 
 1. **Parent Component Owns the State:**
 
@@ -2220,7 +2237,7 @@ Here's why:
    - The data flow remains unidirectional: from parent to child for props and from child to parent through callbacks.
    - The child component does not directly change the parent's state. Instead, it communicates an event (like user input) back to the parent, which then updates the state.
 
-#### Example:
+### Example:
 
 ```jsx
 import React, { useState } from "react";
@@ -2259,7 +2276,7 @@ function Child({ onMessageChange }) {
 export default Parent;
 ```
 
-#### Explanation:
+### Explanation:
 
 - **Parent Component:**
 
@@ -2270,7 +2287,7 @@ export default Parent;
   - Receives the `onMessageChange` callback function as a prop.
   - When the button is clicked, the `sendMessageToParent` function calls the `onMessageChange` function, sending data back to the parent.
 
-#### Data Flow:
+### Data Flow:
 
 1. **Parent to Child:**
 
@@ -2280,17 +2297,17 @@ export default Parent;
    - The child invokes the callback function, passing data to the parent.
    - The parent updates its state based on the data received from the child.
 
-#### Key Points:
+### Key Points:
 
 - The actual data and state management still reside in the parent component.
 - The child component only triggers a state update in the parent through the callback function.
 - This approach maintains a clear and predictable flow of data, adhering to the unidirectional data flow principle.
 
-#### Summary
+### Summary
 
 Even though child components can send data back to parent components using callback functions, this approach does not violate the unidirectional data flow principle. Instead, it enhances the interaction between components while keeping the data flow predictable and easy to manage.
 
-### **What happens when someone uses Redux?**
+## **What happens when someone uses Redux?**
 
 When using Redux for state management in a React application, the unidirectional data flow principle remains intact, but the state management is centralized. Here's how it works:
 
@@ -2304,7 +2321,7 @@ When using Redux for state management in a React application, the unidirectional
 
 5. **Selectors:** Components use selectors to read specific pieces of state from the store. This abstracts the state structure and simplifies state access.
 
-#### Data Flow in Redux:
+### Data Flow in Redux:
 
 - **State Initialization:** The Redux store is initialized with an initial state.
 - **Component Interaction:** Components subscribe to state changes and read state from the store using `useSelector` or `connect`. They also dispatch actions to the store.
@@ -2312,7 +2329,7 @@ When using Redux for state management in a React application, the unidirectional
 - **State Update:** The reducer processes the action and returns a new state, which replaces the old state in the store.
 - **Component Re-Rendering:** Components subscribed to the state changes are re-rendered with the new state.
 
-#### Key Points:
+### Key Points:
 
 - **Predictable State Updates:** Redux ensures state changes are predictable and traceable, as state updates are handled through pure functions (reducers).
 - **Centralized State Management:** With Redux, all state is managed in one place, making it easier to handle complex state interactions.
@@ -2320,11 +2337,11 @@ When using Redux for state management in a React application, the unidirectional
 
 This structure maintains a clear and predictable flow of data throughout the application, enhancing maintainability and debugging.
 
-### Conclusion
+## Conclusion
 
 Unidirectional data flow is a fundamental principle in React that contributes to its simplicity and predictability. By passing data from parent to child components through props, React ensures a clear and manageable flow of information throughout an application.
 
-## Memoizing
+# Memoizing
 
 Memoizing is a technique used in computer science and software engineering to optimize the performance of functions by caching the results of expensive function calls and returning the cached result when the same inputs occur again. The term "memoization" is derived from the word "memo," which means to remember or note down.
 
@@ -2344,17 +2361,17 @@ In JavaScript, memoization is often implemented using techniques like caching re
 
 Overall, memoization is a powerful optimization technique that can help improve the efficiency and responsiveness of applications by reducing unnecessary computations and improving performance.
 
-## React Form
+# React Form
 
 In React, forms are a crucial part of building interactive user interfaces. Managing form data and handling user input efficiently is essential for creating dynamic and responsive web applications. React provides a way to handle forms through controlled components, which means that form elements are controlled by the state of the React components.
 
 Forms in React are essential for handling user input and managing form state. React provides several ways to create and manage forms, from simple controlled components to more complex form libraries. Here’s an overview of creating forms in React:
 
-### 1. **Controlled Components**
+## 1. **Controlled Components**
 
 In React, controlled components refer to form elements that are controlled by the component state. This means the form data is handled by the React component rather than the DOM itself.
 
-#### Example of a Simple Controlled Form:
+### Example of a Simple Controlled Form:
 
 ```jsx
 import React, { useState } from "react";
@@ -2399,11 +2416,11 @@ function SimpleForm() {
 export default SimpleForm;
 ```
 
-### 2. **Uncontrolled Components**
+## 2. **Uncontrolled Components**
 
 Uncontrolled components use `refs` to access form values from the DOM directly, rather than keeping them in the component state.
 
-#### Example of an Uncontrolled Form:
+### Example of an Uncontrolled Form:
 
 ```jsx
 import React, { useRef } from "react";
@@ -2440,11 +2457,11 @@ function UncontrolledForm() {
 export default UncontrolledForm;
 ```
 
-### 3. **Form Libraries**
+## 3. **Form Libraries**
 
 For complex forms, it’s often beneficial to use a form library. Two popular libraries are **Formik** and **React Hook Form**.
 
-#### Example with Formik:
+### Example with Formik:
 
 ```jsx
 import React from "react";
@@ -2489,7 +2506,7 @@ function FormikForm() {
 export default FormikForm;
 ```
 
-#### Example with React Hook Form:
+### Example with React Hook Form:
 
 ```jsx
 import React from "react";
@@ -2529,7 +2546,7 @@ function HookForm() {
 export default HookForm;
 ```
 
-### Summary
+## Summary
 
 - **Controlled Components:** Use state to manage form inputs.
 - **Uncontrolled Components:** Use refs to access form inputs directly.
@@ -2591,7 +2608,7 @@ const Form = () => {
 export default Form;
 ```
 
-### Controlled Components
+## Controlled Components
 
 In React, a controlled component refers to a form element, like an input or textarea, whose value is controlled by the React component's state. This means that the component's state is the single source of truth for the value of the form element, and any changes to that value are managed through React state and React's lifecycle methods.
 
@@ -2683,11 +2700,11 @@ const Form = () => {
 export default Form;
 ```
 
-### useState vs useRef
+## useState vs useRef
 
 `useState` and `useRef` are both React hooks, but they serve different purposes when it comes to forms.
 
-#### **useState**:
+### **useState**:
 
 1. **State Management:**
 
@@ -2717,7 +2734,7 @@ export default Form;
      }
      ```
 
-#### **useRef**:
+### **useRef**:
 
 1. **Immutability:**
 
@@ -2789,7 +2806,7 @@ function MyForm() {
 
 In this example, `useRef` is used to store a reference to the input element, allowing you to interact with it directly without causing a re-render. Meanwhile, `useState` manages the input value and triggers re-renders when the value changes.
 
-### Managing forms with React Hook Form (library)
+## Managing forms with React Hook Form (library)
 
 React Hook Form is a performant, flexible, and extensible form library for React. It provides an intuitive, feature-complete API that offers a seamless experience to developers when building forms. Here are some of its key features:
 
@@ -2905,15 +2922,15 @@ const Form = () => {
 export default Form;
 ```
 
-## React Form Validation
+# React Form Validation
 
 Form validation is an essential aspect of handling user inputs in React applications. There are several approaches to validating forms in React, ranging from basic manual validation to using specialized libraries that simplify the process. Here’s an overview of various methods for implementing form validation in React:
 
-### 1. **Manual Validation**
+## 1. **Manual Validation**
 
 You can manually validate forms by handling input events and checking the validity of each field within the component's state.
 
-#### Example of Manual Validation:
+### Example of Manual Validation:
 
 ```jsx
 import React, { useState } from "react";
@@ -2972,11 +2989,11 @@ function ManualValidationForm() {
 export default ManualValidationForm;
 ```
 
-### 2. **Using Formik**
+## 2. **Using Formik**
 
 Formik is a popular library for managing form state and validation in React. It simplifies form handling by providing components and hooks for form state management and validation.
 
-#### Example with Formik:
+### Example with Formik:
 
 ```jsx
 import React from "react";
@@ -3024,11 +3041,11 @@ function FormikValidationForm() {
 export default FormikValidationForm;
 ```
 
-### 3. **Using React Hook Form**
+## 3. **Using React Hook Form**
 
 React Hook Form is another popular library for handling form validation. It leverages React hooks to manage form state and validation, providing a performant and flexible way to handle forms.
 
-#### Example with React Hook Form:
+### Example with React Hook Form:
 
 ```jsx
 import React from "react";
@@ -3073,7 +3090,7 @@ function HookFormValidation() {
 export default HookFormValidation;
 ```
 
-### Summary
+## Summary
 
 - **Manual Validation:** Allows full control but requires more boilerplate code.
 - **Formik:** Simplifies form state management and validation using Yup for schema validation.
@@ -3087,20 +3104,20 @@ Choosing the right method depends on the complexity of your form and your prefer
 - Zod is for TS based projects
 - Since we use react with typescript, we can do validation using Zod
 
-### Installing Zod
+## Installing Zod
 
 ```bash
 npm i zod
 ```
 
-### To integrate react-hook-form with zod, we need @hookform/resolvers
+## To integrate react-hook-form with zod, we need @hookform/resolvers
 
 ```bash
 npm i @hookform/resolvers
 # Actually this library provides integration with various schema based validation libraries like Zod, Joi, Yup et.,
 ```
 
-### Usage
+## Usage
 
 ```tsx
 // Import the 'useForm' hook from the 'react-hook-form' library
@@ -3203,7 +3220,7 @@ const ZodForm = () => {
 export default ZodForm;
 ```
 
-## Connecting to a backend
+# Connecting to a backend
 
 - For this example, we use a fake backend provided by https://jsonplaceholder.typicode.com/
 - This implementation is using `axios` for sending http requests
@@ -3398,9 +3415,9 @@ const App = () => {
 export default App;
 ```
 
-### Reusable API Client & User Service
+## Reusable API Client & User Service
 
-#### **api-client.ts**
+### **api-client.ts**
 
 ```ts
 // src\services\api-client.ts
@@ -3415,7 +3432,7 @@ export default axios.create({
 
 ---
 
-#### **user-service.ts**
+### **user-service.ts**
 
 ```ts
 // src\services\user-service.ts
@@ -3465,7 +3482,7 @@ export default new UserService();
 
 ---
 
-#### **App.tsx**
+### **App.tsx**
 
 ```tsx
 // src\App.tsx
@@ -3602,13 +3619,13 @@ const App = () => {
 export default App;
 ```
 
-### Generic Http service
+## Generic Http service
 
 - Can be used for different endpoint like users, posts, etc
 - Write only once and it will work for multiple cases
 - Must be initiated with endpoint and requests must use data types explicitly based on the endpoint
 
-#### **http-service.ts**
+### **http-service.ts**
 
 ```ts
 // src\services\http-service.ts
@@ -3662,7 +3679,7 @@ export default create;
 
 ---
 
-#### **user-service.ts**
+### **user-service.ts**
 
 ```ts
 // src\services\user-service.ts
@@ -3679,7 +3696,7 @@ export default create("/users");
 
 ---
 
-#### **App.tsx**
+### **App.tsx**
 
 ```tsx
 import { useState, useEffect } from "react";
@@ -3811,13 +3828,13 @@ const App = () => {
 export default App;
 ```
 
-### Custom data fetching (useUsers) hook for better state management
+## Custom data fetching (useUsers) hook for better state management
 
 - If we have another component apart from App.tsx where we have to fetch the list of users, then the current implementation of useState s and useEffect s will require repititions.
 - To avoid this we can define a custom hook which is just a function with all the current hooks implemented in App.tsx
 - Custom Hooks can be used to share functionality across different components
 
-#### **useUsers.ts**
+### **useUsers.ts**
 
 ```ts
 // src\hooks\useUsers.ts
@@ -3874,7 +3891,7 @@ export default useUsers;
 
 ---
 
-#### **App.tsx**
+### **App.tsx**
 
 ```tsx
 import { AxiosError } from "./services/api-client";
@@ -3974,18 +3991,18 @@ const App = () => {
 export default App;
 ```
 
-## TanStack Query
+# TanStack Query
 
 Powerful asynchronous state management for TS/JS, React, Solid, Vue and Svelte.
 Toss out that granular state management, manual refetching and endless bowls of async-spaghetti code. TanStack Query gives you declarative, always-up-to-date auto-managed queries and mutations that directly improve both your developer and user experiences.
 
 [`Official Documentation`](https://tanstack.com/query/latest/docs/framework/react/overview)
 
-### What is **`Redux?`**
+## What is **`Redux?`**
 
 A popular state management library for JavaScript applications. It allows us to store state or data in an application within a single global store (just a JS object in the user's browser). So a lot of people us it as a cache, as they fetch data from backend and store it in the browser and hence users can quickly access the data.
 
-### Redux vs TanStack Query
+## Redux vs TanStack Query
 
 | Feature                       | Redux                                                                        | TanStack Query                                                            |
 | ----------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -3998,15 +4015,15 @@ A popular state management library for JavaScript applications. It allows us to 
 
 Please note that both libraries serve different purposes and can be used together in a project. The choice between Redux and TanStack Query depends on the specific needs of your project.
 
-### Redux - should we use it ?
+## Redux - should we use it ?
 
 Redux is no longer needed unless we are maintaining an existing redux based app.
 
-### Caching
+## Caching
 
 The process of storing data in a place where it can be accessed more quickly and effeciently in the future.
 
-### Problems with useEffect and direct Axios queries
+## Problems with useEffect and direct Axios queries
 
 When we use the useEffect Hook and Axios queries we face the following problems.
 
@@ -4018,19 +4035,19 @@ When we use the useEffect Hook and Axios queries we face the following problems.
 
 Technically, we can solve all these problems by ourselves but would require more coding. This is where TanStack Query comes into the picture.
 
-### Installation
+## Installation
 
 ```bash
 npm i @tanstack/react-query
 ```
 
-### Core Concepts of React (TanStack) Query:
+## Core Concepts of React (TanStack) Query:
 
 1. [Queries](https://tanstack.com/query/latest/docs/framework/react/guides/queries)
 2. [Mutations](https://tanstack.com/query/latest/docs/framework/react/guides/mutations)
 3. [Query Invalidation](https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation)
 
-### QueryClient and QueryClientProvider
+## QueryClient and QueryClientProvider
 
 `QueryClient` and `QueryClientProvider` are key components in the React Query library, which is part of the TanStack.
 
@@ -4065,7 +4082,7 @@ These two components work together to enable the functionality of React Query in
 
 It's important to note that if you're using multiple versions of `react-query` (for example, due to dependencies on other packages), you might encounter issues. In such cases, it's recommended to ensure that all packages are using the same version of `react-query`.
 
-### useQuery Hook
+## useQuery Hook
 
 `useQuery` is a hook provided by the TanStack Query library for fetching, caching, synchronizing and updating server state in your React applications.
 
@@ -4127,7 +4144,7 @@ const { data, status } = useQuery(queryKey, queryFn, config);
 
 In this example, `staleTime` and `cacheTime` are used to control the freshness and lifetime of the cached data. The `retry` option controls how many times a failed query should be retried.
 
-### useQuery and Pagination
+## useQuery and Pagination
 
 - A good API provider will provide you with the following infomration
   - Count of total number of pages (or provides some metrics using which we can calculate)
@@ -4189,7 +4206,7 @@ const useData = <T>(
 export default useData;
 ```
 
-### useInfiniteQuery and Infinite loading queries
+## useInfiniteQuery and Infinite loading queries
 
 This hook is used for querying lists that can additively "load more" data onto an existing set of data or "infinite scroll".
 
@@ -4243,7 +4260,7 @@ function Projects() {
 }
 ```
 
-### useMutation and Invalidate Cache, optimistic and pessimistic approaches
+## useMutation and Invalidate Cache, optimistic and pessimistic approaches
 
 - Pessimistic
 
@@ -4437,7 +4454,7 @@ export default Form;
 
 ```
 
-### Query Basics
+## Query Basics
 
 A query is a declarative dependency on an asynchronous source of data that is tied to a **unique key**. A query can be used with any Promise based method (including GET and POST methods) to fetch data from a server. If your method modifies data on the server, we recommend using [Mutations](https://tanstack.com/query/latest/docs/framework/react/guides/mutations) instead.
 
@@ -4550,7 +4567,7 @@ function Todos() {
 
 TypeScript will also narrow the type of `data` correctly if you've checked for `pending` and `error` before accessing it.
 
-#### **FetchStatus**
+### **FetchStatus**
 
 In addition to the `status` field, you will also get an additional `fetchStatus` property with the following options:
 
@@ -4558,7 +4575,7 @@ In addition to the `status` field, you will also get an additional `fetchStatus`
 - `fetchStatus === 'paused'` - The query wanted to fetch, but it is paused. Read more about this in the [Network Mode](./guides/network-mode) guide.
 - `fetchStatus === 'idle'` - The query is not doing anything at the moment.
 
-#### **Why two different states?**
+### **Why two different states?**
 
 Background refetches and stale-while-revalidate logic make all combinations for `status` and `fetchStatus` possible. For example:
 
@@ -4570,7 +4587,7 @@ So keep in mind that a query can be in `pending` state without actually fetching
 - The `status` gives information about the `data`: Do we have any or not?
 - The `fetchStatus` gives information about the `queryFn`: Is it running or not?
 
-### Mutation basics
+## Mutation basics
 
 Unlike queries, mutations are typically used to create/update/delete data or perform server side-effects. For this purpose, TanStack Query exports a `useMutation` hook.
 
@@ -4668,7 +4685,7 @@ const CreateTodo = () => {
 
 [//]: # "Example2"
 
-#### **Resetting Mutation State**
+### **Resetting Mutation State**
 
 It's sometimes the case that you need to clear the `error` or `data` of a mutation request. To do this, you can use the `reset` function to handle this:
 
@@ -4703,7 +4720,7 @@ const CreateTodo = () => {
 
 [//]: # "Example3"
 
-#### **Mutation Side Effects**
+### **Mutation Side Effects**
 
 `useMutation` comes with some helper options that allow quick and easy side-effects at any stage during the mutation lifecycle. These come in handy for both [invalidating and refetching queries after mutations](./guides/invalidations-from-mutations) and even [optimistic updates](./guides/optimistic-updates)
 
@@ -4784,7 +4801,7 @@ mutate(todo, {
 
 [//]: # "Example6"
 
-#### **onMutate Side Effect**
+### **onMutate Side Effect**
 
 The `onMutate` option in the `useMutation` hook is a function that is executed just before the mutation function (`mutationFn`) is called. This function receives the variables that are passed to the mutation function.
 
@@ -4807,7 +4824,7 @@ onMutate: (newTodo) => {
 
 In this example, `onMutate` is used to immediately add the new todo to the UI, before the mutation has actually happened. If the mutation fails, the `onError` callback can use the rollback function provided by `onMutate` to restore the original list of todos. This provides a smoother user experience, as they see the result of their action immediately.
 
-#### **Consecutive mutations**
+### **Consecutive mutations**
 
 There is a slight difference in handling `onSuccess`, `onError` and `onSettled` callbacks when it comes to consecutive mutations. When passed to the `mutate` function, they will be fired up only _once_ and only if the component is still mounted. This is due to the fact that mutation observer is removed and resubscribed every time when the `mutate` function is called. On the contrary, `useMutation` handlers execute for each `mutate` call.
 
@@ -4836,7 +4853,7 @@ todos.forEach((todo) => {
 
 [//]: # "Example7"
 
-#### **Promises**
+### **Promises**
 
 Use `mutateAsync` instead of `mutate` to get a promise which will resolve on success or throw on an error. This can for example be used to compose side effects.
 
@@ -4857,7 +4874,7 @@ try {
 
 [//]: # "Example8"
 
-#### **Retry**
+### **Retry**
 
 By default TanStack Query will not retry a mutation on error, but it is possible with the `retry` option:
 
@@ -4874,7 +4891,7 @@ const mutation = useMutation({
 
 If mutations fail because the device is offline, they will be retried in the same order when the device reconnects.
 
-#### **Persist mutations**
+### **Persist mutations**
 
 Mutations can be persisted to storage if needed and resumed at a later point. This can be done with the hydration functions:
 
@@ -4931,7 +4948,7 @@ queryClient.resumePausedMutations();
 
 [//]: # "Example10"
 
-#### **Persisting Offline mutations**
+### **Persisting Offline mutations**
 
 If you persist offline mutations with the [persistQueryClient plugin](./plugins/persistQueryClient), mutations cannot be resumed when the page is reloaded unless you provide a default mutation function.
 
@@ -4978,7 +4995,7 @@ export default function App() {
 
 We also have an extensive [offline example](./examples/offline) that covers both queries and mutations.
 
-### TanStack Query - Example 1 - fetch the data
+## TanStack Query - Example 1 - fetch the data
 
 ```tsx
 // GET https://api.github.com/repos/TanStack/query?repoData
@@ -5024,7 +5041,7 @@ function Example() {
 }
 ```
 
-### Tanstack Query - Example 2 - Fetch the data using a custom hook and dependecies
+## Tanstack Query - Example 2 - Fetch the data using a custom hook and dependecies
 
 ```ts
 import { useQuery } from "@tanstack/react-query";
@@ -5066,11 +5083,11 @@ const useData = <T>(
 export default useData;
 ```
 
-## React Query DevTools
+# React Query DevTools
 
 **React Query DevTools** is a development tool that helps visualize the inner workings of React Query and can save you hours of debugging.
 
-### Installation
+## Installation
 
 The DevTools are a separate package that you need to install. You can install it using npm, yarn, or pnpm:
 
@@ -5084,7 +5101,7 @@ yarn add @tanstack/react-query-devtools
 
 By default, React Query DevTools are only included in bundles when `process.env.NODE_ENV === 'development'`, so you don't need to worry about excluding them during a production build.
 
-### Usage
+## Usage
 
 You can import the DevTools in your application like this:
 
@@ -5111,9 +5128,9 @@ You can also customize the DevTools using various props such as `panelProps`, `c
 
 Please note that for now, the DevTools do not support React Native.
 
-## Global State Management
+# Global State Management
 
-### Reducer
+## Reducer
 
 A function that allows us to centralize state updates in a component
 
@@ -5246,13 +5263,13 @@ const LoginStatus = () => {
 export default LoginStatus;
 ```
 
-### Sharing a state
+## Sharing a state
 
 Lift the state up to the closest parent and pass it down as props to child components.
 
 However, in a complex app with many components becoming child to the top component, we need to set state at top and pass them down as props (again and again) until we reach the bottom component. This creates so much repition in code. This issue is known as `Prop Drilling`
 
-#### **Sharing a state/data using React context**
+### **Sharing a state/data using React context**
 
 Allows sharing data without passing it down through many components in the middle.
 
@@ -5542,7 +5559,7 @@ A React Context acts as a transporter that carries state values and functions to
   export default OrderSelector;
   ```
 
-#### **Custom Providers - React Context**
+### **Custom Providers - React Context**
 
 - We can use custom providers to avoid prop drilling in App.tsx while using providers
 - Example
@@ -5622,7 +5639,7 @@ A React Context acts as a transporter that carries state values and functions to
 
   Now, when you render `App`, it will provide the context to `MainExample`. You can access the context value using the `useSomeContext` hook within `MainExample`. Adjust the context names and state/data according to your specific use case.
 
-#### **Custom Hooks to access context providers**
+### **Custom Hooks to access context providers**
 
 Assuming you have already created a context using `React.createContext`, here's how you can create a custom hook to access that context:
 
@@ -5697,7 +5714,7 @@ export default App;
 Now, any component wrapped within the `UserContext.Provider` will have access to the user context using the `useUserContext` hook.
 Adjust the context names and state/data according to your specific use case.
 
-#### **Notes on React-Context:**
+### **Notes on React-Context:**
 
 - `Minimizing renders`: Split up a context into smaller and focused ones, each having a single responsibility.
 - `When to use Context?`
@@ -5713,9 +5730,9 @@ Adjust the context names and state/data according to your specific use case.
   - xState
   - Zustand (simplest of all these)
 
-## Context vs Redux
+# Context vs Redux
 
-### Redux
+## Redux
 
 - A widely used state management library for JavaScript applications.
 - It provides a centralized store to store the application states.
@@ -5732,11 +5749,11 @@ Adjust the context names and state/data according to your specific use case.
   - See state changes over time
   - Stores both client and server state
 
-### React Context
+## React Context
 
 - It is just a way to store the state somewhere else and transport it
 
-### Conclusion
+## Conclusion
 
 **So should we use Redux?**
 
@@ -5749,7 +5766,7 @@ Adjust the context names and state/data according to your specific use case.
     - Consolidate state logic with a reducer
     - Use a simpler state management tool (like Zustand)
 
-## Zustand
+# Zustand
 
 **Zustand** is a **lightweight and straightforward state management library** for **React**. It provides an alternative to more complex solutions like **Redux**. Let's dive into what Zustand is and how it works:
 
@@ -5810,7 +5827,7 @@ Adjust the context names and state/data according to your specific use case.
 
 In summary, Zustand simplifies global state management in React without sacrificing performance or readability.
 
-### Zustand Example 1:
+## Zustand Example 1:
 
 - An example of a **Zustand store** where we define functions while creating the store:
 
@@ -5866,7 +5883,7 @@ export default Counter;
 
 In the `Counter` component, we import the `useStore` hook and use it to access the `count` state variable and the `increment` and `decrement` functions. These values are then used in the JSX to render a simple counter component.
 
-### Zustand - preventing unecessary re renders
+## Zustand - preventing unecessary re renders
 
 To prevent unnecessary re-renders in your React app when using Zustand, you can leverage **selectors** and **shallow comparison**.
 
@@ -5979,7 +5996,154 @@ if (process.env.NODE_ENV === "development")
 export default useStore;
 ```
 
-## React Router DOM
+# What is Routing ?
+
+Routing is the process of determining how requests are handled by an application, specifically how incoming client requests (such as those made via HTTP) are directed to the appropriate handler (e.g., a function, method, or controller).
+
+In web development, routing typically refers to defining the paths or URLs that an application will respond to, and mapping those paths to specific code that should be executed. Here's a brief overview:
+
+1. **Server-Side Routing**: This is handled on the server (e.g., in Node.js with Express.js). When a client makes a request to a URL, the server determines which code to run based on the route. For example, a request to `/about` might be routed to a function that sends an "About Us" page back to the client.
+
+2. **Client-Side Routing**: This is used in single-page applications (SPAs) where the routing is handled within the browser, usually with a JavaScript framework like React, Angular, or Vue.js. Client-side routing allows the application to change the view without reloading the entire page, providing a smoother user experience.
+
+## Example in Express.js
+
+```javascript
+const express = require("express");
+const app = express();
+
+// Define a route for the home page
+app.get("/", (req, res) => {
+  res.send("Welcome to the Home Page");
+});
+
+// Define a route for the about page
+app.get("/about", (req, res) => {
+  res.send("About Us");
+});
+
+// Start the server
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
+```
+
+In this example:
+
+- A request to `http://localhost:3000/` will return "Welcome to the Home Page".
+- A request to `http://localhost:3000/about` will return "About Us".
+
+Routing is a fundamental concept in web development, crucial for directing users to different parts of an application.
+
+# Types of routing
+
+Routing in web development can be categorized into several types based on how URLs are structured and how navigation is handled. Here are the main types of routing:
+
+## 1. **Path-Based Routing**
+   - **Definition**: Uses the path segment of a URL to determine the route.
+   - **Example URL**: `https://example.com/about`
+   - **Use Case**: Common in both server-side and client-side routing.
+   - **Characteristics**: 
+     - Easy to read and understand.
+     - SEO-friendly because each path represents a different URL.
+
+   **Example (Express.js):**
+   ```javascript
+   app.get('/about', (req, res) => {
+     res.send('About Us');
+   });
+   ```
+
+## 2. **Hash-Based Routing**
+   - **Definition**: Uses the hash (`#`) portion of the URL to determine the route. The part of the URL after the `#` is called the "hash" or "fragment".
+   - **Example URL**: `https://example.com/#/about`
+   - **Use Case**: Popular in older single-page applications (SPAs) to manage client-side routing without involving the server.
+   - **Characteristics**: 
+     - Does not cause a full page reload.
+     - Not SEO-friendly, as search engines typically ignore the hash fragment.
+
+   **Example (React):**
+   ```javascript
+   <HashRouter>
+     <Route path="/about" component={About} />
+   </HashRouter>
+   ```
+
+## 3. **History-Based Routing (HTML5 PushState)**
+   - **Definition**: Uses the HTML5 History API to manipulate the browser history and change the URL path without causing a page reload.
+   - **Example URL**: `https://example.com/about`
+   - **Use Case**: Modern SPAs often use history-based routing for cleaner URLs.
+   - **Characteristics**:
+     - SEO-friendly because the full URL is used.
+     - Allows for a more natural navigation experience.
+  
+   **Example (React with React Router):**
+   ```javascript
+   <BrowserRouter>
+     <Route path="/about" component={About} />
+   </BrowserRouter>
+   ```
+
+## 4. **Query-Based Routing**
+   - **Definition**: Uses query parameters to determine the route or pass additional information to the route.
+   - **Example URL**: `https://example.com/page?route=about`
+   - **Use Case**: Often used in applications where a route needs to handle dynamic data.
+   - **Characteristics**:
+     - Not typically used for main navigation routes.
+     - Useful for filtering, sorting, or paginating data.
+
+   **Example (Express.js):**
+   ```javascript
+   app.get('/page', (req, res) => {
+     const route = req.query.route;
+     res.send(`You are at the ${route} page`);
+   });
+   ```
+
+## 5. **Static vs. Dynamic Routing**
+   - **Static Routing**: Routes are predefined and do not change. Each route corresponds to a specific URL.
+   - **Dynamic Routing**: Routes can change based on conditions or parameters. Common in applications that use dynamic content or require parameters in the URL.
+  
+   **Example of Dynamic Routing (Express.js):**
+   ```javascript
+   app.get('/user/:id', (req, res) => {
+     const userId = req.params.id;
+     res.send(`User ID: ${userId}`);
+   });
+   ```
+
+## 6. **Nested Routing**
+   - **Definition**: Allows routes to be nested inside other routes, creating a hierarchy of routes.
+   - **Use Case**: Useful in applications with complex structures, such as dashboards or admin panels.
+   - **Characteristics**: 
+     - Organizes routes in a parent-child relationship.
+     - Helps manage complex views.
+
+   **Example (React with React Router):**
+   ```javascript
+   <Route path="/user" component={User}>
+     <Route path="profile" component={Profile} />
+     <Route path="settings" component={Settings} />
+   </Route>
+   ```
+
+## 7. **Conditional Routing**
+   - **Definition**: Routes are conditionally rendered based on some logic, such as user authentication status.
+   - **Use Case**: Often used to protect certain routes or redirect users based on their state.
+   - **Characteristics**: 
+     - Enables more control over access to routes.
+     - Common in applications with role-based access control.
+
+   **Example (React with React Router):**
+   ```javascript
+   <Route path="/dashboard" render={() => (
+     isAuthenticated ? <Dashboard /> : <Redirect to="/login" />
+   )}/>
+   ```
+
+Each type of routing serves different needs depending on the architecture of the application, user experience requirements, and technical constraints.
+
+# React Router DOM
 
 - [react-router-dom Website](https://reactrouter.com/en/main)
 - `react-router-dom` is an npm package that provides bindings for using React Router in web applications. It enables you to implement dynamic routing in a web application. This allows you to create and manage routes, navigate, and access history in your React web app.
@@ -6157,9 +6321,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-### Some Important Hooks of react-router-dom
+## Some Important Hooks of react-router-dom
 
-#### **1. useLocation**
+### **1. useLocation**
 
 This hook returns the current location object. This can be useful if you'd like to perform some side effect whenever the current location changes.
 
@@ -6181,7 +6345,7 @@ function App() {
 }
 ```
 
-#### **2. useNavigate**
+### **2. useNavigate**
 
 The useNavigate hook returns a function that lets you navigate programmatically, for example in an effect:
 
@@ -6206,7 +6370,7 @@ The navigate function has two signatures:
 - Either pass a To value (same type as <Link to>) with an optional second options argument (similar to the props you can pass to <Link>), or
 - Pass the delta you want to go in the history stack. For example, navigate(-1) is equivalent to hitting the back button
 
-#### **3. useParams**
+### **3. useParams**
 
 The useParams hook returns an object of key/value pairs of the dynamic params from the current URL that were matched by the <Route path>. Child routes inherit all params from their parent routes.
 
@@ -6232,7 +6396,7 @@ function App() {
 }
 ```
 
-#### **5. useRouteError**
+### **5. useRouteError**
 
 Inside of an errorElement, this hook returns anything thrown during an action, loader, or rendering. Note that thrown responses have special treatment, see isRouteErrorResponse for more information.
 
@@ -6263,33 +6427,35 @@ const ErrorPage = () => {
 export default ErrorPage;
 ```
 
-## Optimization in React
+# Optimization in React
 
 Optimization in React involves improving the performance and efficiency of your application. Here are some key techniques:
 
-### 1. **Memoization**:
-   - Use `React.memo` to prevent unnecessary re-renders of functional components.
-   - Use `useMemo` to memoize expensive calculations.
-   - Use `useCallback` to memoize callback functions.
+## 1. **Memoization**:
 
-### 2. **Code Splitting**:
-   - Use dynamic `import()` to split code into smaller bundles that can be loaded on demand.
-   - Tools like Webpack and libraries like React.lazy and Suspense can help with code splitting.
-   Code splitting is a technique used to break up a large bundle of JavaScript into smaller chunks that can be loaded on demand. This helps improve the initial load time of an application by only loading the necessary code for the current user interaction. In React, code splitting can be achieved using dynamic `import()` statements, React.lazy, and React.Suspense.
+- Use `React.memo` to prevent unnecessary re-renders of functional components.
+- Use `useMemo` to memoize expensive calculations.
+- Use `useCallback` to memoize callback functions.
 
-#### **Benefits of Code Splitting**
+## 2. **Code Splitting**:
+
+- Use dynamic `import()` to split code into smaller bundles that can be loaded on demand.
+- Tools like Webpack and libraries like React.lazy and Suspense can help with code splitting.
+  Code splitting is a technique used to break up a large bundle of JavaScript into smaller chunks that can be loaded on demand. This helps improve the initial load time of an application by only loading the necessary code for the current user interaction. In React, code splitting can be achieved using dynamic `import()` statements, React.lazy, and React.Suspense.
+
+### **Benefits of Code Splitting**
 
 1. **Improved Performance**: By loading only the code needed for the current view, the initial load time is reduced.
 2. **Reduced Bandwidth Usage**: Users only download the code they need, which can be especially beneficial for users with limited data plans.
 3. **Better User Experience**: Faster initial load times can lead to a more responsive and pleasant user experience.
 
-#### **How to Implement Code Splitting in React**
+### **How to Implement Code Splitting in React**
 
 1. **Using Dynamic `import()`**:
    You can use dynamic `import()` to split out parts of your application. This allows you to load modules on demand.
 
    ```javascript
-   import React, { Component } from 'react';
+   import React, { Component } from "react";
 
    class MyComponent extends Component {
      state = {
@@ -6297,7 +6463,7 @@ Optimization in React involves improving the performance and efficiency of your 
      };
 
      loadModule = async () => {
-       const { default: MyModule } = await import('./MyModule');
+       const { default: MyModule } = await import("./MyModule");
        this.setState({ MyModule });
      };
 
@@ -6319,9 +6485,9 @@ Optimization in React involves improving the performance and efficiency of your 
    React provides a built-in way to handle code splitting with `React.lazy` and `Suspense`.
 
    ```javascript
-   import React, { Suspense, lazy } from 'react';
+   import React, { Suspense, lazy } from "react";
 
-   const LazyComponent = lazy(() => import('./LazyComponent'));
+   const LazyComponent = lazy(() => import("./LazyComponent"));
 
    function App() {
      return (
@@ -6342,11 +6508,11 @@ Optimization in React involves improving the performance and efficiency of your 
    When using a router (e.g., React Router), you can split code based on routes to load only the components required for the current route.
 
    ```javascript
-   import React, { Suspense, lazy } from 'react';
-   import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+   import React, { Suspense, lazy } from "react";
+   import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-   const Home = lazy(() => import('./Home'));
-   const About = lazy(() => import('./About'));
+   const Home = lazy(() => import("./Home"));
+   const About = lazy(() => import("./About"));
 
    function App() {
      return (
@@ -6368,35 +6534,43 @@ Optimization in React involves improving the performance and efficiency of your 
 
 By using these techniques, you can make your React applications more efficient and responsive by leveraging code splitting.
 
-### 3. **Virtualization**:
-   - Use libraries like `react-window` or `react-virtualized` to efficiently render large lists or tables.
+## 3. **Virtualization**:
 
-### 4. **Avoid Anonymous Functions in JSX**:
-   - Passing anonymous functions directly in JSX can cause unnecessary re-renders.
+- Use libraries like `react-window` or `react-virtualized` to efficiently render large lists or tables.
 
-### 5. **Use Production Build**:
-   - Ensure you are running a production build of React, which is optimized and stripped of development warnings.
+## 4. **Avoid Anonymous Functions in JSX**:
 
-### 6. **Optimize Images and Assets**:
-   - Compress and optimize images.
-   - Use SVGs for simple graphics.
+- Passing anonymous functions directly in JSX can cause unnecessary re-renders.
 
-### 7. **Efficient State Management**:
-   - Lift state up only when necessary.
-   - Use context wisely and avoid overusing it for global state.
+## 5. **Use Production Build**:
 
-### 8. **Debounce and Throttle**:
-   - Use techniques like debounce and throttle to limit the frequency of function execution, especially for input events.
+- Ensure you are running a production build of React, which is optimized and stripped of development warnings.
 
-### 9. **Use React Profiler**:
-   - Utilize the React Profiler to identify performance bottlenecks.
+## 6. **Optimize Images and Assets**:
 
-### 10. **Avoid Reconciliation Pitfalls**:
-   - Ensure that key props are stable and unique to avoid unnecessary re-renders.
+- Compress and optimize images.
+- Use SVGs for simple graphics.
+
+## 7. **Efficient State Management**:
+
+- Lift state up only when necessary.
+- Use context wisely and avoid overusing it for global state.
+
+## 8. **Debounce and Throttle**:
+
+- Use techniques like debounce and throttle to limit the frequency of function execution, especially for input events.
+
+## 9. **Use React Profiler**:
+
+- Utilize the React Profiler to identify performance bottlenecks.
+
+## 10. **Avoid Reconciliation Pitfalls**:
+
+- Ensure that key props are stable and unique to avoid unnecessary re-renders.
 
 Implementing these strategies can significantly enhance the performance of your React application.
 
-## Important Links
+# Important Links
 
 1. [My Code Sample](https://codesandbox.io/s/introduction-to-jsx-forked-j5wyjn?file=/src/index.js)
 2. [JSX Syntax](https://github.com/airbnb/javascript/blob/master/react/README.md)
