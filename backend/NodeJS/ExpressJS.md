@@ -2,10 +2,30 @@
 
 - [Table of Contents](#table-of-contents)
 - [Express JS](#express-js)
+- [Opinions of Express JS](#opinions-of-express-js)
+  - [1. **Routing**](#1-routing)
+  - [2. **Middleware for Parsing Requests**](#2-middleware-for-parsing-requests)
+  - [3. **CORS Handling**](#3-cors-handling)
+  - [4. **Security**](#4-security)
+  - [5. **Session Management**](#5-session-management)
+  - [6. **Authentication**](#6-authentication)
+  - [7. **Validation and Sanitization**](#7-validation-and-sanitization)
+    - [**Sanitization**](#sanitization)
+    - [**Example**:](#example)
+    - [**Notes**:](#notes)
+    - [Conclusion:](#conclusion)
+  - [8. **Database Integration**](#8-database-integration)
+  - [9. **Logging**](#9-logging)
+  - [10. **Error Handling**](#10-error-handling)
+  - [11. **Rate Limiting**](#11-rate-limiting)
+  - [12. **Compression**](#12-compression)
+  - [Summary](#summary)
+- [Order of standard middlewares](#order-of-standard-middlewares)
+  - [Middleware Order Explanation:](#middleware-order-explanation)
 - [Express Instance - properties and methods](#express-instance---properties-and-methods)
   - [Methods:](#methods)
   - [Properties:](#properties)
-  - [Example:](#example)
+  - [Example:](#example-1)
 - [Automatic change detection and re-serving of node app - using Nodemon](#automatic-change-detection-and-re-serving-of-node-app---using-nodemon)
   - [How Nodemon Works:](#how-nodemon-works)
   - [How to Use Nodemon:](#how-to-use-nodemon)
@@ -13,7 +33,7 @@
   - [Setting Environment Variables:](#setting-environment-variables)
   - [Accessing Environment Variables in Node.js:](#accessing-environment-variables-in-nodejs)
   - [Best Practices for Using Environment Variables:](#best-practices-for-using-environment-variables)
-  - [Example](#example-1)
+  - [Example](#example-2)
   - [Environment of node / express](#environment-of-node--express)
   - [Configuration management - using config](#configuration-management---using-config)
   - [Using config and env for storing both sensitive and non sensitive data](#using-config-and-env-for-storing-both-sensitive-and-non-sensitive-data)
@@ -61,6 +81,367 @@ $ npm install express --save
 ```
 
 Whether you're building a simple web app or a complex API, Express is a powerful choice. Explore the [official documentation](http://expressjs.com/) to learn more!
+
+# Opinions of Express JS
+
+Express.js, as a minimal and unopinionated framework, handles only a few concerns directly without requiring third-party middleware.
+
+1. **Routing**: Handled by Express's built-in routing mechanisms.
+2. **Middleware for Parsing Requests**: JSON and URL-encoded body parsing can be done using Express’s built-in `express.json()` and `express.urlencoded()`.
+3. **Error Handling**: Custom error-handling middleware can be implemented without third-party dependencies.
+
+For other concerns like CORS handling, security headers, session management, etc., you’ll typically need to use third-party middleware, as Express doesn’t provide built-in support for those functionalities.
+
+## 1. **Routing**
+
+- **Express Router**: Used for defining application routes. It’s built into Express and is quite powerful for organizing your routes modularly.
+- **Suggestion**: Express Router is usually sufficient for most applications. For more complex setups, you can create multiple routers for different parts of your application.
+
+**Example**:
+
+```javascript
+const express = require("express");
+const router = express.Router();
+
+router.get("/user", (req, res) => {
+  res.send("User route");
+});
+
+app.use("/api", router);
+```
+
+## 2. **Middleware for Parsing Requests**
+
+- **body-parser**: Parses incoming request bodies in a middleware before your handlers, available under the `req.body` property.
+- **cookie-parser**: Parses Cookie header and populates `req.cookies` with an object keyed by cookie names.
+- **Suggestion**: Use `body-parser` for JSON and URL-encoded data, and `cookie-parser` for handling cookies.
+
+**Example**:
+
+```javascript
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+```
+
+## 3. **CORS Handling**
+
+- **cors**: Provides a middleware to enable Cross-Origin Resource Sharing (CORS).
+- **Suggestion**: Use the `cors` middleware to handle CORS, especially for APIs that will be consumed by front-end applications hosted on different domains.
+
+**Example**:
+
+```javascript
+const cors = require("cors");
+app.use(cors());
+```
+
+## 4. **Security**
+
+- **helmet**: Helps secure Express apps by setting various HTTP headers.
+- **Suggestion**: Always include `helmet` to protect your app from some common security vulnerabilities.
+
+**Example**:
+
+```javascript
+const helmet = require("helmet");
+app.use(helmet());
+```
+
+## 5. **Session Management**
+
+- **express-session**: Manages user sessions. Useful for authentication.
+- **Suggestion**: Use `express-session` for session management, especially in applications requiring user authentication.
+
+**Example**:
+
+```javascript
+const session = require("express-session");
+app.use(
+  session({ secret: "your-secret-key", resave: false, saveUninitialized: true })
+);
+```
+
+## 6. **Authentication**
+
+- **passport.js**: Authentication middleware that supports various strategies like OAuth, JWT, etc.
+- **Suggestion**: Use `passport.js` for authentication to handle multiple authentication strategies.
+
+**Example**:
+
+```javascript
+const passport = require("passport");
+app.use(passport.initialize());
+app.use(passport.session());
+```
+
+## 7. **Validation and Sanitization**
+
+- **Joi**: A powerful schema description language and data validator.
+- **express-validator**: Middleware for validating and sanitizing input.
+- **xss-clean**: Middleware specifically designed to prevent Cross-Site Scripting (XSS) attacks by sanitizing user input.
+- **Suggestion**: Use `Joi` or `express-validator` for server-side validation and sanitization of request data, and include `xss-clean` for additional protection against XSS attacks.
+
+### **Sanitization**
+
+- **express-validator**: Also provides methods to sanitize input, such as trimming whitespace, normalizing emails, and escaping HTML characters to prevent XSS attacks.
+- **Joi**: While primarily a validation library, `Joi` can be combined with custom sanitization logic using its `custom` methods or other middleware.
+- **xss-clean**: A specialized middleware that cleans user inputs to prevent XSS attacks.
+
+### **Example**:
+
+```javascript
+const express = require("express");
+const { body, validationResult } = require("express-validator");
+const xss = require("xss-clean");
+
+const app = express();
+
+// Middleware setup
+app.use(xss()); // Use xss-clean for XSS protection
+
+app.post(
+  "/user",
+  [
+    // Validation
+    body("email").isEmail(),
+    body("password").isLength({ min: 5 }),
+
+    // Sanitization
+    body("email").normalizeEmail(), // Normalize email address
+    body("password").trim().escape(), // Trim and escape password input
+  ],
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    // handle valid and sanitized input
+  }
+);
+```
+
+### **Notes**:
+
+- **Validation** ensures that the input data conforms to expected types, formats, and constraints.
+- **Sanitization** helps in cleaning up the data by removing or escaping potentially harmful characters, normalizing formats (like emails), and ensuring the data is safe to use in the application.
+- **XSS Protection**: `xss-clean` provides an additional layer of security by sanitizing user inputs to remove any potential XSS payloads.
+
+### Conclusion:
+
+Using `express-validator` for validation and sanitization along with `xss-clean` for XSS protection ensures a robust and secure input handling strategy in your Express application.
+
+## 8. **Database Integration**
+
+- **mongoose**: For MongoDB integration with a schema-based solution to model your data.
+- **sequelize**: For SQL databases with ORM capabilities.
+- **Suggestion**: Use `mongoose` for MongoDB and `sequelize` for SQL databases. Both provide powerful tools for data modeling and querying.
+
+**Example (Mongoose)**:
+
+```javascript
+const mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost/myapp", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+```
+
+## 9. **Logging**
+
+- **morgan**: HTTP request logger middleware.
+- **winston**: A versatile logging library that can be integrated with Express.
+- **Suggestion**: Use `morgan` for request logging in development and `winston` for more sophisticated logging needs (file logging, error tracking, etc.).
+
+**Example**:
+
+```javascript
+const morgan = require("morgan");
+app.use(morgan("dev"));
+```
+
+## 10. **Error Handling**
+
+- **Custom error-handling middleware**: Handle errors centrally in your Express app.
+- **Suggestion**: Implement a centralized error handling middleware to catch all errors and send proper responses.
+
+**Example**:
+
+```javascript
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+```
+
+## 11. **Rate Limiting**
+
+- **express-rate-limit**: Basic rate-limiting middleware to prevent abuse.
+- **Suggestion**: Use `express-rate-limit` to prevent DDoS attacks or brute-force attempts by limiting repeated requests to public APIs.
+
+**Example**:
+
+```javascript
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+app.use(limiter);
+```
+
+## 12. **Compression**
+
+- **compression**: Middleware to compress response bodies for better performance.
+- **Suggestion**: Use `compression` to reduce the size of the response body and improve the performance of your app.
+
+**Example**:
+
+```javascript
+const compression = require("compression");
+app.use(compression());
+```
+
+## Summary
+
+Just like React, Node.js and Express are flexible and allow you to choose your stack of middlewares and libraries based on your application's needs. The key is to pick the right tools that align with your project requirements, performance goals, and security concerns.
+
+# Order of standard middlewares
+
+Here's how you can set up all the mentioned middlewares in a single `index.ts` file for an Express application, along with the proper order of middleware usage:
+
+```ts
+import express, { Request, Response, NextFunction } from "express";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import helmet from "helmet";
+import session from "express-session";
+import passport from "passport";
+import { body, validationResult } from "express-validator";
+import mongoose from "mongoose";
+import morgan from "morgan";
+import rateLimit from "express-rate-limit";
+import compression from "compression";
+import xss from "xss-clean"; // Import xss-clean
+
+const app = express();
+
+// 1. Helmet - Security headers
+app.use(helmet());
+
+// 2. Morgan - HTTP request logger
+app.use(morgan("dev"));
+
+// 3. Compression - Compress all responses
+app.use(compression());
+
+// 4. CORS - Cross-Origin Resource Sharing
+app.use(cors());
+
+// 5. Body-parser - Parse incoming request bodies in a middleware before your handlers
+app.use(express.json()); // Built-in in Express (JSON body parser)
+app.use(express.urlencoded({ extended: true })); // Built-in in Express (URL-encoded body parser)
+
+// 6. Cookie-parser - Parse Cookie header and populate req.cookies
+app.use(cookieParser());
+
+// 7. xss-clean - Sanitize user inputs to prevent XSS attacks
+app.use(xss()); // Use xss-clean for XSS protection
+
+// 8. Session management - express-session
+app.use(
+  session({
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // Set secure: true if you are using HTTPS
+  })
+);
+
+// 9. Passport.js - Initialize Passport.js for authentication
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 10. Rate limiting - express-rate-limit
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
+// 11. Routes - Define your routes
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello, World!");
+});
+
+// Example route with validation and sanitization using express-validator
+app.post(
+  "/user",
+  [
+    // Validate and sanitize inputs
+    body("email")
+      .isEmail()
+      .withMessage("Must be a valid email")
+      .normalizeEmail(), // Normalize email to lowercase, removing dots in GMail addresses
+    body("password")
+      .isLength({ min: 5 })
+      .withMessage("Password must be at least 5 characters long")
+      .trim() // Trim leading and trailing whitespace
+      .escape(), // Escape HTML characters to prevent XSS attacks
+    body("username")
+      .isAlphanumeric()
+      .withMessage("Username must be alphanumeric")
+      .trim() // Trim leading and trailing whitespace
+      .escape(), // Escape HTML characters to prevent XSS attacks
+    body("age")
+      .optional() // Age is optional
+      .isInt({ min: 0 })
+      .withMessage("Age must be a positive integer")
+      .toInt(), // Convert age to integer
+  ],
+  (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    res.send("User data is valid and sanitized");
+  }
+);
+
+// 12. Error Handling Middleware - Custom error-handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+
+// 13. Database connection - Example with mongoose (Optional)
+mongoose
+  .connect("mongodb://localhost/myapp", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log(err));
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+```
+
+## Middleware Order Explanation:
+
+1. **Security headers (`helmet`)**: Applied first to set up HTTP headers for better security.
+2. **HTTP request logging (`morgan`)**: Logs incoming requests for development and debugging purposes.
+3. **Response compression (`compression`)**: Compresses the response bodies to improve performance.
+4. **CORS (`cors`)**: Allows handling cross-origin requests.
+5. **Body parsing (`express.json` and `express.urlencoded`)**: Parses incoming request bodies (JSON and URL-encoded data).
+6. **Cookie parsing (`cookie-parser`)**: Parses the `Cookie` header and populates `req.cookies`.
+7. **Session management (`express-session`)**: Manages user sessions.
+8. **Authentication (`passport`)**: Initializes Passport.js for handling authentication.
+9. **Rate limiting (`express-rate-limit`)**: Limits the number of requests an IP can make in a specific period.
+10. **Routes**: Defines application routes, which may include validation and other logic.
+11. **Error handling**: Handles errors that may occur during request processing.
+12. **Database connection**: Sets up the connection to the database, typically done during application initialization.
+
+This order ensures that security, performance, and request parsing are handled before your routes, and that errors are caught and handled appropriately.
 
 # Express Instance - properties and methods
 
@@ -1360,41 +1741,45 @@ Choose the templating engine that best fits your project's requirements and your
 Create separate route files using `express.Router()` and use them in your `app.js` (or main application file). This approach helps organize your routes and keeps your codebase modular and maintainable.
 
 1. **Create a Separate Route File**:
+
    - First, create a new JavaScript file (e.g., `routes.js`) where you'll define your additional routes.
    - In `routes.js`, you'll export a function that takes the `app` object as an argument and sets up your routes.
 
 2. **Example: Creating a Separate Route File (`routes.js`)**:
+
    ```javascript
    // routes.js
-   const express = require('express');
+   const express = require("express");
    const router = express.Router();
 
    // Define your routes here
-   router.get('/login', (req, res) => {
-     res.render('login', { title: 'Express Login' });
+   router.get("/login", (req, res) => {
+     res.render("login", { title: "Express Login" });
    });
 
    // Add more routes as needed
 
    module.exports = (app) => {
-     app.use('/myroutes', router); // Mount the router at a specific path
+     app.use("/myroutes", router); // Mount the router at a specific path
    };
    ```
 
 3. **Using the Route File in `app.js`**:
+
    - In your main application file (`app.js`), require the `routes.js` file and pass the `app` object to it.
    - This will set up the routes defined in `routes.js` under the `/myroutes` path.
 
 4. **Example: Using the Route File in `app.js`**:
+
    ```javascript
    // app.js
-   const express = require('express');
+   const express = require("express");
    const app = express();
 
    // Other app configurations (middlewares, views, etc.)
 
    // Include the routes from routes.js
-   require('./routes')(app);
+   require("./routes")(app);
 
    // Start the server
    const PORT = process.env.PORT || 3000;
@@ -1416,6 +1801,7 @@ For more examples and details, refer to the [official Express documentation on r
 Integrating databases with **Express** is essential for modern web development. Let's explore how you can achieve this:
 
 1. **Choose Your Database System**:
+
    - Express apps can work with various databases supported by Node.js. Some popular options include:
      - **PostgreSQL**
      - **MySQL**
@@ -1424,34 +1810,45 @@ Integrating databases with **Express** is essential for modern web development. 
      - **MongoDB**
 
 2. **Install the Relevant Node.js Driver**:
+
    - To connect your Express app to a database, load the appropriate Node.js driver for that database. Here are examples for a few popular databases:
 
    - **Cassandra**:
-     - Install the `cassandra-driver`:
-       ```javascript
-       const cassandra = require('cassandra-driver');
-       const client = new cassandra.Client({ contactPoints: ['localhost'] });
 
-       client.execute('select key from system.local', (err, result) => {
+     - Install the `cassandra-driver`:
+
+       ```javascript
+       const cassandra = require("cassandra-driver");
+       const client = new cassandra.Client({ contactPoints: ["localhost"] });
+
+       client.execute("select key from system.local", (err, result) => {
          if (err) throw err;
          console.log(result.rows[0]);
        });
        ```
 
    - **Couchbase**:
+
      - Install `couchnode`:
+
        ```javascript
-       const couchbase = require('couchbase');
-       const bucket = (new couchbase.Cluster('localhost:8091')).openBucket('bucketName');
+       const couchbase = require("couchbase");
+       const bucket = new couchbase.Cluster("localhost:8091").openBucket(
+         "bucketName"
+       );
 
        // Add a document to the bucket
-       bucket.insert('document-key', { name: 'Matt', shoeSize: 13 }, (err, result) => {
-         if (err) console.log(err);
-         else console.log(result);
-       });
+       bucket.insert(
+         "document-key",
+         { name: "Matt", shoeSize: 13 },
+         (err, result) => {
+           if (err) console.log(err);
+           else console.log(result);
+         }
+       );
 
        // Get all documents with shoe size 13
-       const n1ql = 'SELECT d.* FROM `bucketName` d WHERE shoeSize = $1';
+       const n1ql = "SELECT d.* FROM `bucketName` d WHERE shoeSize = $1";
        const query = N1qlQuery.fromString(n1ql);
        bucket.query(query, [13], (err, result) => {
          if (err) console.log(err);
@@ -1460,14 +1857,16 @@ Integrating databases with **Express** is essential for modern web development. 
        ```
 
    - **CouchDB**:
+
      - Install `nano`:
+
        ```javascript
-       const nano = require('nano')('http://localhost:5984');
-       nano.db.create('books');
-       const books = nano.db.use('books');
+       const nano = require("nano")("http://localhost:5984");
+       nano.db.create("books");
+       const books = nano.db.use("books");
 
        // Insert a book document in the books database
-       books.insert({ name: 'The Art of War' }, null, (err, body) => {
+       books.insert({ name: "The Art of War" }, null, (err, body) => {
          if (err) console.log(err);
          else console.log(body);
        });
@@ -1480,43 +1879,53 @@ Integrating databases with **Express** is essential for modern web development. 
        ```
 
    - **MySQL**:
+
      - Install `mysql`:
+
        ```javascript
-       const mysql = require('mysql');
+       const mysql = require("mysql");
        const connection = mysql.createConnection({
-         host: 'localhost',
-         user: 'dbuser',
-         password: 's3kreee7',
-         database: 'my_db'
+         host: "localhost",
+         user: "dbuser",
+         password: "s3kreee7",
+         database: "my_db",
        });
 
        connection.connect();
-       connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
+       connection.query("SELECT 1 + 1 AS solution", (err, rows, fields) => {
          if (err) throw err;
-         console.log('The solution is:', rows[0].solution);
+         console.log("The solution is:", rows[0].solution);
        });
        connection.end();
        ```
 
    - **MongoDB**:
+
      - Install `mongodb`:
+
        ```javascript
-       const MongoClient = require('mongodb').MongoClient;
+       const MongoClient = require("mongodb").MongoClient;
 
        // Example (v2.*)
-       MongoClient.connect('mongodb://localhost:27017/animals', (err, db) => {
+       MongoClient.connect("mongodb://localhost:27017/animals", (err, db) => {
          if (err) throw err;
-         db.collection('mammals').find().toArray((err, result) => {
-           if (err) throw err;
-           console.log(result);
-         });
+         db.collection("mammals")
+           .find()
+           .toArray((err, result) => {
+             if (err) throw err;
+             console.log(result);
+           });
        });
 
        // Example (v3.*)
-       MongoClient.connect('mongodb://localhost:27017/animals', (err, client) => {
-         // ...
-       });
+       MongoClient.connect(
+         "mongodb://localhost:27017/animals",
+         (err, client) => {
+           // ...
+         }
+       );
        ```
+
 3. **Implement CRUD Operations**:
    - Use the appropriate methods to create, read, update, and delete data in your database.
 4. **Optimize for Performance and Security**:
