@@ -115,9 +115,10 @@ Understand infrastructure fundamentals for web development.
 
 ### 1.12 Interview Preparation
 
-Ace MERN stack technical interviews.
+Ace MERN stack technical interviews with specialized preparation guides.
 
-- **[MERN Interview Prep](full%20stack%20web%20development/MERN/interviewPrep/MERN_prep.md)** - Comprehensive Q&A and preparation guide for MERN stack interviews
+- **[React Interview Preparation 2025](full%20stack%20web%20development/MERN/frontend/ReactPreparation2025.md)** - Ultimate advanced React interview guide covering React 18+ features, performance optimization, security, testing, micro-frontends, GraphQL, and React Native crossover skills
+- **[MERN Interview Prep](full%20stack%20web%20development/MERN/interviewPrep/MERN_prep.md)** - Comprehensive Q&A and preparation guide for full MERN stack interviews
 
 ### 1.13 Useful Resources
 
