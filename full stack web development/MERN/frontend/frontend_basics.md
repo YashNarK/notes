@@ -8,6 +8,7 @@ A comprehensive index of all frontend development notes. Use this as your starti
   - [Table of contents](#table-of-contents)
   - [Foundations](#foundations)
   - [Styling](#styling)
+    - Tailwind CSS, Sass/SCSS, Bootstrap, Chakra UI, Material Design & MUI
   - [JavaScript (Deep Dives)](#javascript-deep-dives)
   - [React Ecosystem](#react-ecosystem)
   - [State Management](#state-management)
@@ -41,8 +42,10 @@ Core building blocks every frontend developer must know.
 |---|---|
 | CSS (full reference) | [CSS.md](CSS.md) |
 | Sass / SCSS | [CSS.md](CSS.md) (Sass / SCSS section) |
+| Tailwind CSS | [Tailwind.md](Tailwind.md) |
 | Bootstrap | [BOOTSTRAP.md](BOOTSTRAP.md) |
 | Chakra UI | [ChakraUI.md](ChakraUI.md) |
+| Material Design & MUI | [MaterialDesign.md](MaterialDesign.md) |
 
 ---
 
@@ -133,6 +136,8 @@ Core building blocks every frontend developer must know.
 |---|---|
 | Bootstrap | [BOOTSTRAP.md](BOOTSTRAP.md) |
 | Chakra UI | [ChakraUI.md](ChakraUI.md) |
+| Tailwind CSS | [Tailwind.md](Tailwind.md) |
+| Material Design & MUI | [MaterialDesign.md](MaterialDesign.md) |
 | Useful Links & Resources | [UsefulLinks.md](UsefulLinks.md) |
 
 ---
