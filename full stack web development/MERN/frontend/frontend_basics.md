@@ -142,7 +142,7 @@ Core building blocks every frontend developer must know.
 | Topic | File |
 |---|---|
 | MERN Stack Interview Preparation | [../interviewPrep/MERN_prep.md](../interviewPrep/MERN_prep.md) |
-| React Interview Preparation 2025 | [../interviewPrep/ReactPreparation2025.md](../interviewPrep/ReactPreparation2025.md) |
+| React Interview Preparation 2026 | [../interviewPrep/ReactPreparation2026.md](../interviewPrep/ReactPreparation2026.md) |
 
 ---
 
