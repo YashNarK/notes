@@ -16,6 +16,7 @@ Before diving into React, make sure you're comfortable with the following:
 - [Setup Local Environment](#setup-local-environment)
   - [1. create-react-app](#1-create-react-app)
   - [2. Vite](#2-vite)
+  - [Why Vite over Create React App?](#why-vite-over-create-react-app)
 - [JavaScript Concepts](#javascript-concepts)
   - [Useful JS Functions](#useful-js-functions)
     - [1. Map Function:](#1-map-function)
@@ -311,6 +312,24 @@ npm install
 # Start the dev server
 npm run dev
 ```
+
+## Why Vite over Create React App?
+
+CRA was the go-to for years, but the React community has largely moved on from it. Here's why:
+
+| | Create React App | Vite |
+|---|---|---|
+| Dev server start | Slow (bundles everything first) | Instant (serves native ESM, no bundling) |
+| Hot Module Replacement | Slow on large apps | Near-instant, only updates changed module |
+| Build tool | Webpack | Rollup (faster, smaller output) |
+| Config flexibility | Hidden behind `react-scripts` | Fully configurable `vite.config.ts` |
+| TypeScript support | Via `--template typescript` | First-class, zero config |
+| Maintenance status | ⚠️ Effectively unmaintained (deprecated by React team) | ✅ Actively maintained |
+| Ecosystem | Webpack plugins only | Vite + Rollup plugin ecosystem |
+
+**The key difference:** CRA uses Webpack which must **bundle all modules on startup** before the dev server is ready. Vite uses **native browser ES modules** — it only transforms a file when the browser requests it. On a large project, CRA can take 30–60 seconds to start; Vite takes under a second.
+
+> The official React docs (react.dev) no longer recommend CRA. For new projects, use **Vite**, **Next.js** (if you need SSR), or **Remix**.
 
 # JavaScript Concepts
 
