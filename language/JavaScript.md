@@ -2160,3 +2160,1233 @@ Choosing between callbacks, promises, or async/await depends on the specific use
    - [Emmet Cheat Sheet](https://docs.emmet.io/cheat-sheet/) provides quick reference documentation for Emmet, a toolkit for web developers that greatly improves HTML and CSS workflow.
 
 These resources cover a wide range of topics and cater to different learning styles. Whether you're looking to practice coding, explore documentation, or access archived versions of websites, you've got a solid set of tools at your disposal. Don't hesitate to explore additional resources as you continue your web development journey.
+
+
+---
+
+## let and const
+
+| Keyword | Scope | Re-assignable | Re-declarable | Hoisted |
+|---|---|---|---|---|
+| `var` | Function | ✅ | ✅ | ✅ (undefined) |
+| `let` | Block | ✅ | ❌ | ✅ (TDZ) |
+| `const` | Block | ❌ | ❌ | ✅ (TDZ) |
+
+```js
+// Temporal Dead Zone (TDZ) — accessing before declaration throws ReferenceError
+console.log(x); // ReferenceError
+let x = 5;
+
+const obj = { a: 1 };
+obj.a = 2;        // ✅ — property mutation is fine
+obj = { a: 3 };   // ❌ TypeError — reassignment blocked
+```
+
+> **Rule:** Use `const` by default. Use `let` only when the value needs to change. Never use `var`.
+
+---
+
+## Arrow Functions
+
+```js
+// Traditional
+function add(a, b) { return a + b; }
+
+// Arrow
+const add = (a, b) => a + b;
+
+// Multi-line body
+const fetchUser = async (id) => {
+  const res = await fetch(`/api/users/${id}`);
+  return res.json();
+};
+
+// Returning object literal — wrap in parentheses
+const makeUser = (name) => ({ name, active: true });
+```
+
+**Key difference — `this` binding:**
+```js
+// Arrow functions do NOT have their own `this`
+function Timer() {
+  this.count = 0;
+  setInterval(() => {
+    this.count++;   // `this` = Timer instance ✅
+  }, 1000);
+}
+
+// Regular function would need .bind(this) or self = this
+```
+
+---
+
+## Template Literals
+
+```js
+const name = 'Alice';
+const role = 'Developer';
+
+// String interpolation
+console.log(`Hello, ${name}! You are a ${role}.`);
+
+// Multi-line strings
+const html = `
+  <div class="card">
+    <h2>${name}</h2>
+    <p>${role}</p>
+  </div>
+`;
+
+// Tagged templates
+function highlight(strings, ...values) {
+  return strings.reduce((result, str, i) =>
+    `${result}${str}${values[i] ? `<b>${values[i]}</b>` : ''}`, '');
+}
+const output = highlight`Hello ${name}, you are a ${role}!`;
+// "Hello <b>Alice</b>, you are a <b>Developer</b>!"
+```
+
+---
+
+## Destructuring
+
+**Array destructuring:**
+```js
+const [first, second, ...rest] = [1, 2, 3, 4, 5];
+// first=1, second=2, rest=[3,4,5]
+
+// Skipping elements
+const [,, third] = [1, 2, 3];   // third=3
+
+// Default values
+const [a = 10, b = 20] = [5];    // a=5, b=20
+
+// Swapping variables
+let x = 1, y = 2;
+[x, y] = [y, x];                 // x=2, y=1
+```
+
+**Object destructuring:**
+```js
+const user = { name: 'Alice', age: 30, role: 'admin' };
+
+const { name, age, role } = user;
+
+// Rename on destructure
+const { name: userName, role: userRole } = user;
+
+// Default values
+const { name, theme = 'light' } = user;   // theme='light'
+
+// Nested destructuring
+const { address: { city, zip } } = { address: { city: 'NYC', zip: '10001' } };
+
+// Function parameter destructuring
+function greet({ name, age = 0 }) {
+  return `${name} is ${age}`;
+}
+greet(user);
+```
+
+---
+
+## Spread and Rest Operators
+
+Both use `...` but in different contexts.
+
+**Spread — expand an iterable:**
+```js
+// Arrays
+const a = [1, 2, 3];
+const b = [4, 5, 6];
+const merged = [...a, ...b];             // [1,2,3,4,5,6]
+const copy = [...a];                     // shallow copy
+
+// Objects (ES2018)
+const base = { theme: 'light', lang: 'en' };
+const config = { ...base, lang: 'fr', debug: true };
+// { theme:'light', lang:'fr', debug:true }
+
+// Function calls
+Math.max(...[1, 2, 3]);                  // 3
+```
+
+**Rest — collect remaining elements:**
+```js
+// Array rest
+const [head, ...tail] = [1, 2, 3, 4];   // head=1, tail=[2,3,4]
+
+// Object rest
+const { name, ...rest } = { name: 'Alice', age: 30, role: 'admin' };
+// rest = { age:30, role:'admin' }
+
+// Function rest parameters
+function sum(...nums) {
+  return nums.reduce((a, b) => a + b, 0);
+}
+sum(1, 2, 3, 4);   // 10
+```
+
+---
+
+## Default Parameters
+
+```js
+function createUser(name, role = 'user', active = true) {
+  return { name, role, active };
+}
+
+createUser('Alice');                    // { name:'Alice', role:'user', active:true }
+createUser('Bob', 'admin');             // { name:'Bob', role:'admin', active:true }
+createUser('Carol', undefined, false);  // undefined triggers default for role
+
+// Default can reference earlier params
+function padStart(str, len = str.length * 2) { ... }
+```
+
+---
+
+## Modules (import / export)
+
+```js
+// Named exports
+export const API_URL = 'https://api.example.com';
+export function fetchUser(id) { ... }
+export class UserService { ... }
+
+// Default export (one per file)
+export default function App() { ... }
+
+// Named imports
+import { API_URL, fetchUser } from './api.js';
+
+// Rename on import
+import { fetchUser as getUser } from './api.js';
+
+// Default import
+import App from './App.jsx';
+
+// Mix default and named
+import App, { API_URL } from './app.js';
+
+// Re-export (barrel file)
+// index.js
+export { UserCard } from './UserCard.jsx';
+export { UserList } from './UserList.jsx';
+export { default as UserService } from './UserService.js';
+```
+
+**Dynamic import (code splitting):**
+```js
+// Lazy load on demand
+const { default: Chart } = await import('./Chart.js');
+
+// In React
+const Chart = React.lazy(() => import('./Chart'));
+```
+
+---
+
+## Promises
+
+```js
+// Creating a promise
+const delay = (ms) =>
+  new Promise((resolve, reject) => {
+    if (ms < 0) reject(new Error('Delay must be positive'));
+    setTimeout(resolve, ms);
+  });
+
+// Chaining
+fetch('/api/users')
+  .then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  })
+  .then(users => console.log(users))
+  .catch(err => console.error(err))
+  .finally(() => setLoading(false));
+
+// Static methods
+Promise.all([p1, p2, p3])         // resolves when ALL resolve; rejects if any rejects
+Promise.allSettled([p1, p2, p3])  // resolves with all results (fulfilled or rejected)
+Promise.race([p1, p2, p3])        // resolves/rejects with the FIRST settled promise
+Promise.any([p1, p2, p3])         // resolves with FIRST fulfilled; rejects if all reject
+Promise.resolve(value)            // immediately resolved
+Promise.reject(error)             // immediately rejected
+```
+
+---
+
+## Async / Await
+
+Syntactic sugar over Promises — makes async code read like synchronous code.
+
+```js
+async function loadUserData(userId) {
+  try {
+    const userRes = await fetch(`/api/users/${userId}`);
+    if (!userRes.ok) throw new Error('User not found');
+    const user = await userRes.json();
+
+    const postsRes = await fetch(`/api/users/${userId}/posts`);
+    const posts = await postsRes.json();
+
+    return { user, posts };
+  } catch (err) {
+    console.error('Failed:', err);
+    throw err;  // re-throw so caller knows it failed
+  } finally {
+    setLoading(false);
+  }
+}
+
+// Parallel requests (don't await sequentially if independent)
+async function loadAll(userId) {
+  const [user, posts] = await Promise.all([
+    fetch(`/api/users/${userId}`).then(r => r.json()),
+    fetch(`/api/posts?userId=${userId}`).then(r => r.json()),
+  ]);
+  return { user, posts };
+}
+```
+
+---
+
+## Optional Chaining
+
+Access deeply nested properties without manual null checks.
+
+```js
+const user = { profile: { address: null } };
+
+// Without optional chaining
+const city = user && user.profile && user.profile.address && user.profile.address.city;
+
+// With optional chaining
+const city = user?.profile?.address?.city;   // undefined (no throw)
+
+// With arrays
+const first = arr?.[0];
+
+// With function calls
+const result = obj.method?.();
+
+// Combined with nullish coalescing
+const displayName = user?.profile?.name ?? 'Anonymous';
+```
+
+---
+
+## Nullish Coalescing
+
+`??` returns the right-hand side when the left is **null or undefined** (not other falsy values).
+
+```js
+// ?? vs ||
+0 || 'default'    // 'default'  (0 is falsy)
+0 ?? 'default'    // 0          (0 is not null/undefined)
+
+'' || 'default'   // 'default'
+'' ?? 'default'   // ''
+
+null ?? 'default'      // 'default'
+undefined ?? 'default' // 'default'
+false ?? 'default'     // false
+```
+
+---
+
+## Logical Assignment Operators
+
+```js
+// ||=  assign if value is falsy
+user.name ||= 'Anonymous';     // same as: user.name = user.name || 'Anonymous'
+
+// &&=  assign if value is truthy
+user.profile &&= sanitize(user.profile);
+
+// ??=  assign if value is null/undefined
+config.timeout ??= 5000;
+```
+
+---
+
+## Classes
+
+```js
+class Animal {
+  #name;                        // private field (ES2022)
+  static count = 0;             // static field
+
+  constructor(name, sound) {
+    this.#name = name;
+    this.sound = sound;
+    Animal.count++;
+  }
+
+  speak() {
+    return `${this.#name} says ${this.sound}`;
+  }
+
+  get name() { return this.#name; }            // getter
+  set name(val) { this.#name = val.trim(); }   // setter
+
+  static create(name, sound) {                 // static method
+    return new Animal(name, sound);
+  }
+}
+
+class Dog extends Animal {
+  constructor(name) {
+    super(name, 'Woof');
+  }
+
+  fetch(item) {
+    return `${this.name} fetches ${item}`;
+  }
+}
+
+const dog = new Dog('Rex');
+dog.speak();    // "Rex says Woof"
+```
+
+---
+
+## Symbols
+
+Unique, immutable primitive values — useful as object keys to avoid naming collisions.
+
+```js
+const id = Symbol('id');
+const id2 = Symbol('id');
+id === id2;   // false — always unique
+
+const user = {
+  [id]: 123,
+  name: 'Alice',
+};
+
+user[id];   // 123
+// Symbol keys don't appear in for...in or Object.keys()
+
+// Well-known Symbols
+class MyArray {
+  [Symbol.iterator]() {   // makes object iterable
+    let i = 0;
+    return {
+      next: () => i < 3
+        ? { value: i++, done: false }
+        : { done: true }
+    };
+  }
+}
+```
+
+---
+
+## Iterators and Generators
+
+**Iterator protocol:** An object with a `next()` method returning `{ value, done }`.
+
+**Generator function:** Produces an iterator using `function*` and `yield`.
+
+```js
+function* range(start, end, step = 1) {
+  for (let i = start; i < end; i += step) {
+    yield i;
+  }
+}
+
+for (const n of range(0, 10, 2)) {
+  console.log(n);   // 0, 2, 4, 6, 8
+}
+
+// Infinite sequence
+function* naturalNumbers() {
+  let n = 1;
+  while (true) yield n++;
+}
+
+const nums = naturalNumbers();
+nums.next().value;  // 1
+nums.next().value;  // 2
+
+// Async generators
+async function* fetchPages(url) {
+  let page = 1;
+  while (true) {
+    const res = await fetch(`${url}?page=${page++}`);
+    const data = await res.json();
+    if (!data.length) return;
+    yield data;
+  }
+}
+
+for await (const page of fetchPages('/api/items')) {
+  process(page);
+}
+```
+
+---
+
+## Proxy and Reflect
+
+**Proxy** wraps an object and intercepts operations (get, set, delete, etc.).
+
+```js
+const validator = {
+  set(target, key, value) {
+    if (key === 'age' && (typeof value !== 'number' || value < 0)) {
+      throw new TypeError('Age must be a non-negative number');
+    }
+    target[key] = value;
+    return true;
+  },
+  get(target, key) {
+    console.log(`Accessing ${key}`);
+    return Reflect.get(target, key);
+  }
+};
+
+const user = new Proxy({}, validator);
+user.age = 25;    // ✅
+user.age = -1;    // ❌ TypeError
+
+// Reactive state (basis of Vue 3)
+function reactive(obj) {
+  return new Proxy(obj, {
+    set(target, key, value) {
+      target[key] = value;
+      render(); // trigger re-render
+      return true;
+    }
+  });
+}
+```
+
+---
+
+## WeakMap and WeakSet
+
+Hold **weak references** — entries are garbage-collected when the key object has no other references.
+
+```js
+// WeakMap: private data, caching, metadata
+const cache = new WeakMap();
+
+function processUser(user) {
+  if (cache.has(user)) return cache.get(user);
+  const result = heavyComputation(user);
+  cache.set(user, result);
+  return result;
+}
+// When `user` is GC'd, its cache entry is automatically removed
+
+// WeakSet: track without preventing GC
+const seen = new WeakSet();
+function process(obj) {
+  if (seen.has(obj)) return;
+  seen.add(obj);
+  // ...
+}
+```
+
+---
+
+## Array Methods (ES6+)
+
+```js
+// find / findIndex
+arr.find(x => x.id === 5)         // first match or undefined
+arr.findIndex(x => x.id === 5)    // first index or -1
+arr.findLast(x => x.active)       // ES2023: search from end
+arr.findLastIndex(x => x.active)
+
+// flat / flatMap
+[1, [2, [3]]].flat()              // [1, 2, [3]] — 1 level
+[1, [2, [3]]].flat(Infinity)      // [1, 2, 3]
+arr.flatMap(x => [x, x * 2])      // map + flat(1)
+
+// Array.from
+Array.from({ length: 5 }, (_, i) => i)    // [0,1,2,3,4]
+Array.from(new Set([1, 2, 2, 3]))          // [1,2,3]
+Array.from('hello')                        // ['h','e','l','l','o']
+
+// Array.at() — negative indexing (ES2022)
+arr.at(-1)    // last element
+arr.at(-2)    // second to last
+
+// includes
+[1, 2, NaN].includes(NaN)    // true (unlike indexOf)
+
+// fill
+new Array(5).fill(0)             // [0,0,0,0,0]
+arr.fill('x', 2, 4)             // fill from index 2 to 3
+
+// toSorted / toReversed / toSpliced / with (ES2023 — non-mutating)
+arr.toSorted((a, b) => a - b)    // returns new sorted array
+arr.toReversed()                  // returns new reversed array
+arr.with(2, 'new')               // returns copy with index 2 replaced
+```
+
+---
+
+## Object Methods (ES6+)
+
+```js
+// Object.assign — shallow merge
+Object.assign({}, defaults, overrides)
+
+// Object.keys / values / entries
+Object.keys(obj)      // ['key1', 'key2']
+Object.values(obj)    // [val1, val2]
+Object.entries(obj)   // [['key1', val1], ['key2', val2]]
+
+// Object.fromEntries — inverse of Object.entries
+Object.fromEntries([['a', 1], ['b', 2]])    // { a:1, b:2 }
+Object.fromEntries(new Map([['x', 10]]))    // { x:10 }
+
+// Transform object values
+const doubled = Object.fromEntries(
+  Object.entries(prices).map(([k, v]) => [k, v * 2])
+);
+
+// Object.freeze / Object.seal
+Object.freeze(obj)   // no add/modify/delete
+Object.seal(obj)     // can modify existing, can't add/delete
+
+// Object.hasOwn (ES2022 — preferred over hasOwnProperty)
+Object.hasOwn(user, 'name')    // true/false
+
+// Object.getOwnPropertyDescriptor
+Object.getOwnPropertyDescriptor(obj, 'name')
+// { value, writable, enumerable, configurable }
+
+// Computed property names
+const key = 'dynamic';
+const obj = { [key]: 'value', [`${key}_id`]: 1 };
+```
+
+---
+
+## Error Handling Patterns
+
+```js
+// Custom error classes
+class ApiError extends Error {
+  constructor(message, status, code) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+  }
+}
+
+// Result pattern (avoid thrown errors for expected failures)
+async function safeParseJSON(text) {
+  try {
+    return { ok: true, data: JSON.parse(text) };
+  } catch {
+    return { ok: false, error: 'Invalid JSON' };
+  }
+}
+
+const { ok, data, error } = await safeParseJSON(response);
+
+// Error cause (ES2022)
+try {
+  await fetchUser(id);
+} catch (err) {
+  throw new Error('Failed to load dashboard', { cause: err });
+}
+```
+
+
+---
+
+## DOM Manipulation
+
+The **Document Object Model (DOM)** is a tree representation of an HTML document that JavaScript can read and modify.
+
+```js
+// Selecting elements
+document.getElementById('app')
+document.querySelector('.card')           // first match
+document.querySelectorAll('.card')        // NodeList of all matches
+document.querySelector('ul > li:first-child')
+
+// Creating and inserting elements
+const div = document.createElement('div');
+div.className = 'card';
+div.textContent = 'Hello';
+div.setAttribute('data-id', '42');
+
+// Insertion methods
+parent.append(div)            // end of parent (accepts strings too)
+parent.prepend(div)           // start of parent
+parent.insertBefore(div, ref) // before a reference node
+ref.before(div)               // before ref (modern)
+ref.after(div)                // after ref (modern)
+ref.replaceWith(div)          // replace ref with div
+
+// Reading/writing
+el.textContent = 'Safe text'       // no HTML parsing (XSS-safe)
+el.innerHTML = '<b>Bold</b>'       // parses HTML (⚠️ XSS risk)
+el.innerText                       // visible text only (respects CSS)
+
+// Classes
+el.classList.add('active', 'visible')
+el.classList.remove('hidden')
+el.classList.toggle('open')
+el.classList.contains('active')   // boolean
+el.classList.replace('old', 'new')
+
+// Styles
+el.style.color = 'red'
+el.style.cssText = 'color:red; font-size:16px'
+getComputedStyle(el).color         // computed value
+
+// Attributes
+el.getAttribute('href')
+el.setAttribute('aria-label', 'Close')
+el.removeAttribute('disabled')
+el.hasAttribute('hidden')
+el.dataset.userId                  // <div data-user-id="5">
+
+// DOM traversal
+el.parentElement
+el.children                        // HTMLCollection of child elements
+el.firstElementChild
+el.lastElementChild
+el.nextElementSibling
+el.previousElementSibling
+el.closest('.card')                // nearest ancestor matching selector
+
+// Removing elements
+el.remove()
+```
+
+---
+
+## Events
+
+```js
+// Adding listeners
+el.addEventListener('click', handler)
+el.addEventListener('click', handler, { once: true })     // fires once
+el.addEventListener('click', handler, { passive: true })  // can't preventDefault (perf)
+el.addEventListener('click', handler, { capture: true })  // capture phase
+
+// Removing listeners — must pass same function reference
+el.removeEventListener('click', handler)
+
+// Event object
+el.addEventListener('click', (e) => {
+  e.preventDefault()         // prevent default browser action
+  e.stopPropagation()        // stop bubbling to parent
+  e.stopImmediatePropagation() // also stop other listeners on same element
+  e.target                   // element that triggered the event
+  e.currentTarget            // element the listener is attached to
+  e.type                     // 'click'
+  e.clientX, e.clientY       // mouse position relative to viewport
+  e.key, e.code              // keyboard events
+});
+
+// Event delegation — one listener handles many children
+document.querySelector('#list').addEventListener('click', (e) => {
+  const item = e.target.closest('li');
+  if (!item) return;
+  console.log('Clicked:', item.dataset.id);
+});
+
+// Custom events
+const event = new CustomEvent('user:login', {
+  detail: { userId: 42 },
+  bubbles: true,
+  cancelable: true,
+});
+document.dispatchEvent(event);
+
+document.addEventListener('user:login', (e) => {
+  console.log(e.detail.userId);
+});
+
+// Common events
+// Mouse: click, dblclick, mousedown, mouseup, mouseover, mouseout, mousemove
+// Keyboard: keydown, keyup, keypress
+// Form: submit, change, input, focus, blur, reset
+// Window: load, DOMContentLoaded, resize, scroll, beforeunload
+// Touch: touchstart, touchend, touchmove
+// Pointer: pointerdown, pointerup, pointermove (unifies mouse/touch/pen)
+```
+
+---
+
+## Fetch API
+
+The modern way to make HTTP requests.
+
+```js
+// Basic GET
+const res = await fetch('/api/users');
+if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+const users = await res.json();
+
+// POST with JSON body
+const res = await fetch('/api/users', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ name: 'Alice', role: 'admin' }),
+});
+
+// File upload
+const formData = new FormData();
+formData.append('avatar', fileInput.files[0]);
+await fetch('/api/upload', { method: 'POST', body: formData });
+
+// With AbortController (cancellation)
+const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 5000);
+
+try {
+  const res = await fetch('/api/data', { signal: controller.signal });
+  const data = await res.json();
+} catch (err) {
+  if (err.name === 'AbortError') console.log('Request cancelled');
+} finally {
+  clearTimeout(timeout);
+}
+
+// Reading response types
+res.json()        // parse as JSON
+res.text()        // parse as string
+res.blob()        // parse as Blob (images, files)
+res.arrayBuffer() // parse as ArrayBuffer
+res.formData()    // parse as FormData
+
+// Response properties
+res.ok            // true if status 200-299
+res.status        // 200, 404, etc.
+res.headers.get('Content-Type')
+res.url
+res.redirected
+
+// Streaming responses (large files, SSE)
+const reader = res.body.getReader();
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  process(value);   // Uint8Array chunk
+}
+```
+
+---
+
+## AJAX with XMLHttpRequest
+
+The older approach — still relevant to understand, but prefer Fetch.
+
+```js
+const xhr = new XMLHttpRequest();
+xhr.open('GET', '/api/users');
+xhr.setRequestHeader('Accept', 'application/json');
+
+xhr.onload = function () {
+  if (xhr.status === 200) {
+    const data = JSON.parse(xhr.responseText);
+  }
+};
+xhr.onerror = () => console.error('Network error');
+xhr.onprogress = (e) => {
+  if (e.lengthComputable) {
+    const percent = (e.loaded / e.total) * 100;
+  }
+};
+
+xhr.send();
+
+// POST
+xhr.open('POST', '/api/users');
+xhr.setRequestHeader('Content-Type', 'application/json');
+xhr.send(JSON.stringify({ name: 'Alice' }));
+```
+
+---
+
+## Web Storage
+
+Client-side key-value storage. Data persists across sessions (localStorage) or only for the current session (sessionStorage).
+
+```js
+// localStorage — persists until manually cleared
+localStorage.setItem('theme', 'dark');
+localStorage.getItem('theme');          // 'dark'
+localStorage.removeItem('theme');
+localStorage.clear();
+
+// Store objects (must serialize)
+localStorage.setItem('user', JSON.stringify({ name: 'Alice' }));
+const user = JSON.parse(localStorage.getItem('user'));
+
+// sessionStorage — cleared when tab/window closes
+sessionStorage.setItem('token', 'abc123');
+
+// Storage event (fired in OTHER tabs of the same origin)
+window.addEventListener('storage', (e) => {
+  console.log(e.key, e.oldValue, e.newValue);
+});
+```
+
+| Feature | localStorage | sessionStorage | Cookie |
+|---|---|---|---|
+| Capacity | ~5MB | ~5MB | ~4KB |
+| Expiry | Never | Tab close | Configurable |
+| Accessible from JS | ✅ | ✅ | ✅ (if not HttpOnly) |
+| Sent with requests | ❌ | ❌ | ✅ automatically |
+
+---
+
+## Cookies
+
+```js
+// Set a cookie
+document.cookie = 'user=Alice; expires=Fri, 31 Dec 2025 23:59:59 GMT; path=/; SameSite=Lax';
+
+// Read cookies
+document.cookie   // "user=Alice; theme=dark" — all as one string
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp(`(^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
+// Delete a cookie
+document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+```
+
+**Cookie flags:**
+- `HttpOnly` — not accessible via JS (set server-side, XSS protection)
+- `Secure` — HTTPS only
+- `SameSite=Strict/Lax/None` — CSRF protection
+- `Path=/` — scope to a path
+
+---
+
+## WebSockets
+
+Full-duplex real-time communication between client and server.
+
+```js
+const ws = new WebSocket('wss://api.example.com/ws');
+
+ws.onopen = () => {
+  console.log('Connected');
+  ws.send(JSON.stringify({ type: 'subscribe', channel: 'prices' }));
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  updateUI(data);
+};
+
+ws.onerror = (err) => console.error('WebSocket error', err);
+
+ws.onclose = (event) => {
+  console.log(`Closed: ${event.code} ${event.reason}`);
+  // implement reconnect logic here
+};
+
+ws.close();   // close the connection
+ws.readyState // 0=CONNECTING, 1=OPEN, 2=CLOSING, 3=CLOSED
+```
+
+**vs. Server-Sent Events (SSE):**
+```js
+// SSE — server pushes to client only (one-way, HTTP)
+const es = new EventSource('/api/events');
+es.onmessage = (e) => console.log(e.data);
+es.addEventListener('userJoined', (e) => updateList(JSON.parse(e.data)));
+es.close();
+```
+
+---
+
+## Service Workers
+
+A script running in the background, separate from the web page. Enables offline support, push notifications, and background sync.
+
+```js
+// Register a service worker
+if ('serviceWorker' in navigator) {
+  const reg = await navigator.serviceWorker.register('/sw.js');
+  console.log('SW registered:', reg.scope);
+}
+
+// sw.js — basic cache-first strategy
+const CACHE_NAME = 'app-v1';
+const ASSETS = ['/', '/index.html', '/app.js', '/style.css'];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    caches.match(e.request).then(cached => cached || fetch(e.request))
+  );
+});
+```
+
+**Use cases:** Offline apps (PWA), background data sync, push notifications.
+
+---
+
+## Intersection Observer
+
+Efficiently observe when elements enter/leave the viewport — avoids scroll event listeners.
+
+```js
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      entry.target.src = entry.target.dataset.src;  // lazy load image
+      observer.unobserve(entry.target);              // stop observing
+    }
+  });
+}, {
+  root: null,           // viewport
+  rootMargin: '0px 0px -100px 0px',  // trigger 100px before bottom
+  threshold: 0.1        // 10% of element visible
+});
+
+document.querySelectorAll('.lazy').forEach(el => observer.observe(el));
+```
+
+**Use cases:** Lazy loading images/components, infinite scroll, animations on scroll, analytics (impression tracking).
+
+---
+
+## MutationObserver
+
+Watch for changes in the DOM tree.
+
+```js
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach(mutation => {
+    if (mutation.type === 'childList') {
+      console.log('Children changed:', mutation.addedNodes, mutation.removedNodes);
+    }
+    if (mutation.type === 'attributes') {
+      console.log(`${mutation.attributeName} changed`);
+    }
+  });
+});
+
+observer.observe(targetEl, {
+  childList: true,       // watch for child node add/remove
+  attributes: true,      // watch for attribute changes
+  characterData: true,   // watch for text changes
+  subtree: true,         // watch entire subtree
+});
+
+observer.disconnect();   // stop observing
+```
+
+---
+
+## ResizeObserver
+
+Observe element size changes (replaces window resize event for element-level tracking).
+
+```js
+const observer = new ResizeObserver((entries) => {
+  entries.forEach(entry => {
+    const { width, height } = entry.contentRect;
+    if (width < 600) applyMobileLayout();
+    else applyDesktopLayout();
+  });
+});
+
+observer.observe(document.querySelector('.container'));
+observer.unobserve(el);
+observer.disconnect();
+```
+
+---
+
+## Clipboard API
+
+```js
+// Copy text
+await navigator.clipboard.writeText('Copied text!');
+
+// Read text
+const text = await navigator.clipboard.readText();
+
+// Copy image/rich content
+const blob = await fetch('/image.png').then(r => r.blob());
+await navigator.clipboard.write([
+  new ClipboardItem({ 'image/png': blob })
+]);
+```
+
+---
+
+## Geolocation API
+
+```js
+// One-time position
+navigator.geolocation.getCurrentPosition(
+  (pos) => {
+    const { latitude, longitude, accuracy } = pos.coords;
+    showOnMap(latitude, longitude);
+  },
+  (err) => console.error(err.message),
+  { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+);
+
+// Watch position (real-time tracking)
+const watchId = navigator.geolocation.watchPosition(successFn, errorFn);
+navigator.geolocation.clearWatch(watchId);
+```
+
+---
+
+## Web Workers
+
+Run scripts in background threads — keeps UI responsive during heavy computation.
+
+```js
+// main.js
+const worker = new Worker('/worker.js');
+worker.postMessage({ data: largeDataset });
+
+worker.onmessage = (e) => {
+  console.log('Result:', e.data);
+};
+worker.onerror = (err) => console.error(err);
+worker.terminate();
+
+// worker.js
+self.onmessage = (e) => {
+  const result = heavyComputation(e.data);
+  self.postMessage(result);
+};
+```
+
+---
+
+## History API
+
+Manipulate browser history without reloading the page (foundation of client-side routing).
+
+```js
+// Push a new state
+history.pushState({ page: 1 }, 'Title', '/about');
+
+// Replace current state
+history.replaceState({ page: 2 }, 'Title', '/profile');
+
+// Navigate
+history.back()
+history.forward()
+history.go(-2)
+
+// Listen for back/forward
+window.addEventListener('popstate', (e) => {
+  console.log('State:', e.state, 'Path:', location.pathname);
+  renderPage(location.pathname);
+});
+```
+
+---
+
+## URL and URLSearchParams
+
+```js
+const url = new URL('https://example.com/search?q=react&page=2');
+url.hostname   // 'example.com'
+url.pathname   // '/search'
+url.search     // '?q=react&page=2'
+url.hash       // ''
+
+const params = url.searchParams;
+params.get('q')          // 'react'
+params.get('page')       // '2'
+params.set('page', '3')
+params.append('filter', 'latest')
+params.delete('q')
+params.has('q')          // false after delete
+
+// Convert back
+url.toString()           // updated full URL
+params.toString()        // 'page=3&filter=latest'
+
+// Parse from current page
+const params = new URLSearchParams(window.location.search);
+```
+
+---
+
+## Performance API
+
+```js
+// High-resolution timing
+performance.now()           // ms since page load (microsecond precision)
+
+// Mark and measure custom timings
+performance.mark('start:render');
+renderDashboard();
+performance.mark('end:render');
+performance.measure('render', 'start:render', 'end:render');
+
+const [measure] = performance.getEntriesByName('render');
+console.log(`Render took ${measure.duration}ms`);
+
+// Navigation timing
+const nav = performance.getEntriesByType('navigation')[0];
+nav.domContentLoadedEventEnd - nav.startTime   // DOMContentLoaded time
+nav.loadEventEnd - nav.startTime               // Page load time
+
+// Resource timing
+performance.getEntriesByType('resource').forEach(r => {
+  console.log(r.name, r.duration);
+});
+```
+
+---
+
+## Broadcast Channel API
+
+Communicate between tabs/windows of the same origin.
+
+```js
+// All tabs listen to the same channel
+const channel = new BroadcastChannel('app-state');
+
+// Send
+channel.postMessage({ type: 'THEME_CHANGED', theme: 'dark' });
+
+// Receive
+channel.onmessage = (e) => {
+  if (e.data.type === 'THEME_CHANGED') applyTheme(e.data.theme);
+};
+
+channel.close();
+```
+
+**Use case:** Sync authentication state, theme changes, or cart updates across multiple open tabs.

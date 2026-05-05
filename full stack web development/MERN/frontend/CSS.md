@@ -828,3 +828,511 @@ In this example:
 #### Conclusion
 
 The `fr` unit is a powerful tool in CSS Grid for creating flexible, responsive layouts. By understanding and using `fr` units, you can design layouts that adapt to different screen sizes and content amounts, providing a more dynamic user experience.
+
+
+---
+
+## What is Sass?
+
+**Sass** (Syntactically Awesome Style Sheets) is a CSS preprocessor that extends CSS with powerful features like variables, nesting, mixins, and functions. It compiles down to plain CSS.
+
+**Why use Sass?**
+- Reduces repetition (DRY principle)
+- Enables modular, reusable stylesheets
+- Provides logic/programming constructs
+- Better organization for large stylesheets
+
+---
+
+## Sass vs SCSS Syntax
+
+There are two syntaxes:
+
+| Feature | Sass (Indented) | SCSS (Sassy CSS) |
+|---|---|---|
+| File extension | `.sass` | `.scss` |
+| Curly braces | ❌ (indentation) | ✅ |
+| Semicolons | ❌ | ✅ |
+| CSS compatibility | ❌ (not valid CSS) | ✅ (superset of CSS) |
+
+**SCSS is the modern standard** — any valid CSS is valid SCSS.
+
+```scss
+// SCSS (preferred)
+.button {
+  color: red;
+  &:hover {
+    color: darkred;
+  }
+}
+```
+
+```sass
+// Sass (indented)
+.button
+  color: red
+  &:hover
+    color: darkred
+```
+
+---
+
+## Getting Started
+
+**Install Sass:**
+```bash
+npm install -D sass
+```
+
+**Compile SCSS to CSS:**
+```bash
+npx sass input.scss output.css
+npx sass --watch src/styles:dist/styles   # watch mode
+```
+
+**With Vite (React/Vue):**
+```bash
+npm install -D sass
+# Vite auto-handles .scss imports — no extra config needed
+```
+
+```jsx
+// In a React component
+import './Button.scss';
+```
+
+---
+
+## Variables
+
+Sass variables store reusable values. They are **compile-time** (unlike CSS custom properties which are runtime).
+
+```scss
+// _variables.scss
+$primary-color: #3498db;
+$secondary-color: #2ecc71;
+$font-stack: 'Inter', 'Helvetica', sans-serif;
+$base-font-size: 16px;
+$border-radius: 8px;
+$breakpoint-md: 768px;
+
+// Usage
+.button {
+  background: $primary-color;
+  font-family: $font-stack;
+  border-radius: $border-radius;
+}
+```
+
+**Variable scope:**
+```scss
+$color: red;       // global
+
+.card {
+  $color: blue;    // local — only inside .card
+  color: $color;   // blue
+}
+
+p {
+  color: $color;   // red (global)
+}
+```
+
+---
+
+## Nesting
+
+Sass allows rules to be nested, mirroring HTML structure.
+
+```scss
+nav {
+  background: #333;
+
+  ul {
+    list-style: none;
+    margin: 0;
+  }
+
+  li {
+    display: inline-block;
+  }
+
+  a {
+    color: white;
+    text-decoration: none;
+
+    &:hover {           // & = parent selector
+      color: #3498db;
+    }
+
+    &.active {          // .active class on anchor
+      font-weight: bold;
+    }
+  }
+}
+```
+
+**`&` parent selector tricks:**
+```scss
+.button {
+  color: white;
+
+  &--primary   { background: blue; }   // BEM: .button--primary
+  &--secondary { background: gray; }   // BEM: .button--secondary
+  &:disabled   { opacity: 0.5; }
+  &:hover      { transform: scale(1.05); }
+
+  .dark-theme & { background: #222; }  // .dark-theme .button
+}
+```
+
+> ⚠️ Avoid deep nesting (> 3 levels) — it creates overly specific CSS.
+
+---
+
+## Partials and Modules
+
+**Partials** are Sass files prefixed with `_` that are not compiled independently — they're meant to be imported.
+
+```
+styles/
+  _variables.scss
+  _reset.scss
+  _typography.scss
+  _buttons.scss
+  _cards.scss
+  main.scss          ← compiled output
+```
+
+**Modern `@use` (recommended):**
+```scss
+// main.scss
+@use 'variables';    // imports _variables.scss
+@use 'reset';
+@use 'buttons';
+
+// Access with namespace
+.card {
+  color: variables.$primary-color;
+}
+```
+
+**`@forward` — re-export from an index file:**
+```scss
+// _index.scss
+@forward 'variables';
+@forward 'mixins';
+
+// Consuming file
+@use 'styles' as s;
+.btn { color: s.$primary-color; }
+```
+
+> ⚠️ `@import` is deprecated. Always use `@use` and `@forward`.
+
+---
+
+## Mixins
+
+Mixins are reusable blocks of CSS, optionally accepting arguments.
+
+```scss
+// _mixins.scss
+
+// Basic mixin
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Mixin with arguments and defaults
+@mixin button-styles($bg: #3498db, $color: white, $radius: 4px) {
+  background: $bg;
+  color: $color;
+  border-radius: $radius;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+// Responsive mixin
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (max-width: 576px) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (max-width: 768px) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (max-width: 1024px) { @content; }
+  }
+}
+```
+
+**Using mixins:**
+```scss
+@use 'mixins' as m;
+
+.hero {
+  @include m.flex-center;
+  height: 100vh;
+}
+
+.btn-primary {
+  @include m.button-styles(#e74c3c, white, 8px);
+}
+
+.sidebar {
+  width: 300px;
+
+  @include m.respond-to('md') {
+    width: 100%;
+    display: none;
+  }
+}
+```
+
+---
+
+## Extends and Placeholders
+
+`@extend` shares a set of CSS rules between selectors. Best used with **placeholder selectors** (`%`).
+
+```scss
+// Placeholder — NOT output unless extended
+%card-base {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  background: white;
+}
+
+.product-card {
+  @extend %card-base;
+  border-top: 4px solid blue;
+}
+
+.profile-card {
+  @extend %card-base;
+  text-align: center;
+}
+```
+
+**Extends vs Mixins:**
+| | Mixins | Extends |
+|---|---|---|
+| Arguments | ✅ | ❌ |
+| Output | Duplicated CSS | Grouped selectors |
+| Use case | Parameterized styles | Shared base styles |
+| Recommended | ✅ Generally preferred | Limited use cases |
+
+---
+
+## Functions
+
+Sass has built-in functions and supports custom functions.
+
+```scss
+// Custom function
+@function rem($px, $base: 16) {
+  @return ($px / $base) * 1rem;
+}
+
+@function clamp-value($min, $preferred, $max) {
+  @return clamp(#{$min}, #{$preferred}, #{$max});
+}
+
+// Usage
+.hero {
+  font-size: rem(24);       // 1.5rem
+  padding: rem(32) rem(16); // 2rem 1rem
+}
+```
+
+**Built-in functions:**
+```scss
+// Color functions
+darken(#3498db, 10%)
+lighten(#3498db, 20%)
+mix(#f00, #00f, 50%)
+rgba(#3498db, 0.5)
+complement(#3498db)
+
+// Math
+math.ceil(4.2)      // 5
+math.floor(4.8)     // 4
+math.round(4.5)     // 5
+math.abs(-5)        // 5
+math.max(1, 2, 3)   // 3
+
+// String
+string.to-upper-case('hello')  // "HELLO"
+string.length('hello')         // 5
+```
+
+---
+
+## Operators
+
+```scss
+$container-width: 1200px;
+$columns: 12;
+$gutter: 20px;
+
+.col {
+  width: ($container-width / $columns) - $gutter;  // arithmetic
+}
+
+// Comparison (in @if)
+$font-size: 16px;
+@if $font-size >= 14px {
+  body { font-size: $font-size; }
+}
+```
+
+---
+
+## Control Flow
+
+```scss
+// @if / @else if / @else
+@mixin theme-color($theme) {
+  @if $theme == 'dark' {
+    background: #1a1a1a;
+    color: white;
+  } @else if $theme == 'light' {
+    background: white;
+    color: #333;
+  } @else {
+    @error "Unknown theme: #{$theme}";
+  }
+}
+
+// @for loop
+@for $i from 1 through 5 {
+  .col-#{$i} {
+    width: 20% * $i;
+  }
+}
+
+// @each loop
+$sizes: sm, md, lg, xl;
+@each $size in $sizes {
+  .text-#{$size} {
+    font-size: map.get($size-map, $size);
+  }
+}
+
+// @while loop
+$i: 1;
+@while $i <= 3 {
+  .item-#{$i} { order: $i; }
+  $i: $i + 1;
+}
+```
+
+---
+
+## Maps
+
+Maps are Sass's key-value data structure.
+
+```scss
+@use 'sass:map';
+
+$theme-colors: (
+  'primary':   #3498db,
+  'secondary': #2ecc71,
+  'danger':    #e74c3c,
+  'warning':   #f39c12,
+);
+
+$font-sizes: (
+  'sm': 0.875rem,
+  'md': 1rem,
+  'lg': 1.25rem,
+  'xl': 1.5rem,
+);
+
+// Access a value
+.btn-primary {
+  background: map.get($theme-colors, 'primary');
+}
+
+// Iterate over a map
+@each $name, $color in $theme-colors {
+  .text-#{$name} { color: $color; }
+  .bg-#{$name}   { background: $color; }
+}
+```
+
+---
+
+## Built-in Modules
+
+```scss
+@use 'sass:math';
+@use 'sass:color';
+@use 'sass:string';
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
+
+// math
+math.div(10, 3)          // 3.333...
+math.percentage(0.5)     // 50%
+
+// color
+color.adjust(#3498db, $red: 10, $blue: -20)
+color.scale(#3498db, $lightness: 20%)
+color.invert(#3498db)
+
+// string
+string.slice('hello world', 1, 5)   // 'hello'
+string.index('hello', 'ell')         // 2
+```
+
+---
+
+## Sass vs CSS Custom Properties
+
+| | Sass Variables | CSS Custom Properties |
+|---|---|---|
+| Scope | Compile-time | Runtime |
+| Dynamic (JS) | ❌ | ✅ |
+| Browser DevTools | Not visible | ✅ Visible |
+| Theming | Static | ✅ Dynamic |
+| Fallback values | ❌ | ✅ `var(--x, fallback)` |
+
+**Best practice:** Use both together — Sass variables for static config, CSS custom properties for runtime theming.
+
+```scss
+// _variables.scss
+$primary-hsl: 210, 70%, 50%;
+
+:root {
+  --primary: hsl(#{$primary-hsl});
+  --primary-dark: hsl(#{$primary-hsl}, 80%, 40%);
+}
+```
+
+---
+
+## Best Practices
+
+1. **Use `@use`/`@forward`** — never `@import`
+2. **Follow the 7-1 pattern** for large projects:
+   ```
+   abstracts/   (_variables, _mixins, _functions)
+   base/        (_reset, _typography)
+   components/  (_buttons, _cards, _modals)
+   layout/      (_header, _footer, _grid)
+   pages/       (_home, _about)
+   themes/      (_dark, _light)
+   vendors/     (third-party overrides)
+   main.scss
+   ```
+3. **Keep nesting shallow** — max 3 levels
+4. **Use BEM naming** with Sass nesting (`&--modifier`, `&__element`)
+5. **Use mixins over `@extend`** for predictable output
+6. **Use maps** for design tokens (colors, spacing, font sizes)
+7. **Write functions** for unit conversions (`px → rem`)
