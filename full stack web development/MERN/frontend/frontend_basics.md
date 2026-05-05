@@ -65,6 +65,15 @@ Core building blocks every frontend developer must know.
 | React core concepts | [React/React.md](React/React.md) |
 | React summary / cheatsheet | [React/ReactSummary.md](React/ReactSummary.md) |
 | React Server Components (RSC) & Next.js App Router | [React/ReactServerComponents.md](React/ReactServerComponents.md) |
+| React — UI libraries & component systems | [React/React_UI.md](React/React_UI.md) |
+| React — Routing (TanStack Router, React Router, Next.js App Router) | [React/React_Routing.md](React/React_Routing.md) |
+| React — HTTP & data fetching (Axios, TanStack Query) | [React/React_HTTP.md](React/React_HTTP.md) |
+| React — Managing app state (useState, Zustand, Context) | [React/React_State.md](React/React_State.md) |
+| React — Internationalization (react-i18next, next-intl) | [React/React_i18n.md](React/React_i18n.md) |
+| React — Forms (React Hook Form, Server Actions) | [React/React_Forms.md](React/React_Forms.md) |
+| React — Form validation (Zod + RHF resolver) | [React/React_FormValidation.md](React/React_FormValidation.md) |
+| React — Data updation (Immer, TanStack Query mutations) | [React/React_DataUpdation.md](React/React_DataUpdation.md) |
+| React — Animations (Framer Motion, React Spring) | [React/React_Animations.md](React/React_Animations.md) |
 | Three.js (3D in the browser) | [ThreeJS/ThreeJS.md](ThreeJS/ThreeJS.md) |
 
 ---
