@@ -538,7 +538,7 @@ React only has a strong opinion on the **UI** layer. Everything else is left to 
 | [UI](React_UI.md)                          | [React_UI.md](React_UI.md)                         | MUI, Chakra, shadcn/ui, Tailwind, Radix UI |
 | [Routing](React_Routing.md)                | [React_Routing.md](React_Routing.md)               | TanStack Router, React Router v6           |
 | [HTTP & Data Fetching](React_HTTP.md)      | [React_HTTP.md](React_HTTP.md)                     | Axios, TanStack Query                      |
-| [Managing App State](React_State.md)       | [React_State.md](React_State.md)                   | useState, useReducer, Context, Zustand     |
+| [Managing App State](React_State.md)       | [React_State.md](React_State.md) · [Redux/Redux.md](../Redux/Redux.md) · [Redux/ReduxPatterns.md](../Redux/ReduxPatterns.md) | useState, useReducer, Context, Zustand, Redux (RTK) |
 | [Internationalization](React_i18n.md)      | [React_i18n.md](React_i18n.md)                     | react-i18next, next-intl                   |
 | [Forms](React_Forms.md)                    | [React_Forms.md](React_Forms.md)                   | React Hook Form, Server Actions            |
 | [Form Validation](React_FormValidation.md) | [React_FormValidation.md](React_FormValidation.md) | Zod + RHF resolver                         |
