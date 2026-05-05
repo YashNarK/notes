@@ -496,3 +496,213 @@ export default async function ProtectedPage() {
 }
 ```
 
+
+---
+
+## React Router DOM Hooks (Plain React)
+
+These hooks are only available inside components that are rendered within a **data router** (e.g., `createBrowserRouter`). They give you programmatic access to routing state.
+
+### 1. `useLocation`
+
+Returns the current **location object** (`{ pathname, search, hash, state, key }`). Useful for analytics or triggering side effects on navigation.
+
+```tsx
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
+function PageAnalytics() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Fire a page-view event on every route change
+    analytics.page(location.pathname);
+  }, [location]);
+
+  return null;
+}
+```
+
+### 2. `useNavigate`
+
+Returns a **navigate function** for programmatic navigation — redirects after form submission, logout, or inactivity.
+
+```tsx
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+function useInactivityRedirect(timeoutMs = 30_000) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate('/session-timed-out');   // navigate to a path
+    }, timeoutMs);
+    return () => clearTimeout(timer);
+  }, [navigate, timeoutMs]);
+}
+```
+
+**Two signatures:**
+
+```ts
+// 1. Navigate to a path (with optional state/replace)
+navigate('/dashboard', { replace: true, state: { from: '/login' } });
+
+// 2. Move through history stack (like browser back/forward)
+navigate(-1);  // back
+navigate(1);   // forward
+```
+
+### 3. `useParams`
+
+Returns the **dynamic segment values** from the matched route path. Child routes inherit parent params.
+
+```tsx
+// Route definition: path="games/:slug"
+import { useParams } from 'react-router-dom';
+
+function GameDetailsPage() {
+  const { slug } = useParams<{ slug: string }>();
+  // slug = "the-witcher-3" when URL is /games/the-witcher-3
+}
+```
+
+### 4. `useSearchParams`
+
+Reads and updates the **query string** (`?key=value`) without a full page reload. Similar to `useState` for URL search params.
+
+```tsx
+import { useSearchParams } from 'react-router-dom';
+
+function SearchPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query    = searchParams.get('q')    ?? '';
+  const category = searchParams.get('cat')  ?? 'all';
+
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={e =>
+          // ❌ setSearchParams({ q: e.target.value })  — drops other params!
+          // ✅ Spread existing params first to preserve them
+          setSearchParams({ ...Object.fromEntries(searchParams), q: e.target.value })
+        }
+      />
+      <select
+        value={category}
+        onChange={e =>
+          setSearchParams({ ...Object.fromEntries(searchParams), cat: e.target.value })
+        }
+      >
+        <option value="all">All</option>
+        <option value="tech">Tech</option>
+      </select>
+    </div>
+  );
+}
+```
+
+> **Gotcha**: `setSearchParams({ q: value })` **replaces all** query params. Always spread the current params if you only want to update one.
+
+### 5. `useRouteError`
+
+Available inside an `errorElement`. Returns whatever was thrown during an action, loader, or render.
+
+```tsx
+import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+
+function ErrorPage() {
+  const error = useRouteError();
+
+  const message = isRouteErrorResponse(error)
+    ? `${error.status} — ${error.statusText}`  // known HTTP error (404, 403…)
+    : 'An unexpected error occurred';           // runtime exception
+
+  return (
+    <div style={{ textAlign: 'center', paddingTop: '4rem' }}>
+      <h1>Oops!</h1>
+      <p>{message}</p>
+    </div>
+  );
+}
+```
+
+> `isRouteErrorResponse` is a type-guard — it returns `true` when the error is an HTTP response (thrown from a `loader` or `action`), allowing you to show different UI for 404 vs generic crashes.
+
+---
+
+## Full App Setup: Router + TanStack Query (Plain React)
+
+Production apps typically compose React Router with TanStack Query and a UI library (e.g., Chakra UI). The key wiring lives in `routes.tsx` and `main.tsx`.
+
+### `routes.tsx` — centralised route config
+
+```tsx
+// src/routes.tsx
+import { createBrowserRouter } from 'react-router-dom';
+import Layout         from './pages/Layout';
+import HomePage       from './pages/HomePage';
+import GameDetailsPage from './pages/GameDetailsPage';
+import ErrorPage      from './pages/ErrorPage';
+
+const router = createBrowserRouter([
+  {
+    path: '/game-hub',
+    element: <Layout />,       // persistent shell (NavBar, Sidebar)
+    errorElement: <ErrorPage />,
+    children: [
+      { index: true,              element: <HomePage /> },
+      { path: 'games/:slug',      element: <GameDetailsPage /> },
+    ],
+  },
+]);
+
+export default router;
+```
+
+### `main.tsx` — root provider composition
+
+```tsx
+// src/main.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { RouterProvider } from 'react-router-dom';
+import router from './routes.tsx';
+import theme from './theme.ts';
+import './index.css';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      staleTime:           1000 * 60 * 10,   // 10 min — don't refetch fresh data
+      gcTime:              1000 * 60 * 5,    // 5 min — evict unused cache
+      refetchOnWindowFocus: true,
+      refetchOnReconnect:   true,
+      refetchOnMount:       true,
+    },
+  },
+});
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <ChakraProvider theme={theme}>
+      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools />
+      </QueryClientProvider>
+    </ChakraProvider>
+  </React.StrictMode>
+);
+```
+
+**Provider order matters:**
+- `ChakraProvider` wraps everything so Chakra components get access to the theme.
+- `QueryClientProvider` wraps `RouterProvider` so that any component rendered by a route can call `useQuery`/`useMutation`.
+- `RouterProvider` is the outermost *routing* boundary — it renders the matched route component tree.

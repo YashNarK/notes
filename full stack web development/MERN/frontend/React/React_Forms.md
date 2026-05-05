@@ -385,3 +385,172 @@ export function CreateUserForm() {
   );
 }
 ```
+
+---
+
+## useState vs useRef in Forms (Plain React)
+
+Both hooks can hold form input values, but they have fundamentally different behaviour:
+
+| | `useState` | `useRef` |
+|---|---|---|
+| Triggers re-render on change | ✅ Yes | ❌ No |
+| Current value in JSX | ✅ Reactive | ❌ Stale until next render |
+| Validation on every keystroke | ✅ Easy | ⚠️ Extra work |
+| Read value only on submit | ⚠️ Wasteful (re-renders on every key) | ✅ Ideal |
+| Accessing DOM element directly | ❌ Not designed for this | ✅ Yes (`ref.current`) |
+
+### `useState` — controlled input (re-renders on every keystroke)
+
+```tsx
+import { useState, type FormEvent } from 'react';
+
+function ControlledForm() {
+  const [email, setEmail] = useState('');
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    console.log('Submitted:', email);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        placeholder="Email"
+      />
+      <p>Preview: {email}</p>    {/* works because component re-renders */}
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+**Use `useState` when** you need live validation, character counts, conditional UI, or to show a preview of the input as the user types.
+
+### `useRef` — uncontrolled input (read only on submit)
+
+```tsx
+import { useRef, type FormEvent } from 'react';
+
+function UncontrolledForm() {
+  const emailRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    console.log('Submitted:', emailRef.current?.value);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input ref={emailRef} type="email" defaultValue="" placeholder="Email" />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+**Use `useRef` when** you only need the value at submit time and want to avoid re-renders (e.g., a simple search box or login form with no live validation).
+
+### Combining both
+
+```tsx
+import { useState, useRef, type FormEvent } from 'react';
+
+function HybridForm() {
+  const [error, setError] = useState('');
+  const emailRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const value = emailRef.current?.value ?? '';
+    if (!value.includes('@')) {
+      setError('Please enter a valid email');   // useState drives error UI
+    } else {
+      setError('');
+      console.log('Submitted:', value);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input ref={emailRef} type="email" placeholder="Email" />
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+> **In practice**: for anything beyond a 2-field form, use **React Hook Form** (see above sections) — it uses uncontrolled inputs under the hood for performance but gives you full validation and `watch()` for live values when you need them.
+
+---
+
+## Formik (Plain React / Next.js)
+
+**Formik** is a form library that manages form state, validation, and submission. It is feature-complete but more verbose than React Hook Form. Useful when migrating existing Formik codebases or when the team is already familiar with it.
+
+```bash
+npm i formik yup
+```
+
+### Basic example with Yup validation
+
+```tsx
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+
+const schema = Yup.object({
+  name:  Yup.string().required('Name is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+});
+
+function ContactForm() {
+  return (
+    <Formik
+      initialValues={{ name: '', email: '' }}
+      validationSchema={schema}
+      onSubmit={(values, { setSubmitting, resetForm }) => {
+        // values is fully typed as { name: string; email: string }
+        console.log('Submitted:', values);
+        resetForm();
+        setSubmitting(false);
+      }}
+    >
+      {({ isSubmitting }) => (
+        <Form>
+          <div>
+            <label htmlFor="name">Name</label>
+            <Field id="name" name="name" type="text" />
+            <ErrorMessage name="name" component="p" className="error" />
+          </div>
+          <div>
+            <label htmlFor="email">Email</label>
+            <Field id="email" name="email" type="email" />
+            <ErrorMessage name="email" component="p" className="error" />
+          </div>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Sending...' : 'Submit'}
+          </button>
+        </Form>
+      )}
+    </Formik>
+  );
+}
+```
+
+### Formik vs React Hook Form comparison
+
+| Feature | Formik | React Hook Form |
+|---|---|---|
+| Controlled inputs | ✅ (re-renders on every keystroke) | ❌ (uncontrolled, no re-renders) |
+| Performance | ⚠️ Can be slow on large forms | ✅ Fast |
+| Bundle size | ~13 kB | ~9 kB |
+| Yup integration | ✅ Built-in `validationSchema` | ✅ via `@hookform/resolvers/yup` |
+| Zod integration | ⚠️ Manual | ✅ via `@hookform/resolvers/zod` |
+| TypeScript | ✅ Good | ✅ Excellent |
+| Learning curve | Low | Low |
+
+> **Recommendation**: prefer **React Hook Form** for new projects. Use Formik only when maintaining an existing codebase or team familiarity is the deciding factor.

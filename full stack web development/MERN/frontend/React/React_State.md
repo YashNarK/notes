@@ -404,3 +404,394 @@ export function FilterBar() {
   );
 }
 ```
+
+---
+
+## Pure Components & StrictMode
+
+### Pure Components
+
+A **pure function** always returns the same output for the same input. A **pure component** always returns the same JSX for the same props.
+
+React relies on this contract to optimise rendering. If a component has side effects during render (e.g., mutating external variables), React cannot safely re-render it predictably.
+
+```tsx
+// ❌ Impure — mutates a variable outside the component
+let count = 0;
+const Message = () => {
+  count++;  // side effect during render
+  return <div>Message {count}</div>;
+};
+// In StrictMode renders: Message 2, Message 4, Message 6...
+
+// ✅ Pure — all mutations are local to the render call
+const Message = () => {
+  let count = 0;
+  count++;  // local, safe
+  return <div>Message {count}</div>;
+};
+// Always renders: Message 1
+```
+
+**Rule:** during the render phase, only read props and state — never write to anything that existed before the render call.
+
+### StrictMode
+
+`<React.StrictMode>` intentionally renders each component **twice** in development (using only the second render's output) to surface impure components:
+
+```tsx
+// main.tsx
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+- Only active in development — no performance cost in production.
+- If your component renders differently on the first vs second call, you have an impurity.
+- StrictMode also detects deprecated lifecycle usage and unexpected side effects in `useEffect`.
+
+---
+
+## Immutable Update Patterns
+
+React uses **reference equality** to decide if state changed. You must always return a new object/array — never mutate in place.
+
+### Updating a flat object
+
+```tsx
+const [drink, setDrink] = useState({ title: 'cola', price: 5 });
+
+// ❌ Mutation — same reference, React skips re-render
+drink.price = 6;
+setDrink(drink);
+
+// ✅ New object via spread
+setDrink({ ...drink, price: 6 });
+```
+
+### Updating nested objects
+
+`...` is **shallow** — it only copies the top-level keys. Nested objects still share the same reference unless explicitly spread:
+
+```tsx
+const [user, setUser] = useState({
+  name: 'John',
+  address: { street: 'Baker Street', city: 'London', zipCode: '94111' },
+});
+
+// ❌ Wrong — city and zipCode are lost
+setUser({ ...user, address: { street: 'Church Street' } });
+
+// ✅ Spread at every level that changes
+setUser({ ...user, address: { ...user.address, street: 'Church Street' } });
+```
+
+> **Gotcha**: the deeper the nesting, the more verbose this becomes. Use **Immer** (see below) to avoid the boilerplate.
+
+### Updating an array
+
+```tsx
+const [tags, setTags] = useState(['happy', 'cheerful']);
+
+// Add
+setTags([...tags, 'exciting']);
+
+// Remove
+setTags(tags.filter(tag => tag !== 'cheerful'));
+
+// Update one element
+setTags(tags.map(tag => (tag === 'happy' ? 'happiness' : tag)));
+```
+
+### Updating an array of objects
+
+```tsx
+const [bugs, setBugs] = useState([
+  { id: 1, name: 'UI Glitch',              fixed: false },
+  { id: 2, name: 'Biometric login failed', fixed: false },
+]);
+
+// Fix bug 1
+setBugs(bugs.map(bug => (bug.id === 1 ? { ...bug, fixed: true } : bug)));
+
+// Delete bug 2
+setBugs(bugs.filter(bug => bug.id !== 2));
+```
+
+---
+
+## Immer — Simplifying Immutable Updates
+
+When state is deeply nested, spread-based updates become verbose and error-prone. **Immer** lets you write apparently-mutating code that is actually safe: it records changes against a *draft* and produces a new immutable object.
+
+```bash
+npm i immer use-immer
+```
+
+### How Immer Works
+
+Immer wraps your mutable code in a `produce()` call. Inside the recipe function you receive a **draft proxy** — all changes to the draft are recorded, and Immer produces a new immutable value. The original object is never touched.
+
+### Without Immer vs with Immer
+
+```tsx
+const baseState = [
+  { title: 'Learn TypeScript', done: true },
+  { title: 'Try Immer',        done: false },
+];
+
+// ❌ Without Immer — shallow clone at every level manually
+const next = baseState.slice();
+next[1] = { ...next[1], done: true };
+next.push({ title: 'Tweet about it', done: false });
+
+// ✅ With Immer — write mutations directly against the draft
+import { produce } from 'immer';
+
+const next = produce(baseState, draft => {
+  draft[1].done = true;
+  draft.push({ title: 'Tweet about it', done: false });
+});
+```
+
+### useState + Immer (`useImmer`)
+
+```tsx
+import { useImmer } from 'use-immer';
+
+interface Todo { id: string; title: string; done: boolean; }
+
+function TodoList() {
+  const [todos, setTodos] = useImmer<Todo[]>([
+    { id: 'react', title: 'Learn React', done: true  },
+    { id: 'immer', title: 'Try Immer',  done: false },
+  ]);
+
+  const toggle = (id: string) => setTodos(draft => {
+    const todo = draft.find(t => t.id === id)!;
+    todo.done = !todo.done;  // looks like mutation — Immer makes it safe
+  });
+
+  const add = (title: string) => setTodos(draft => {
+    draft.push({ id: crypto.randomUUID(), title, done: false });
+  });
+
+  return (
+    <ul>
+      {todos.map(t => (
+        <li key={t.id} onClick={() => toggle(t.id)}
+            style={{ textDecoration: t.done ? 'line-through' : 'none' }}>
+          {t.title}
+        </li>
+      ))}
+      <button onClick={() => add('New task')}>Add</button>
+    </ul>
+  );
+}
+```
+
+### useReducer + Immer (`useImmerReducer`)
+
+```tsx
+import { useImmerReducer } from 'use-immer';
+
+type Todo = { id: string; title: string; done: boolean };
+type Action =
+  | { type: 'toggle'; id: string }
+  | { type: 'add';    title: string };
+
+function todoReducer(draft: Todo[], action: Action) {
+  switch (action.type) {
+    case 'toggle': {
+      const todo = draft.find(t => t.id === action.id)!;
+      todo.done = !todo.done;  // direct mutation on draft — safe
+      break;
+    }
+    case 'add':
+      draft.push({ id: crypto.randomUUID(), title: action.title, done: false });
+      break;
+  }
+}
+
+function TodoList() {
+  const [todos, dispatch] = useImmerReducer(todoReducer, []);
+  // ...
+}
+```
+
+> **When to use Immer**: any state that is a nested object or array with more than 2 levels of depth. For flat state, plain spread is fine.
+
+---
+
+## Multi-Context Pattern
+
+Real apps often need multiple independent contexts (e.g., game filters + page number). The pattern is: create a context file per concern, wrap providers in `App.tsx`, consume via `useContext` in leaf components.
+
+```ts
+// src/contexts/gameQueryContext.ts
+import { createContext, type Dispatch, type SetStateAction } from 'react';
+import type { GameQuery } from '../types';
+
+interface GameQueryContextType {
+  gameQuery: GameQuery;
+  setGameQuery: Dispatch<SetStateAction<GameQuery>>;
+}
+export const GameQueryContext = createContext<GameQueryContextType>({} as GameQueryContextType);
+```
+
+```ts
+// src/contexts/pageNumberContext.ts
+import { createContext, type Dispatch, type SetStateAction } from 'react';
+
+interface PageNumberContextType {
+  pageNumber: number;
+  setPageNumber: Dispatch<SetStateAction<number>>;
+}
+export const PageNumberContext = createContext<PageNumberContextType>({} as PageNumberContextType);
+```
+
+```tsx
+// App.tsx — compose providers
+import { useState } from 'react';
+import { GameQueryContext } from './contexts/gameQueryContext';
+import { PageNumberContext } from './contexts/pageNumberContext';
+
+function App() {
+  const [pageNumber, setPageNumber] = useState(1);
+  const [gameQuery, setGameQuery] = useState<GameQuery>({ page: 1 } as GameQuery);
+
+  return (
+    <GameQueryContext.Provider value={{ gameQuery, setGameQuery }}>
+      <PageNumberContext.Provider value={{ pageNumber, setPageNumber }}>
+        <OrderSelector />
+        <PlatformSelector />
+      </PageNumberContext.Provider>
+    </GameQueryContext.Provider>
+  );
+}
+```
+
+```tsx
+// PlatformSelector.tsx — consume both contexts
+import { useContext } from 'react';
+import { PageNumberContext } from '../../contexts/pageNumberContext';
+import { GameQueryContext } from '../../contexts/gameQueryContext';
+
+const PlatformSelector = () => {
+  const { setPageNumber } = useContext(PageNumberContext);
+  const { gameQuery, setGameQuery } = useContext(GameQueryContext);
+
+  const handleSelect = (platform: Platform | null) => {
+    setGameQuery({ ...gameQuery, platform, page: 1 });
+    setPageNumber(1);
+  };
+  // ...
+};
+```
+
+### Custom Provider (encapsulating state inside the context file)
+
+Move state + provider into the context file so `App.tsx` stays clean:
+
+```tsx
+// src/contexts/SomeContext.tsx
+import { createContext, useContext, useState, type ReactNode } from 'react';
+
+interface SomeContextType { value: string; setValue: (v: string) => void; }
+const SomeContext = createContext<SomeContextType | null>(null);
+
+export function SomeProvider({ children }: { children: ReactNode }) {
+  const [value, setValue] = useState('');
+  return <SomeContext.Provider value={{ value, setValue }}>{children}</SomeContext.Provider>;
+}
+
+// Guard hook — throws a clear error when used outside the provider
+export function useSomeContext() {
+  const ctx = useContext(SomeContext);
+  if (!ctx) throw new Error('useSomeContext must be used inside <SomeProvider>');
+  return ctx;
+}
+```
+
+```tsx
+// App.tsx — clean, no internal state logic
+import { SomeProvider } from './contexts/SomeContext';
+export default function App() {
+  return <SomeProvider><MyComponent /></SomeProvider>;
+}
+```
+
+### Notes on React Context
+
+- **Minimise renders**: split one large context into multiple small ones, each with a single responsibility. All consumers of a context re-render when *any* value in it changes.
+- **When to use Context**: low-frequency global values — theme, locale, auth user. Do NOT use Context for server state (use TanStack Query) or high-frequency updates (use Zustand).
+- **Alternatives**: Redux, MobX, Recoil, xState, Zustand (simplest for client state).
+
+---
+
+## Zustand — Preventing Unnecessary Re-renders
+
+By default Zustand compares selected values by `Object.is`. When you select multiple values at once in an object literal, the object reference is always new → always re-renders. Use **selectors** + **`useShallow`** to fix this:
+
+```tsx
+import { useShallow } from 'zustand/react/shallow';
+import { useCountStore } from './stores/countStore';
+
+// ❌ New object on every render → always re-renders
+const { bears, increment } = useCountStore(
+  state => ({ bears: state.bears, increment: state.increment })
+);
+
+// ✅ Shallow comparison — only re-renders when bears or increment actually change
+const { bears, increment } = useCountStore(
+  useShallow(state => ({ bears: state.bears, increment: state.increment }))
+);
+```
+
+**Architecture decision guide:**
+| Scenario | Recommendation |
+|---|---|
+| Reusable, composable components | props + `useReducer` (portable) |
+| App-specific components | Zustand store (simpler) |
+| Frequently changing values | Zustand (not Context) |
+| Server / async data | TanStack Query |
+| Cross-framework portability | Redux (worth complexity only then) |
+
+---
+
+## Zustand DevTools
+
+Use `simple-zustand-devtools` to inspect store state in the browser during development:
+
+```bash
+npm i simple-zustand-devtools
+```
+
+```ts
+// stores/countStore.ts
+import { create } from 'zustand';
+import { mountStoreDevtool } from 'simple-zustand-devtools';
+
+interface CountStore {
+  count: number;
+  increment: () => void;
+  decrement: () => void;
+}
+
+const useCountStore = create<CountStore>(set => ({
+  count: 0,
+  increment: () => set(state => ({ count: state.count + 1 })),
+  decrement: () => set(state => ({ count: state.count - 1 })),
+}));
+
+// Mount devtools only in development
+if (process.env.NODE_ENV === 'development') {
+  mountStoreDevtool('Counter Store', useCountStore);
+}
+
+export default useCountStore;
+```
+
+The panel appears in React DevTools under the name you pass — showing live store state and allowing state inspection.

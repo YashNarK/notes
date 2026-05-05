@@ -407,3 +407,356 @@ export function UserDashboard() {
 ```
 
 > **Best practice**: Fetch as much as possible in Server Components; fall back to TanStack Query only for interactive or real-time data.
+
+---
+
+## Service Layer Pattern (Plain React)
+
+Rather than scattering `axios.get/post/delete/put` calls across components, extract them into a dedicated **service layer**. This keeps components focused on UI and makes the HTTP logic reusable and testable.
+
+### File structure
+
+```
+src/
+  services/
+    api-client.ts     ← shared Axios instance
+    user-service.ts   ← domain-specific service class
+  App.tsx             ← consumes the service via useEffect
+```
+
+### `api-client.ts` — shared Axios instance
+
+```ts
+// src/services/api-client.ts
+import axios, { CanceledError } from 'axios';
+
+export { CanceledError };  // re-export so consumers don't import axios directly
+
+export default axios.create({
+  baseURL: 'https://jsonplaceholder.typicode.com',
+  // headers: { 'api-key': '...' }
+});
+```
+
+### `user-service.ts` — domain service class
+
+```ts
+// src/services/user-service.ts
+import apiClient from './api-client';
+
+export interface UserData {
+  id: number;
+  name: string;
+}
+
+class UserService {
+  async getAllUsers() {
+    const controller = new AbortController();
+    const resp = await apiClient.get<UserData[]>('/users', {
+      signal: controller.signal,
+    });
+    return { resp, cancel: () => controller.abort() };
+  }
+
+  async getUserByID(userID: number) {
+    return apiClient.get<UserData>('/users/' + userID);
+  }
+
+  async deleteUserByID(userID: number) {
+    return apiClient.delete('/users/' + userID);
+  }
+
+  async createUser(newUser: UserData) {
+    return apiClient.post<UserData>('/users', newUser);
+  }
+
+  async updateUserByID(userID: number, modified: UserData) {
+    return apiClient.put<UserData>('/users/' + userID, modified);
+  }
+}
+
+export default new UserService();
+```
+
+### `App.tsx` — consuming the service
+
+```tsx
+// src/App.tsx
+import { useState, useEffect } from 'react';
+import { AxiosError, CanceledError } from './services/api-client';
+import userService, { UserData } from './services/user-service';
+
+const App = () => {
+  const [users, setUsers]         = useState<UserData[]>([]);
+  const [httpErrors, setHttpErrors] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let cancel: (() => void) | undefined;
+
+    (async () => {
+      try {
+        setIsLoading(true);
+        const { resp, cancel: _cancel } = await userService.getAllUsers();
+        cancel = _cancel;
+        setUsers(resp.data);
+      } catch (err) {
+        if (err instanceof CanceledError) return;
+        setHttpErrors((err as AxiosError).message);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+
+    return () => cancel?.();
+  }, []);
+
+  const handleDelete = async (user: UserData) => {
+    const rollback = [...users];
+    setUsers(users.filter(u => u.id !== user.id));     // optimistic
+    try {
+      await userService.deleteUserByID(user.id);
+    } catch (err) {
+      setHttpErrors((err as AxiosError).message);
+      setUsers(rollback);                               // revert on failure
+    }
+  };
+
+  const handleAdd = async () => {
+    try {
+      const resp = await userService.createUser({ id: 0, name: 'Naren' });
+      setUsers([...users, resp.data]);
+    } catch (err) {
+      setHttpErrors((err as AxiosError).message);
+    }
+  };
+
+  const handleUpdate = async (modified: UserData) => {
+    try {
+      const resp = await userService.updateUserByID(modified.id, modified);
+      setUsers(users.map(u => (u.id === resp.data.id ? resp.data : u)));
+    } catch (err) {
+      setHttpErrors((err as AxiosError).message);
+    }
+  };
+
+  if (isLoading) return <div className="spinner-border" />;
+
+  return (
+    <div className="mx-5">
+      {httpErrors && <div className="alert alert-danger">{httpErrors}</div>}
+      <button onClick={handleAdd} className="btn btn-primary my-2">Add</button>
+      <ul className="list-group">
+        {users.map(user => (
+          <li key={user.id} className="list-group-item d-flex justify-content-between">
+            <span>{user.id}: {user.name}</span>
+            <div>
+              <button className="btn btn-outline-secondary mx-2"
+                onClick={() => handleUpdate({ ...user, name: 'mod ' + user.name })}>
+                Update
+              </button>
+              <button className="btn btn-outline-danger mx-2"
+                onClick={() => handleDelete(user)}>
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
+```
+
+---
+
+## Generic HTTP Service Class (Plain React)
+
+Once you have more than one resource (users, posts, products…), copy-pasting `UserService` for each is wasteful. Extract a **generic `HttpService<T>`** and create resource services in one line.
+
+### `http-service.ts`
+
+```ts
+// src/services/http-service.ts
+import apiClient from './api-client';
+
+interface Entity { id: number; }
+
+class HttpService {
+  private endpoint: string;
+
+  constructor(endpoint: string) {
+    // normalise trailing slash
+    this.endpoint = endpoint.endsWith('/') ? endpoint : endpoint + '/';
+  }
+
+  async getAll<T>() {
+    const controller = new AbortController();
+    const resp = await apiClient.get<T[]>(this.endpoint, {
+      signal: controller.signal,
+    });
+    return { resp, cancel: () => controller.abort() };
+  }
+
+  async getByID<T extends Entity>(entity: T) {
+    return apiClient.get<T>(this.endpoint + entity.id);
+  }
+
+  async deleteByID<T extends Entity>(entity: T) {
+    return apiClient.delete(this.endpoint + entity.id);
+  }
+
+  async create<T extends Entity>(entity: T) {
+    return apiClient.post<T>(this.endpoint, entity);
+  }
+
+  async updateByID<T extends Entity>(entity: T) {
+    return apiClient.put<T>(this.endpoint + entity.id, entity);
+  }
+}
+
+// Factory — keeps calling code clean: const svc = create('/users')
+export const create = (endpoint: string) => new HttpService(endpoint);
+```
+
+### One-line resource services
+
+```ts
+// src/services/user-service.ts
+import { create } from './http-service';
+export interface UserData { id: number; name: string; }
+export default create('/users');
+
+// src/services/post-service.ts
+import { create } from './http-service';
+export interface PostData { id: number; title: string; body: string; userId: number; }
+export default create('/posts');
+```
+
+### Using in App.tsx (same API as before — just generic type parameters differ)
+
+```tsx
+const { resp, cancel } = await userService.getAll<UserData>();
+await userService.deleteByID(user);
+const resp = await userService.create<UserData>(newUser);
+const resp = await userService.updateByID<UserData>(modifiedUser);
+```
+
+---
+
+## Custom Data Fetching Hook (Plain React)
+
+When a second component needs the same user list, you'd have to duplicate `useState` + `useEffect` logic. Extract it into a **custom hook** — custom hooks are just functions that call other hooks.
+
+### `useUsers.ts`
+
+```ts
+// src/hooks/useUsers.ts
+import { useEffect, useState } from 'react';
+import { AxiosError, CanceledError } from '../services/api-client';
+import userService, { UserData } from '../services/user-service';
+
+const useUsers = () => {
+  const [users,      setUsers]      = useState<UserData[]>([]);
+  const [httpErrors, setHttpErrors] = useState('');
+  const [isLoading,  setIsLoading]  = useState(false);
+
+  useEffect(() => {
+    let cancel: (() => void) | undefined;
+
+    (async () => {
+      try {
+        setIsLoading(true);
+        const { resp, cancel: _cancel } = await userService.getAll<UserData>();
+        cancel = _cancel;
+        setUsers(resp.data);
+      } catch (err) {
+        if (err instanceof CanceledError) return;
+        setHttpErrors((err as AxiosError).message);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+
+    return () => cancel?.();
+  }, []);
+
+  return { users, httpErrors, isLoading, setUsers, setHttpErrors };
+};
+
+export default useUsers;
+```
+
+### App.tsx — now just event handlers
+
+```tsx
+// src/App.tsx — all fetch logic is in useUsers; App only orchestrates CRUD
+import { AxiosError } from './services/api-client';
+import userService, { UserData } from './services/user-service';
+import useUsers from './hooks/useUsers';
+
+const App = () => {
+  const { users, isLoading, httpErrors, setUsers, setHttpErrors } = useUsers();
+
+  const handleDelete = async (user: UserData) => {
+    const rollback = [...users];
+    setUsers(users.filter(u => u.id !== user.id));
+    try {
+      await userService.deleteByID(user);
+    } catch (err) {
+      setHttpErrors((err as AxiosError).message);
+      setUsers(rollback);
+    }
+  };
+
+  const handleAdd = async () => {
+    try {
+      const resp = await userService.create<UserData>({ id: 0, name: 'Naren' });
+      setUsers([...users, resp.data]);
+    } catch (err) {
+      setHttpErrors((err as AxiosError).message);
+    }
+  };
+
+  const handleUpdate = async (modified: UserData) => {
+    try {
+      const resp = await userService.updateByID<UserData>(modified);
+      setUsers(users.map(u => (u.id === resp.data.id ? resp.data : u)));
+    } catch (err) {
+      setHttpErrors((err as AxiosError).message);
+    }
+  };
+
+  if (isLoading) return <div className="spinner-border" />;
+
+  return (
+    <div className="mx-5">
+      {httpErrors && <div className="alert alert-danger">{httpErrors}</div>}
+      <button onClick={handleAdd} className="btn btn-primary my-2">Add</button>
+      <ul className="list-group">
+        {users.map(user => (
+          <li key={user.id} className="list-group-item d-flex justify-content-between">
+            <span>{user.id}: {user.name}</span>
+            <div>
+              <button className="btn btn-outline-secondary mx-2"
+                onClick={() => handleUpdate({ ...user, name: 'mod ' + user.name })}>
+                Update
+              </button>
+              <button className="btn btn-outline-danger mx-2"
+                onClick={() => handleDelete(user)}>
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
+```
+
+> **When to graduate to TanStack Query**: once you need caching, deduplication, background refetching, or infinite scroll — replace `useUsers` with `useQuery` from TanStack Query (see above sections). The service layer (`api-client.ts`, `http-service.ts`) stays the same.
