@@ -12,252 +12,127 @@ Before diving into React, make sure you're comfortable with the following:
 ---
 
 ## Table of Contents
-- [Table of Contents](#table-of-contents)
 
+- [Prerequisites](#prerequisites)
 - [Setup Local Environment](#setup-local-environment)
   - [1. create-react-app](#1-create-react-app)
   - [2. Vite](#2-vite)
   - [Why Vite over Create React App?](#why-vite-over-create-react-app)
 - [JavaScript Concepts](#javascript-concepts)
   - [Useful JS Functions](#useful-js-functions)
-    - [1. Map Function:](#1-map-function)
-    - [2. Filter Function:](#2-filter-function)
-    - [3. Reduce Function:](#3-reduce-function)
-    - [4. Find Function:](#4-find-function)
-    - [5. FindIndex Function:](#5-findindex-function)
-  - [Using JS Short Circuit and Truthy Falsy Properties in React Codes](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
-    - [JS Short Circuiting:](#js-short-circuiting)
-    - [Truthy/Falsy Properties:](#truthyfalsy-properties)
-    - [React example](#react-example)
+  - [Using JS Short Circuit and Truthy Falsy in React](#using-js-short-circuit-and-truthy-falsy-properties-in-react-codes)
 - [React Basics](#react-basics)
   - [What is React?](#what-is-react)
   - [Opinions of React](#opinions-of-react)
   - [React Elements](#react-elements)
   - [React Components](#react-components)
-    - [Fragment](#fragment)
-    - [Props](#props)
-      - [**Passing function via a prop**](#passing-function-via-a-prop)
-      - [**Passing children via prop**](#passing-children-via-prop)
+  - [JSX](#jsx)
+  - [TSX](#tsx)
+- [Project Structure, Code Maintainability & Style Guide](#project-structure-code-maintainability--style-guide)
+  - [Folder Structure — Standalone React (Vite)](#folder-structure--standalone-react-vite)
+  - [Feature-First vs Layer-First](#feature-first-vs-layer-first)
+  - [Folder Structure — Next.js (App Router)](#folder-structure--nextjs-app-router)
+  - [Naming Conventions](#naming-conventions)
+  - [Component File Structure](#component-file-structure)
+  - [ESLint Configuration](#eslint-configuration)
+  - [Prettier Configuration](#prettier-configuration)
+  - [Absolute Imports (Path Aliases)](#absolute-imports-path-aliases)
+  - [Code Maintainability Rules](#code-maintainability-rules)
+  - [TypeScript Strict Mode](#typescript-strict-mode)
 - [State](#state)
   - [Declarative State Programming](#declarative-state-programming)
   - [Imperative State Programming](#imperative-state-programming)
-- [State in React](#state-in-react)
-  - [**Understanding the state hook:**](#understanding-the-state-hook)
-  - [**Choosing the state structure:**](#choosing-the-state-structure)
-  - [**Keeping the components Pure:**](#keeping-the-components-pure)
-  - [**Understanding strictmode**](#understanding-strictmode)
-  - [**Updating state objects:**](#updating-state-objects)
-  - [**Updating nested state objects:**](#updating-nested-state-objects)
-  - [**Updating Array states:**](#updating-array-states)
-  - [**Updating Array of object:**](#updating-array-of-object)
-  - [**Simplify update Logics using immer library:**](#simplify-update-logics-using-immer-library)
-    - [**A quick example for comparison:**](#a-quick-example-for-comparison)
-    - [**Installing immer**](#installing-immer)
-    - [**Using immer with React**](#using-immer-with-react)
-  - [**Sharing state between component:**](#sharing-state-between-component)
+  - [State in React](#state-in-react)
+  - [Updating state objects](#updating-state-objects)
+  - [Updating nested state objects](#updating-nested-state-objects)
+  - [Updating Array states](#updating-array-states)
+  - [Simplify update Logics using immer library](#simplify-update-logics-using-immer-library)
+  - [Sharing state between components](#sharing-state-between-component)
   - [Basic Overview of react state](#basic-overview-of-react-state)
-- [Props vs State](#props-vs-state)
+  - [Props vs State](#props-vs-state)
 - [Hooks in React](#hooks-in-react)
-  - [1. **useState**:](#1-usestate)
-  - [2. **useEffect**:](#2-useeffect)
-  - [3. **useContext**:](#3-usecontext)
-  - [4. **useReducer**:](#4-usereducer)
-  - [5. **useRef**:](#5-useref)
-  - [6. **useCallback**:](#6-usecallback)
-  - [7. **useMemo**:](#7-usememo)
-  - [8. **useLayoutEffect**:](#8-uselayouteffect)
-- [Event Handling in React](#event-handling-in-react)
-  - [Using class components](#using-class-components)
-  - [Using functions components](#using-functions-components)
-- [React Event Pooling](#react-event-pooling)
-- [Life Cycle of a React Component](#life-cycle-of-a-react-component)
-  - [Life cycle implementation in Functional Component](#life-cycle-implementation-in-functional-component)
-- [Uni directional data flow](#uni-directional-data-flow)
-  - [How Unidirectional Data Flow Works in React](#how-unidirectional-data-flow-works-in-react)
-  - [Benefits of Unidirectional Data Flow](#benefits-of-unidirectional-data-flow)
-  - [**What happens when we use callback function as props?**](#what-happens-when-we-use-callback-function-as-props)
-    - [How Callbacks Maintain Unidirectional Data Flow](#how-callbacks-maintain-unidirectional-data-flow)
-    - [Example:](#example)
-    - [Explanation:](#explanation)
-    - [Data Flow:](#data-flow)
-    - [Key Points:](#key-points)
-    - [Summary](#summary)
-  - [**What happens when someone uses Redux?**](#what-happens-when-someone-uses-redux)
-    - [Data Flow in Redux:](#data-flow-in-redux)
-    - [Key Points:](#key-points-1)
-  - [Conclusion](#conclusion)
-- [Memoizing](#memoizing)
-- [React Form](#react-form)
-  - [1. **Controlled Components**](#1-controlled-components)
-    - [Example of a Simple Controlled Form:](#example-of-a-simple-controlled-form)
-  - [2. **Uncontrolled Components**](#2-uncontrolled-components)
-    - [Example of an Uncontrolled Form:](#example-of-an-uncontrolled-form)
-  - [3. **Form Libraries**](#3-form-libraries)
-    - [Example with Formik:](#example-with-formik)
-    - [Example with React Hook Form:](#example-with-react-hook-form)
-  - [Summary](#summary-1)
-  - [Controlled Components](#controlled-components)
-  - [useState vs useRef](#usestate-vs-useref)
-    - [**useState**:](#usestate)
-    - [**useRef**:](#useref)
-      - [**Combining `useState` and `useRef`**:](#combining-usestate-and-useref)
-  - [Managing forms with React Hook Form (library)](#managing-forms-with-react-hook-form-library)
-- [React Form Validation](#react-form-validation)
-  - [1. **Manual Validation**](#1-manual-validation)
-    - [Example of Manual Validation:](#example-of-manual-validation)
-  - [2. **Using Formik**](#2-using-formik)
-    - [Example with Formik:](#example-with-formik-1)
-  - [3. **Using React Hook Form**](#3-using-react-hook-form)
-    - [Example with React Hook Form:](#example-with-react-hook-form-1)
-  - [Summary](#summary-2)
-  - [Installing Zod](#installing-zod)
-  - [To integrate react-hook-form with zod, we need @hookform/resolvers](#to-integrate-react-hook-form-with-zod-we-need-hookformresolvers)
-  - [Usage](#usage-1)
-- [Connecting to a backend](#connecting-to-a-backend)
-  - [Reusable API Client \& User Service](#reusable-api-client--user-service)
-    - [**api-client.ts**](#api-clientts)
-    - [**user-service.ts**](#user-servicets)
-    - [**App.tsx**](#apptsx)
-  - [Generic Http service](#generic-http-service)
-    - [**http-service.ts**](#http-servicets)
-    - [**user-service.ts**](#user-servicets-1)
-    - [**App.tsx**](#apptsx-1)
-  - [Custom data fetching (useUsers) hook for better state management](#custom-data-fetching-useusers-hook-for-better-state-management)
-    - [**useUsers.ts**](#useusersts)
-    - [**App.tsx**](#apptsx-2)
-- [TanStack Query](#tanstack-query)
-  - [What is **`Redux?`**](#what-is-redux)
-  - [Redux vs TanStack Query](#redux-vs-tanstack-query)
-  - [Redux - should we use it ?](#redux---should-we-use-it-)
-  - [Caching](#caching)
-  - [Problems with useEffect and direct Axios queries](#problems-with-useeffect-and-direct-axios-queries)
-  - [Installation](#installation-4)
-  - [Core Concepts of React (TanStack) Query:](#core-concepts-of-react-tanstack-query)
-  - [QueryClient and QueryClientProvider](#queryclient-and-queryclientprovider)
-  - [useQuery Hook](#usequery-hook)
-  - [useQuery and Pagination](#usequery-and-pagination)
-  - [useInfiniteQuery and Infinite loading queries](#useinfinitequery-and-infinite-loading-queries)
-  - [useMutation and Invalidate Cache, optimistic and pessimistic approaches](#usemutation-and-invalidate-cache-optimistic-and-pessimistic-approaches)
-  - [Query Basics](#query-basics)
-    - [**FetchStatus**](#fetchstatus)
-    - [**Why two different states?**](#why-two-different-states)
-  - [Mutation basics](#mutation-basics)
-    - [**Resetting Mutation State**](#resetting-mutation-state)
-    - [**Mutation Side Effects**](#mutation-side-effects)
-    - [**onMutate Side Effect**](#onmutate-side-effect)
-    - [**Consecutive mutations**](#consecutive-mutations)
-    - [**Promises**](#promises)
-    - [**Retry**](#retry)
-    - [**Persist mutations**](#persist-mutations)
-    - [**Persisting Offline mutations**](#persisting-offline-mutations)
-  - [TanStack Query - Example 1 - fetch the data](#tanstack-query---example-1---fetch-the-data)
-  - [Tanstack Query - Example 2 - Fetch the data using a custom hook and dependecies](#tanstack-query---example-2---fetch-the-data-using-a-custom-hook-and-dependecies)
-- [React Query DevTools](#react-query-devtools)
-  - [Installation](#installation-5)
-  - [Usage](#usage-2)
-- [Global State Management](#global-state-management)
-  - [Reducer](#reducer)
-  - [Sharing a state](#sharing-a-state)
-    - [**Sharing a state/data using React context**](#sharing-a-statedata-using-react-context)
-    - [**Custom Providers - React Context**](#custom-providers---react-context)
-    - [**Custom Hooks to access context providers**](#custom-hooks-to-access-context-providers)
-    - [**Notes on React-Context:**](#notes-on-react-context)
-- [Context vs Redux](#context-vs-redux)
-  - [Redux](#redux)
-  - [React Context](#react-context)
-  - [Conclusion](#conclusion-1)
-- [Zustand](#zustand)
-  - [Zustand Example 1:](#zustand-example-1)
-  - [Zustand - preventing unecessary re renders](#zustand---preventing-unecessary-re-renders)
-  - [Simple Zustand Dev Tools](#simple-zustand-dev-tools)
-- [What is Routing ?](#what-is-routing-)
-  - [Example in Express.js](#example-in-expressjs)
-- [Types of routing](#types-of-routing)
-  - [1. **Path-Based Routing**](#1-path-based-routing)
-  - [2. **Hash-Based Routing**](#2-hash-based-routing)
-  - [3. **History-Based Routing (HTML5 PushState)**](#3-history-based-routing-html5-pushstate)
-  - [4. **Query-Based Routing**](#4-query-based-routing)
-  - [5. **Static vs. Dynamic Routing**](#5-static-vs-dynamic-routing)
-  - [6. **Nested Routing**](#6-nested-routing)
-  - [7. **Conditional Routing**](#7-conditional-routing)
-- [React Router DOM](#react-router-dom)
-  - [Some Important Hooks of react-router-dom](#some-important-hooks-of-react-router-dom)
-    - [**1. useLocation**](#1-uselocation)
-    - [**2. useNavigate**](#2-usenavigate)
-    - [**3. useParams**](#3-useparams)
-    - [**4. useSearchParams**](#4-usesearchparams)
-    - [**5. useRouteError**](#5-userouteerror)
-- [Optimization in React](#optimization-in-react)
-  - [1. **Memoization**:](#1-memoization)
-  - [2. **Code Splitting**:](#2-code-splitting)
-    - [**Benefits of Code Splitting**](#benefits-of-code-splitting)
-    - [**How to Implement Code Splitting in React**](#how-to-implement-code-splitting-in-react)
-  - [3. **Virtualization**:](#3-virtualization)
-  - [4. **Avoid Anonymous Functions in JSX**:](#4-avoid-anonymous-functions-in-jsx)
-  - [5. **Use Production Build**:](#5-use-production-build)
-  - [6. **Optimize Images and Assets**:](#6-optimize-images-and-assets)
-  - [7. **Efficient State Management**:](#7-efficient-state-management)
-  - [8. **Debounce and Throttle**:](#8-debounce-and-throttle)
-  - [9. **Use React Profiler**:](#9-use-react-profiler)
-  - [10. **Avoid Reconciliation Pitfalls**:](#10-avoid-reconciliation-pitfalls)
-- [React 18+ Features](#react-18-features)
-  - [createRoot](#createroot)
-  - [Automatic Batching](#automatic-batching)
-  - [Transitions (useTransition \& useDeferredValue)](#transitions-usetransition--usedeferredvalue)
-  - [useId](#useid)
-  - [Suspense Improvements](#suspense-improvements)
-- [Error Boundaries](#error-boundaries)
-  - [Class-Based Error Boundary](#class-based-error-boundary)
-  - [react-error-boundary Library](#react-error-boundary-library)
+  - [useState](#1-usestate)
+  - [useEffect](#2-useeffect)
+  - [useContext](#3-usecontext)
+  - [useReducer](#4-usereducer)
+  - [useRef](#5-useref)
+  - [useCallback](#6-usecallback)
+  - [useMemo](#7-usememo)
+  - [useLayoutEffect](#8-uselayouteffect)
 - [Custom Hooks](#custom-hooks)
   - [Rules of Hooks](#rules-of-hooks)
   - [useLocalStorage](#uselocalstorage)
   - [useFetch](#usefetch)
   - [useDebounce](#usedebounce)
   - [useMediaQuery](#usemediaquery)
+- [Event Handling in React](#event-handling-in-react)
+  - [Using class components](#using-class-components)
+  - [Using function components](#using-functions-components)
+  - [React Event Pooling](#react-event-pooling)
+- [Life Cycle of a React Component](#life-cycle-of-a-react-component)
+  - [Life cycle in Functional Component](#life-cycle-implementation-in-functional-component)
+- [Unidirectional Data Flow](#uni-directional-data-flow)
+  - [How Unidirectional Data Flow Works in React](#how-unidirectional-data-flow-works-in-react)
+  - [Benefits of Unidirectional Data Flow](#benefits-of-unidirectional-data-flow)
+- [Memoizing](#memoizing)
+- [React Form](#react-form)
+  - [Controlled Components](#1-controlled-components)
+  - [Uncontrolled Components](#2-uncontrolled-components)
+  - [Form Libraries](#3-form-libraries)
+  - [useState vs useRef](#usestate-vs-useref)
+  - [Managing forms with React Hook Form](#managing-forms-with-react-hook-form-library)
+  - [React Form Validation](#react-form-validation)
+  - [Integrating Zod](#installing-zod)
+- [Connecting to a Backend](#connecting-to-a-backend)
+  - [Reusable API Client & User Service](#reusable-api-client--user-service)
+  - [Generic Http Service](#generic-http-service)
+  - [Custom data fetching hook (useUsers)](#custom-data-fetching-useusers-hook-for-better-state-management)
+- [TanStack Query](#tanstack-query)
+  - [Redux vs TanStack Query](#redux-vs-tanstack-query)
+  - [Caching](#caching)
+  - [QueryClient and QueryClientProvider](#queryclient-and-queryclientprovider)
+  - [useQuery Hook](#usequery-hook)
+  - [useQuery and Pagination](#usequery-and-pagination)
+  - [useInfiniteQuery](#useinfinitequery-and-infinite-loading-queries)
+  - [useMutation](#usemutation-and-invalidate-cache-optimistic-and-pessimistic-approaches)
+  - [React Query DevTools](#react-query-devtools)
+- [Global State Management](#global-state-management)
+  - [Reducer](#reducer)
+  - [Sharing a state](#sharing-a-state)
+  - [Context vs Redux](#context-vs-redux)
+  - [Zustand](#zustand)
+- [Routing](#what-is-routing-)
+  - [Types of routing](#types-of-routing)
+  - [React Router DOM](#react-router-dom)
+  - [Important Hooks of react-router-dom](#some-important-hooks-of-react-router-dom)
 - [Advanced Patterns](#advanced-patterns)
   - [Compound Components](#compound-components)
   - [Higher-Order Components (HOC)](#higher-order-components-hoc)
   - [Render Props](#render-props)
-- [React Server Components (RSC)](#react-server-components-rsc)
+  - [React Server Components (RSC)](#react-server-components-rsc)
+- [React 18+ Features](#react-18-features)
+  - [createRoot](#createroot)
+  - [Automatic Batching](#automatic-batching)
+  - [Transitions (useTransition & useDeferredValue)](#transitions-usetransition--usedeferredvalue)
+  - [useId](#useid)
+  - [Suspense Improvements](#suspense-improvements)
+- [Error Boundaries](#error-boundaries)
+  - [Class-Based Error Boundary](#class-based-error-boundary)
+  - [react-error-boundary Library](#react-error-boundary-library)
+- [Optimization in React](#optimization-in-react)
 - [Testing React](#testing-react)
   - [Jest Setup](#jest-setup)
   - [React Testing Library Basics](#react-testing-library-basics)
   - [Testing Hooks](#testing-hooks)
-- [General Programming Concepts \& Libraries](#general-programming-concepts--libraries)
+- [General Programming Concepts & Libraries](#general-programming-concepts--libraries)
   - [Cohesion and Coupling](#cohesion-and-coupling)
-  - [Useful VS Code extensions](#useful-vs-code-extensions)
-  - [Useful browser extensions](#useful-browser-extensions)
-  - [Populer UI Libraries](#populer-ui-libraries)
-  - [Icons for UI](#icons-for-ui)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [Icon Properties](#icon-properties)
-  - [Update logic Libraries](#update-logic-libraries)
-  - [React Form Libraries](#react-form-libraries)
-  - [Validation Libraries](#validation-libraries)
-    - [Joi vs Zod](#joi-vs-zod)
-  - [HTTP request library](#http-request-library)
-  - [CSS in JS styling libraries](#css-in-js-styling-libraries)
-  - [TS types for JS library variables](#ts-types-for-js-library-variables)
-  - [Cache, Retry AJAX, Infinite Scrolling/Pagination library](#cache-retry-ajax-infinite-scrollingpagination-library)
-    - [Installation](#installation-1)
-    - [Additional dev tools](#additional-dev-tools)
-  - [Infinite scrolling library - (to use with useInifiniteQuery of react-query)](#infinite-scrolling-library---to-use-with-useinifinitequery-of-react-query)
-    - [Installation](#installation-2)
-  - [Client State Management library](#client-state-management-library)
-    - [Installation](#installation-3)
-    - [Additional Dev Tools](#additional-dev-tools-1)
-  - [Routing Library](#routing-library)
-  - [Preferred backend stacks](#preferred-backend-stacks)
-  - [Deploying app in GitHub Pages](#deploying-app-in-github-pages)
-  - [Angular vs React](#angular-vs-react)
-  - [JSX](#jsx)
-  - [TSX](#tsx)
+  - [Useful VS Code Extensions](#useful-vs-code-extensions)
+  - [Popular UI Libraries](#populer-ui-libraries)
+- [Angular vs React](#angular-vs-react)
 - [Important Links](#important-links)
-- [React Summary](#react-summary)
+- [React Summary](ReactSummary.md)
 
-
+---
 ## Setup Local Environment
 
 1. Install Node LTS.
@@ -797,6 +672,460 @@ function App() {
 export default App;
 ```
 
+## JSX
+
+JSX (JavaScript XML) is a syntax extension for JavaScript that looks similar to XML or HTML. It is often used with React to describe what the UI should look like. JSX provides a concise and expressive syntax for defining React elements, making it more readable and easier to write and understand UI components.
+JSX (JavaScript Extension) allows embedding HTML within JS files and supports JS within HTML. It is compiled by Babel.
+
+Here are some key points about JSX:
+
+1. **Embedding Expressions:**
+   JSX allows you to embed JavaScript expressions within curly braces `{}`. This allows you to include dynamic content or JavaScript logic within your markup.
+
+   ```jsx
+   const name = "World";
+   const element = <p>Hello, {name}!</p>;
+   ```
+
+2. **HTML-Like Syntax:**
+   JSX resembles HTML, making it familiar and easy for developers who are accustomed to working with HTML. However, there are some differences, such as using `className` instead of `class` for defining CSS classes.
+
+   ```jsx
+   const element = <div className="container">This is a JSX element</div>;
+   ```
+
+3. **Creating React Elements:**
+   JSX gets transpiled into JavaScript code that creates React elements. The `React.createElement` function is used under the hood.
+
+   ```jsx
+   const element = <h1>Hello, React!</h1>;
+   // Transpiles to: const element = React.createElement('h1', null, 'Hello, React!');
+   ```
+
+4. **Attributes and Props:**
+   JSX allows you to define attributes similar to HTML. These attributes are called props (short for properties) in React.
+
+   ```jsx
+   const element = <img src="path/to/image.jpg" alt="An example image" />;
+   ```
+
+5. **JSX Fragments:**
+   JSX fragments (`<></>`) allow you to return multiple elements without introducing an additional parent wrapper element.
+
+   ```jsx
+   const element = (
+     <>
+       <h1>Title</h1>
+       <p>Paragraph</p>
+     </>
+   );
+   ```
+
+6. **Expressions in JSX:**
+   You can use JavaScript expressions within JSX to compute values or perform conditional rendering.
+
+   ```jsx
+   const isLoggedIn = true;
+   const element = (
+     <div>{isLoggedIn ? <p>Welcome, User!</p> : <p>Please log in</p>}</div>
+   );
+   ```
+
+JSX makes it more convenient to work with React by providing a syntax that closely resembles the final output. While it might look like HTML, it's important to remember that JSX is not HTML; it's a syntactic sugar for `React.createElement` calls, producing React elements that are then rendered to the DOM.
+
+Goto https://babeljs.io/repl for converting JSX to vanilla JS which any browser can acceot for more understanding of JSX.
+
+## TSX
+
+1. **Definition:**
+
+   - TSX stands for TypeScript JSX. It is a syntax extension for TypeScript that allows developers to write JSX (JavaScript XML) syntax with the benefits of static typing provided by TypeScript.
+
+2. **JSX in React:**
+
+   - JSX is a syntax extension for JavaScript often used with React. It allows developers to write HTML-like code within JavaScript files. JSX makes it easier to describe what the UI should look like.
+
+3. **TypeScript Integration:**
+
+   - TypeScript is a superset of JavaScript that adds static typing to the language. TSX is an extension of JSX specifically designed to work seamlessly with TypeScript. It allows developers to write React components with strong typing.
+
+4. **Benefits of TypeScript with JSX (TSX):**
+
+   - **Static Typing:** TypeScript adds a layer of static typing to JavaScript, reducing runtime errors and improving code maintainability.
+   - **Code Autocompletion:** Developers get better tooling support, including autocompletion and inline documentation, in TypeScript-enabled IDEs.
+   - **Early Error Detection:** TypeScript can catch certain types of errors during development, providing feedback to developers before runtime.
+
+5. **Example TSX Code in React:**
+
+   ```tsx
+   import React, { useState } from "react";
+
+   // A simple React component using TSX
+   const MyComponent: React.FC = () => {
+     const [count, setCount] = useState<number>(0);
+
+     return (
+       <div>
+         <p>Count: {count}</p>
+         <button onClick={() => setCount(count + 1)}>Increment</button>
+       </div>
+     );
+   };
+
+   export default MyComponent;
+   ```
+
+6. **Type Annotations in TSX:**
+
+   - TypeScript allows developers to annotate types explicitly. In the example above, `useState<number>` specifies that the `count` state should be of type `number`.
+
+7. **Integration with React Ecosystem:**
+   - Many libraries and tools in the React ecosystem support TypeScript, making it easier for developers to adopt TypeScript in their React projects.
+
+In summary, TSX in React refers to using TypeScript with JSX syntax. It enhances React development by providing static typing, improved tooling, and early error detection, making it a popular choice for developers building robust and scalable React applications.
+
+
+
+
+
+---
+
+## Project Structure, Code Maintainability & Style Guide
+
+A consistent project structure and code style guide is the foundation of a maintainable React
+codebase. This section covers **standalone React (Vite)** and **Next.js (App Router)** setups.
+
+### Folder Structure — Standalone React (Vite)
+
+```
+my-react-app/
+├── public/                   # Static assets served as-is (favicon, robots.txt)
+├── src/
+│   ├── assets/               # Images, fonts, SVGs imported by components
+│   ├── components/           # Globally reusable UI components
+│   │   ├── ui/               # Atomic/primitive components (Button, Input, Modal)
+│   │   └── layout/           # Structural components (Header, Footer, Sidebar)
+│   ├── features/             # Feature-based modules — self-contained slices of the app
+│   │   └── auth/
+│   │       ├── components/   # Components used only by this feature
+│   │       ├── hooks/        # Hooks used only by this feature
+│   │       ├── services/     # API calls for this feature
+│   │       ├── store/        # Feature-level state (slices / atoms)
+│   │       └── types/        # TypeScript types for this feature
+│   ├── hooks/                # Shared custom hooks (used across multiple features)
+│   ├── pages/                # Route-level components (used with React Router)
+│   ├── services/             # Global API clients and HTTP utilities
+│   ├── store/                # Global state (Redux store or Zustand atoms)
+│   ├── types/                # Shared TypeScript interfaces and types
+│   ├── utils/                # Pure utility / helper functions (no side-effects)
+│   ├── lib/                  # Third-party config instances (axios, query client)
+│   ├── constants/            # App-wide constants (ROUTES, API_KEYS, etc.)
+│   ├── styles/               # Global CSS, theme tokens, design variables
+│   ├── App.tsx
+│   └── main.tsx
+├── .eslintrc.cjs
+├── .prettierrc
+├── tsconfig.json
+└── vite.config.ts
+```
+
+### Feature-First vs Layer-First
+
+**Layer-first** (avoid for large apps — everything mixed in flat folders):
+
+```
+src/
+  components/   ← auth button, product card, checkout widget all mixed together
+  hooks/        ← all hooks from all features in one pile
+  services/     ← all API calls combined
+```
+
+**Feature-first** (recommended — each feature owns its code):
+
+```
+src/
+  features/
+    auth/       ← all auth: components, hooks, services, types
+    products/   ← all product: components, hooks, services, types
+    checkout/
+  components/   ← only truly shared UI (Button, Modal, Input)
+  hooks/        ← only truly shared hooks (useDebounce, useLocalStorage)
+```
+
+> **Rule of thumb:** if a component or hook is used by **more than one feature**, move it to
+> the shared `components/` or `hooks/` folder. Otherwise keep it co-located with its feature.
+
+### Folder Structure — Next.js (App Router)
+
+```
+my-next-app/
+├── app/                          # App Router root (file-system routing)
+│   ├── layout.tsx                # Root layout (wraps every page)
+│   ├── page.tsx                  # Home page — renders at /
+│   ├── globals.css
+│   ├── (auth)/                   # Route group — no URL segment added
+│   │   ├── login/
+│   │   │   └── page.tsx          # renders at /login
+│   │   └── register/
+│   │       └── page.tsx          # renders at /register
+│   ├── dashboard/
+│   │   ├── layout.tsx            # Nested layout (only for /dashboard routes)
+│   │   ├── page.tsx              # /dashboard
+│   │   └── [id]/
+│   │       └── page.tsx          # /dashboard/:id  (dynamic segment)
+│   └── api/                      # Route Handlers (replaces pages/api/)
+│       └── users/
+│           └── route.ts          # GET /api/users  POST /api/users
+├── components/                   # Shared UI (Client + Server Components)
+│   ├── ui/                       # Primitive components
+│   └── layout/                   # Structural components
+├── features/                     # Feature modules (same pattern as standalone React)
+├── hooks/                        # Client-side custom hooks
+├── lib/                          # Server-side configs (Prisma client, Auth options)
+├── services/                     # Server-side data fetching functions
+├── store/                        # Client-side global state
+├── types/                        # Shared TypeScript types
+├── utils/
+├── constants/
+├── public/
+├── .eslintrc.cjs
+├── .prettierrc
+├── next.config.js
+└── tsconfig.json
+```
+
+> **Next.js gotcha:** Server Components (the default in App Router) **cannot** use hooks,
+> browser APIs, or event handlers. Add `'use client'` at the top of any file that needs them.
+
+### Naming Conventions
+
+| Item | Convention | Example |
+|---|---|---|
+| Component files | PascalCase | `UserProfile.tsx` |
+| Hook files | camelCase with `use` prefix | `useAuth.ts`, `useLocalStorage.ts` |
+| Utility / service files | camelCase | `apiClient.ts`, `formatDate.ts` |
+| CSS Modules | camelCase | `userProfile.module.css` |
+| Constants | SCREAMING_SNAKE_CASE | `MAX_RETRY_COUNT`, `API_BASE_URL` |
+| Types / Interfaces | PascalCase | `UserProfile`, `ApiResponse<T>` |
+| Context files | PascalCase + `Context` suffix | `AuthContext.tsx`, `ThemeContext.tsx` |
+| Event handlers | camelCase with `handle` prefix | `handleSubmit`, `handleInputChange` |
+| Boolean props | `is`, `has`, `can` prefix | `isLoading`, `hasError`, `canEdit` |
+| Test files | Same name + `.test` or `.spec` | `UserProfile.test.tsx` |
+
+### Component File Structure
+
+Follow this internal ordering within every component file for consistency:
+
+```tsx
+// 1. React imports first, then third-party, then local (keep groups separated by blank line)
+import { useState, useEffect } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { Button } from '@/components/ui/Button';
+import { fetchUser } from '@/services/userService';
+import type { User } from '@/types';
+
+// 2. Types / interfaces for THIS component only
+interface UserCardProps {
+  userId: string;
+  onSelect?: (user: User) => void;
+}
+
+// 3. Module-level constants (if any)
+const CARD_MAX_WIDTH = 320;
+
+// 4. The component
+export function UserCard({ userId, onSelect }: UserCardProps) {
+  // 4a. Hooks: state → refs → context → queries (always at the top level, no conditions)
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { data: user, isLoading } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => fetchUser(userId),
+  });
+
+  // 4b. Derived values (computed from state / props, no side-effects)
+  const displayName = user ? `${user.firstName} ${user.lastName}` : '—';
+
+  // 4c. Effects
+  useEffect(() => {
+    document.title = displayName;
+  }, [displayName]);
+
+  // 4d. Event handlers
+  const handleClick = () => {
+    setIsExpanded(prev => !prev);
+    onSelect?.(user!);
+  };
+
+  // 4e. Early returns — guard clauses (loading, error, empty)
+  if (isLoading) return <span>Loading…</span>;
+  if (!user) return null;
+
+  // 4f. The JSX return (always last)
+  return (
+    <div style={{ maxWidth: CARD_MAX_WIDTH }}>
+      <h2>{displayName}</h2>
+      <button onClick={handleClick}>
+        {isExpanded ? 'Collapse' : 'Expand'}
+      </button>
+    </div>
+  );
+}
+```
+
+### ESLint Configuration
+
+```bash
+npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin \
+  eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-jsx-a11y \
+  eslint-plugin-import eslint-config-prettier
+```
+
+`.eslintrc.cjs`:
+
+```js
+module.exports = {
+  root: true,
+  env: { browser: true, es2022: true },
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint', 'react', 'react-hooks', 'jsx-a11y', 'import'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',       // React 17+ — no need to import React in every file
+    'plugin:react-hooks/recommended',
+    'plugin:jsx-a11y/recommended',
+    'plugin:import/recommended',
+    'prettier',                       // MUST be last — disables conflicting ESLint format rules
+  ],
+  settings: {
+    react: { version: 'detect' },
+  },
+  rules: {
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'react/prop-types': 'off',        // TypeScript handles prop types
+    'import/order': ['warn', {
+      groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+      'newlines-between': 'always',
+    }],
+  },
+};
+```
+
+### Prettier Configuration
+
+```bash
+npm install -D prettier eslint-config-prettier
+```
+
+`.prettierrc`:
+
+```json
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "endOfLine": "lf"
+}
+```
+
+`.vscode/settings.json` — auto-format and auto-fix on every save:
+
+```json
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
+```
+
+### Absolute Imports (Path Aliases)
+
+Avoid `../../../` path hell by aliasing `src/` as `@/`.
+
+`vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: { '@': path.resolve(__dirname, './src') },
+  },
+});
+```
+
+`tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "@/*": ["./src/*"] }
+  }
+}
+```
+
+Now write `import { Button } from '@/components/ui/Button'` instead of
+`'../../../components/ui/Button'`.
+
+> **Next.js:** The `@/` alias is built-in — no extra config required.
+
+### Code Maintainability Rules
+
+1. **One component per file** — multiple exports per file make refactoring and imports harder.
+2. **Keep components small** — if a component exceeds ~150 lines, extract sub-components or a
+   custom hook.
+3. **Extract hooks for logic** — keep stateful logic in custom hooks; keep JSX in the component.
+4. **Co-locate tests** — `UserCard.test.tsx` lives next to `UserCard.tsx`, not in a
+   distant `__tests__/` folder.
+5. **Barrel exports** — use `index.ts` in each folder for cleaner imports:
+
+   ```ts
+   // components/ui/index.ts
+   export { Button } from './Button';
+   export { Input } from './Input';
+   export { Modal } from './Modal';
+
+   // consumer:
+   import { Button, Modal } from '@/components/ui';
+   ```
+
+6. **Avoid prop drilling deeper than 2 levels** — use Context, Zustand, or component
+   composition instead.
+7. **Never mutate props or state directly** — always return new objects / arrays.
+8. **Memoize selectively** — only add `useMemo` / `useCallback` / `React.memo` after the
+   React Profiler shows a real performance problem. Premature memoization adds noise.
+
+### TypeScript Strict Mode
+
+Enable the strictest TypeScript settings to catch the most bugs at compile time:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true
+  }
+}
+```
+
+`strict: true` enables: `strictNullChecks`, `noImplicitAny`, `strictFunctionTypes`,
+`strictBindCallApply` — the single most impactful TypeScript option for code correctness.
+
+---
 ## State
 
 State makes UI interactive. UI = f(state). There are declarative and imperative approaches.
@@ -1541,6 +1870,151 @@ This hook is similar to `useEffect`, but it fires synchronously after all DOM mu
   ```
 
 These are some of the most commonly used React Hooks, but React provides many more hooks for various purposes, such as custom hooks (`useCustomHook`) and hooks for working with forms, animations, and more. Understanding and mastering these hooks can significantly enhance your productivity and enable you to build powerful and maintainable React applications.
+
+## Custom Hooks
+
+Custom hooks extract reusable stateful logic into standalone functions. Any function starting with `use` that calls React hooks is a custom hook.
+
+## Rules of Hooks
+
+1. Only call hooks at the **top level** — never inside loops, conditions, or nested functions
+2. Only call hooks from **React function components** or other custom hooks
+3. Custom hooks must start with **`use`**
+
+## useLocalStorage
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? (JSON.parse(item) as T) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      console.warn(`Failed to save "${key}" to localStorage`);
+    }
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}
+
+// Usage
+const [theme, setTheme] = useLocalStorage<"light" | "dark">("theme", "light");
+```
+
+## useFetch
+
+```tsx
+import { useState, useEffect, useRef } from "react";
+
+interface FetchState<T> {
+  data: T | null;
+  isLoading: boolean;
+  error: Error | null;
+}
+
+function useFetch<T>(url: string): FetchState<T> {
+  const [state, setState] = useState<FetchState<T>>({
+    data: null,
+    isLoading: true,
+    error: null,
+  });
+  const abortRef = useRef<AbortController>(null);
+
+  useEffect(() => {
+    abortRef.current = new AbortController();
+
+    setState({ data: null, isLoading: true, error: null });
+
+    fetch(url, { signal: abortRef.current.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<T>;
+      })
+      .then((data) => setState({ data, isLoading: false, error: null }))
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          setState({ data: null, isLoading: false, error: err });
+        }
+      });
+
+    return () => abortRef.current?.abort(); // cancel on unmount or url change
+  }, [url]);
+
+  return state;
+}
+
+// Usage
+const { data: users, isLoading, error } = useFetch<User[]>("/api/users");
+```
+
+## useDebounce
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useDebounce<T>(value: T, delay: number = 500): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// Usage — only fires search API call 500ms after user stops typing
+function SearchBar() {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 500);
+
+  useEffect(() => {
+    if (debouncedQuery) fetchResults(debouncedQuery);
+  }, [debouncedQuery]);
+
+  return <input value={query} onChange={(e) => setQuery(e.target.value)} />;
+}
+```
+
+## useMediaQuery
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia(query).matches
+      : false
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    mql.addEventListener("change", handler);
+    setMatches(mql.matches);
+    return () => mql.removeEventListener("change", handler);
+  }, [query]);
+
+  return matches;
+}
+
+// Usage
+const isMobile = useMediaQuery("(max-width: 768px)");
+const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
+```
+
+---
 
 ## Event Handling in React
 
@@ -6124,148 +6598,208 @@ const ErrorPage = () => {
 export default ErrorPage;
 ```
 
-## Optimization in React
+## Advanced Patterns
 
-Optimization in React involves improving the performance and efficiency of your application. Here are some key techniques:
+## Compound Components
 
-## 1. **Memoization**:
+Compound components share implicit state via context, giving consumers a composable API — like `<select>` and `<option>`.
 
-- Use `React.memo` to prevent unnecessary re-renders of functional components.
-- Use `useMemo` to memoize expensive calculations.
-- Use `useCallback` to memoize callback functions.
+```tsx
+import { createContext, useContext, useState, ReactNode } from "react";
 
-## 2. **Code Splitting**:
+interface TabsContextType {
+  activeTab: string;
+  setActiveTab: (id: string) => void;
+}
 
-- Use dynamic `import()` to split code into smaller bundles that can be loaded on demand.
-- Tools like Webpack and libraries like React.lazy and Suspense can help with code splitting.
-  Code splitting is a technique used to break up a large bundle of JavaScript into smaller chunks that can be loaded on demand. This helps improve the initial load time of an application by only loading the necessary code for the current user interaction. In React, code splitting can be achieved using dynamic `import()` statements, React.lazy, and React.Suspense.
+const TabsContext = createContext<TabsContextType | null>(null);
 
-### **Benefits of Code Splitting**
+function useTabs() {
+  const ctx = useContext(TabsContext);
+  if (!ctx) throw new Error("Must be used within <Tabs>");
+  return ctx;
+}
 
-1. **Improved Performance**: By loading only the code needed for the current view, the initial load time is reduced.
-2. **Reduced Bandwidth Usage**: Users only download the code they need, which can be especially beneficial for users with limited data plans.
-3. **Better User Experience**: Faster initial load times can lead to a more responsive and pleasant user experience.
+// Parent manages state
+function Tabs({ children, defaultTab }: { children: ReactNode; defaultTab: string }) {
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  return (
+    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
+      <div className="tabs">{children}</div>
+    </TabsContext.Provider>
+  );
+}
 
-### **How to Implement Code Splitting in React**
+// Sub-components consume shared state
+function TabList({ children }: { children: ReactNode }) {
+  return <div className="tab-list" role="tablist">{children}</div>;
+}
 
-1. **Using Dynamic `import()`**:
-   You can use dynamic `import()` to split out parts of your application. This allows you to load modules on demand.
+function Tab({ id, children }: { id: string; children: ReactNode }) {
+  const { activeTab, setActiveTab } = useTabs();
+  return (
+    <button
+      role="tab"
+      aria-selected={activeTab === id}
+      onClick={() => setActiveTab(id)}
+    >
+      {children}
+    </button>
+  );
+}
 
-   ```javascript
-   import React, { Component } from "react";
+function TabPanel({ id, children }: { id: string; children: ReactNode }) {
+  const { activeTab } = useTabs();
+  if (activeTab !== id) return null;
+  return <div role="tabpanel">{children}</div>;
+}
 
-   class MyComponent extends Component {
-     state = {
-       MyModule: null,
-     };
+// Attach sub-components as static properties (namespace pattern)
+Tabs.List  = TabList;
+Tabs.Tab   = Tab;
+Tabs.Panel = TabPanel;
 
-     loadModule = async () => {
-       const { default: MyModule } = await import("./MyModule");
-       this.setState({ MyModule });
-     };
+// Consumer — clean, declarative API
+function App() {
+  return (
+    <Tabs defaultTab="home">
+      <Tabs.List>
+        <Tabs.Tab id="home">Home</Tabs.Tab>
+        <Tabs.Tab id="about">About</Tabs.Tab>
+      </Tabs.List>
+      <Tabs.Panel id="home"><HomePage /></Tabs.Panel>
+      <Tabs.Panel id="about"><AboutPage /></Tabs.Panel>
+    </Tabs>
+  );
+}
+```
 
-     render() {
-       const { MyModule } = this.state;
-       return (
-         <div>
-           <button onClick={this.loadModule}>Load Module</button>
-           {MyModule && <MyModule />}
-         </div>
-       );
-     }
-   }
+## Higher-Order Components (HOC)
 
-   export default MyComponent;
-   ```
+An HOC is a function that takes a component and returns a new enhanced component. Useful for cross-cutting concerns (auth, logging, theming).
 
-2. **Using `React.lazy` and `Suspense`**:
-   React provides a built-in way to handle code splitting with `React.lazy` and `Suspense`.
+```tsx
+import { ComponentType } from "react";
 
-   ```javascript
-   import React, { Suspense, lazy } from "react";
+// HOC that adds authentication guard
+function withAuth<P extends object>(WrappedComponent: ComponentType<P>) {
+  return function AuthenticatedComponent(props: P) {
+    const { user, isLoading } = useAuth();
 
-   const LazyComponent = lazy(() => import("./LazyComponent"));
+    if (isLoading) return <Spinner />;
+    if (!user) return <Navigate to="/login" replace />;
 
-   function App() {
-     return (
-       <div>
-         <Suspense fallback={<div>Loading...</div>}>
-           <LazyComponent />
-         </Suspense>
-       </div>
-     );
-   }
+    return <WrappedComponent {...props} />;
+  };
+}
 
-   export default App;
-   ```
+// HOC that injects loading state
+function withLoading<P extends object>(WrappedComponent: ComponentType<P>) {
+  return function WithLoadingComponent({
+    isLoading,
+    ...props
+  }: P & { isLoading: boolean }) {
+    if (isLoading) return <div>Loading...</div>;
+    return <WrappedComponent {...(props as P)} />;
+  };
+}
 
-   In this example, `LazyComponent` is loaded only when it is rendered. While it's being loaded, the `Suspense` component shows a fallback (like a loading spinner).
+// Usage — compose HOCs
+const ProtectedDashboard = withAuth(withLoading(Dashboard));
+```
 
-3. **Route-Based Code Splitting**:
-   When using a router (e.g., React Router), you can split code based on routes to load only the components required for the current route.
+> **Prefer custom hooks over HOCs** when possible — hooks are simpler and don't add to the component tree depth.
 
-   ```javascript
-   import React, { Suspense, lazy } from "react";
-   import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+## Render Props
 
-   const Home = lazy(() => import("./Home"));
-   const About = lazy(() => import("./About"));
+A component accepts a function as a prop (or `children`) and calls it with internal state. Gives consumers full control over rendering.
 
-   function App() {
-     return (
-       <Router>
-         <Suspense fallback={<div>Loading...</div>}>
-           <Switch>
-             <Route path="/about" component={About} />
-             <Route path="/" component={Home} />
-           </Switch>
-         </Suspense>
-       </Router>
-     );
-   }
+```tsx
+interface MousePosition { x: number; y: number }
 
-   export default App;
-   ```
+function MouseTracker({
+  render,
+}: {
+  render: (pos: MousePosition) => React.ReactNode;
+}) {
+  const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 });
 
-   Here, the `Home` and `About` components are loaded only when their respective routes are accessed.
+  return (
+    <div
+      onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
+      style={{ height: "100vh" }}
+    >
+      {render(pos)}
+    </div>
+  );
+}
 
-By using these techniques, you can make your React applications more efficient and responsive by leveraging code splitting.
+// Usage
+<MouseTracker
+  render={({ x, y }) => (
+    <p>Mouse is at ({x}, {y})</p>
+  )}
+/>
+```
 
-## 3. **Virtualization**:
+> **Modern alternative:** Extract to a custom hook (`useMouse`) — same logic, cleaner code.
 
-- Use libraries like `react-window` or `react-virtualized` to efficiently render large lists or tables.
+---
 
-## 4. **Avoid Anonymous Functions in JSX**:
+## React Server Components (RSC)
 
-- Passing anonymous functions directly in JSX can cause unnecessary re-renders.
+React Server Components (introduced with Next.js 13+ App Router) run **exclusively on the server**. They can directly access databases, file systems, and secrets — without sending those to the browser.
 
-## 5. **Use Production Build**:
+### Server vs Client Components
 
-- Ensure you are running a production build of React, which is optimized and stripped of development warnings.
+| | Server Component | Client Component |
+|---|---|---|
+| Default in Next.js App Router | ✅ Yes | ❌ No (opt-in with `"use client"`) |
+| Runs on | Server only | Browser (+ server for hydration) |
+| Can use hooks (useState, etc.) | ❌ No | ✅ Yes |
+| Can access DB / filesystem | ✅ Yes | ❌ No |
+| Bundle size impact | Zero (not sent to browser) | Adds to JS bundle |
+| Can accept/render Server Components as children | ✅ Yes | ✅ Yes |
 
-## 6. **Optimize Images and Assets**:
+```tsx
+// app/users/page.tsx — Server Component (default in Next.js App Router)
+import { db } from "@/lib/db";
 
-- Compress and optimize images.
-- Use SVGs for simple graphics.
+export default async function UsersPage() {
+  const users = await db.user.findMany(); // direct DB access, no API needed
 
-## 7. **Efficient State Management**:
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
 
-- Lift state up only when necessary.
-- Use context wisely and avoid overusing it for global state.
+// app/users/UserCard.tsx — Client Component (needs interactivity)
+"use client";
 
-## 8. **Debounce and Throttle**:
+import { useState } from "react";
 
-- Use techniques like debounce and throttle to limit the frequency of function execution, especially for input events.
+export function UserCard({ user }: { user: User }) {
+  const [expanded, setExpanded] = useState(false);
 
-## 9. **Use React Profiler**:
+  return (
+    <div onClick={() => setExpanded((e) => !e)}>
+      <h3>{user.name}</h3>
+      {expanded && <p>{user.email}</p>}
+    </div>
+  );
+}
+```
 
-- Utilize the React Profiler to identify performance bottlenecks.
+### Key RSC Rules
 
-## 10. **Avoid Reconciliation Pitfalls**:
-
-- Ensure that key props are stable and unique to avoid unnecessary re-renders.
-
-Implementing these strategies can significantly enhance the performance of your React application.
+1. Never `"use client"` on a component that accesses secrets/DB — those would leak to the browser
+2. Client Components can import Server Components as `children` props (pass-through is safe)
+3. Client Components **cannot** import Server Components directly
+4. Use `Suspense` around Server Components for streaming/loading states
 
 ---
 
@@ -6521,353 +7055,148 @@ function MyComponent() {
 
 ---
 
-## Custom Hooks
-
-Custom hooks extract reusable stateful logic into standalone functions. Any function starting with `use` that calls React hooks is a custom hook.
-
-## Rules of Hooks
-
-1. Only call hooks at the **top level** — never inside loops, conditions, or nested functions
-2. Only call hooks from **React function components** or other custom hooks
-3. Custom hooks must start with **`use`**
-
-## useLocalStorage
-
-```tsx
-import { useState, useEffect } from "react";
-
-function useLocalStorage<T>(key: string, initialValue: T) {
-  const [value, setValue] = useState<T>(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
-    } catch {
-      return initialValue;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      console.warn(`Failed to save "${key}" to localStorage`);
-    }
-  }, [key, value]);
-
-  return [value, setValue] as const;
-}
-
-// Usage
-const [theme, setTheme] = useLocalStorage<"light" | "dark">("theme", "light");
-```
-
-## useFetch
-
-```tsx
-import { useState, useEffect, useRef } from "react";
-
-interface FetchState<T> {
-  data: T | null;
-  isLoading: boolean;
-  error: Error | null;
-}
-
-function useFetch<T>(url: string): FetchState<T> {
-  const [state, setState] = useState<FetchState<T>>({
-    data: null,
-    isLoading: true,
-    error: null,
-  });
-  const abortRef = useRef<AbortController>(null);
-
-  useEffect(() => {
-    abortRef.current = new AbortController();
+## Optimization in React
+
+Optimization in React involves improving the performance and efficiency of your application. Here are some key techniques:
 
-    setState({ data: null, isLoading: true, error: null });
+## 1. **Memoization**:
 
-    fetch(url, { signal: abortRef.current.signal })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<T>;
-      })
-      .then((data) => setState({ data, isLoading: false, error: null }))
-      .catch((err) => {
-        if (err.name !== "AbortError") {
-          setState({ data: null, isLoading: false, error: err });
-        }
-      });
-
-    return () => abortRef.current?.abort(); // cancel on unmount or url change
-  }, [url]);
-
-  return state;
-}
-
-// Usage
-const { data: users, isLoading, error } = useFetch<User[]>("/api/users");
-```
-
-## useDebounce
-
-```tsx
-import { useState, useEffect } from "react";
-
-function useDebounce<T>(value: T, delay: number = 500): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
-// Usage — only fires search API call 500ms after user stops typing
-function SearchBar() {
-  const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 500);
-
-  useEffect(() => {
-    if (debouncedQuery) fetchResults(debouncedQuery);
-  }, [debouncedQuery]);
-
-  return <input value={query} onChange={(e) => setQuery(e.target.value)} />;
-}
-```
-
-## useMediaQuery
-
-```tsx
-import { useState, useEffect } from "react";
-
-function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() =>
-    typeof window !== "undefined"
-      ? window.matchMedia(query).matches
-      : false
-  );
-
-  useEffect(() => {
-    const mql = window.matchMedia(query);
-    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
-    mql.addEventListener("change", handler);
-    setMatches(mql.matches);
-    return () => mql.removeEventListener("change", handler);
-  }, [query]);
-
-  return matches;
-}
-
-// Usage
-const isMobile = useMediaQuery("(max-width: 768px)");
-const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
-```
-
----
-
-## Advanced Patterns
-
-## Compound Components
-
-Compound components share implicit state via context, giving consumers a composable API — like `<select>` and `<option>`.
-
-```tsx
-import { createContext, useContext, useState, ReactNode } from "react";
-
-interface TabsContextType {
-  activeTab: string;
-  setActiveTab: (id: string) => void;
-}
-
-const TabsContext = createContext<TabsContextType | null>(null);
-
-function useTabs() {
-  const ctx = useContext(TabsContext);
-  if (!ctx) throw new Error("Must be used within <Tabs>");
-  return ctx;
-}
-
-// Parent manages state
-function Tabs({ children, defaultTab }: { children: ReactNode; defaultTab: string }) {
-  const [activeTab, setActiveTab] = useState(defaultTab);
-  return (
-    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
-      <div className="tabs">{children}</div>
-    </TabsContext.Provider>
-  );
-}
-
-// Sub-components consume shared state
-function TabList({ children }: { children: ReactNode }) {
-  return <div className="tab-list" role="tablist">{children}</div>;
-}
-
-function Tab({ id, children }: { id: string; children: ReactNode }) {
-  const { activeTab, setActiveTab } = useTabs();
-  return (
-    <button
-      role="tab"
-      aria-selected={activeTab === id}
-      onClick={() => setActiveTab(id)}
-    >
-      {children}
-    </button>
-  );
-}
-
-function TabPanel({ id, children }: { id: string; children: ReactNode }) {
-  const { activeTab } = useTabs();
-  if (activeTab !== id) return null;
-  return <div role="tabpanel">{children}</div>;
-}
-
-// Attach sub-components as static properties (namespace pattern)
-Tabs.List  = TabList;
-Tabs.Tab   = Tab;
-Tabs.Panel = TabPanel;
-
-// Consumer — clean, declarative API
-function App() {
-  return (
-    <Tabs defaultTab="home">
-      <Tabs.List>
-        <Tabs.Tab id="home">Home</Tabs.Tab>
-        <Tabs.Tab id="about">About</Tabs.Tab>
-      </Tabs.List>
-      <Tabs.Panel id="home"><HomePage /></Tabs.Panel>
-      <Tabs.Panel id="about"><AboutPage /></Tabs.Panel>
-    </Tabs>
-  );
-}
-```
-
-## Higher-Order Components (HOC)
-
-An HOC is a function that takes a component and returns a new enhanced component. Useful for cross-cutting concerns (auth, logging, theming).
-
-```tsx
-import { ComponentType } from "react";
-
-// HOC that adds authentication guard
-function withAuth<P extends object>(WrappedComponent: ComponentType<P>) {
-  return function AuthenticatedComponent(props: P) {
-    const { user, isLoading } = useAuth();
-
-    if (isLoading) return <Spinner />;
-    if (!user) return <Navigate to="/login" replace />;
-
-    return <WrappedComponent {...props} />;
-  };
-}
-
-// HOC that injects loading state
-function withLoading<P extends object>(WrappedComponent: ComponentType<P>) {
-  return function WithLoadingComponent({
-    isLoading,
-    ...props
-  }: P & { isLoading: boolean }) {
-    if (isLoading) return <div>Loading...</div>;
-    return <WrappedComponent {...(props as P)} />;
-  };
-}
-
-// Usage — compose HOCs
-const ProtectedDashboard = withAuth(withLoading(Dashboard));
-```
-
-> **Prefer custom hooks over HOCs** when possible — hooks are simpler and don't add to the component tree depth.
-
-## Render Props
-
-A component accepts a function as a prop (or `children`) and calls it with internal state. Gives consumers full control over rendering.
-
-```tsx
-interface MousePosition { x: number; y: number }
-
-function MouseTracker({
-  render,
-}: {
-  render: (pos: MousePosition) => React.ReactNode;
-}) {
-  const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 });
-
-  return (
-    <div
-      onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
-      style={{ height: "100vh" }}
-    >
-      {render(pos)}
-    </div>
-  );
-}
-
-// Usage
-<MouseTracker
-  render={({ x, y }) => (
-    <p>Mouse is at ({x}, {y})</p>
-  )}
-/>
-```
-
-> **Modern alternative:** Extract to a custom hook (`useMouse`) — same logic, cleaner code.
-
----
-
-## React Server Components (RSC)
-
-React Server Components (introduced with Next.js 13+ App Router) run **exclusively on the server**. They can directly access databases, file systems, and secrets — without sending those to the browser.
-
-### Server vs Client Components
-
-| | Server Component | Client Component |
-|---|---|---|
-| Default in Next.js App Router | ✅ Yes | ❌ No (opt-in with `"use client"`) |
-| Runs on | Server only | Browser (+ server for hydration) |
-| Can use hooks (useState, etc.) | ❌ No | ✅ Yes |
-| Can access DB / filesystem | ✅ Yes | ❌ No |
-| Bundle size impact | Zero (not sent to browser) | Adds to JS bundle |
-| Can accept/render Server Components as children | ✅ Yes | ✅ Yes |
-
-```tsx
-// app/users/page.tsx — Server Component (default in Next.js App Router)
-import { db } from "@/lib/db";
-
-export default async function UsersPage() {
-  const users = await db.user.findMany(); // direct DB access, no API needed
-
-  return (
-    <ul>
-      {users.map((user) => (
-        <li key={user.id}>{user.name}</li>
-      ))}
-    </ul>
-  );
-}
-
-// app/users/UserCard.tsx — Client Component (needs interactivity)
-"use client";
-
-import { useState } from "react";
-
-export function UserCard({ user }: { user: User }) {
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <div onClick={() => setExpanded((e) => !e)}>
-      <h3>{user.name}</h3>
-      {expanded && <p>{user.email}</p>}
-    </div>
-  );
-}
-```
-
-### Key RSC Rules
-
-1. Never `"use client"` on a component that accesses secrets/DB — those would leak to the browser
-2. Client Components can import Server Components as `children` props (pass-through is safe)
-3. Client Components **cannot** import Server Components directly
-4. Use `Suspense` around Server Components for streaming/loading states
+- Use `React.memo` to prevent unnecessary re-renders of functional components.
+- Use `useMemo` to memoize expensive calculations.
+- Use `useCallback` to memoize callback functions.
+
+## 2. **Code Splitting**:
+
+- Use dynamic `import()` to split code into smaller bundles that can be loaded on demand.
+- Tools like Webpack and libraries like React.lazy and Suspense can help with code splitting.
+  Code splitting is a technique used to break up a large bundle of JavaScript into smaller chunks that can be loaded on demand. This helps improve the initial load time of an application by only loading the necessary code for the current user interaction. In React, code splitting can be achieved using dynamic `import()` statements, React.lazy, and React.Suspense.
+
+### **Benefits of Code Splitting**
+
+1. **Improved Performance**: By loading only the code needed for the current view, the initial load time is reduced.
+2. **Reduced Bandwidth Usage**: Users only download the code they need, which can be especially beneficial for users with limited data plans.
+3. **Better User Experience**: Faster initial load times can lead to a more responsive and pleasant user experience.
+
+### **How to Implement Code Splitting in React**
+
+1. **Using Dynamic `import()`**:
+   You can use dynamic `import()` to split out parts of your application. This allows you to load modules on demand.
+
+   ```javascript
+   import React, { Component } from "react";
+
+   class MyComponent extends Component {
+     state = {
+       MyModule: null,
+     };
+
+     loadModule = async () => {
+       const { default: MyModule } = await import("./MyModule");
+       this.setState({ MyModule });
+     };
+
+     render() {
+       const { MyModule } = this.state;
+       return (
+         <div>
+           <button onClick={this.loadModule}>Load Module</button>
+           {MyModule && <MyModule />}
+         </div>
+       );
+     }
+   }
+
+   export default MyComponent;
+   ```
+
+2. **Using `React.lazy` and `Suspense`**:
+   React provides a built-in way to handle code splitting with `React.lazy` and `Suspense`.
+
+   ```javascript
+   import React, { Suspense, lazy } from "react";
+
+   const LazyComponent = lazy(() => import("./LazyComponent"));
+
+   function App() {
+     return (
+       <div>
+         <Suspense fallback={<div>Loading...</div>}>
+           <LazyComponent />
+         </Suspense>
+       </div>
+     );
+   }
+
+   export default App;
+   ```
+
+   In this example, `LazyComponent` is loaded only when it is rendered. While it's being loaded, the `Suspense` component shows a fallback (like a loading spinner).
+
+3. **Route-Based Code Splitting**:
+   When using a router (e.g., React Router), you can split code based on routes to load only the components required for the current route.
+
+   ```javascript
+   import React, { Suspense, lazy } from "react";
+   import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
+   const Home = lazy(() => import("./Home"));
+   const About = lazy(() => import("./About"));
+
+   function App() {
+     return (
+       <Router>
+         <Suspense fallback={<div>Loading...</div>}>
+           <Switch>
+             <Route path="/about" component={About} />
+             <Route path="/" component={Home} />
+           </Switch>
+         </Suspense>
+       </Router>
+     );
+   }
+
+   export default App;
+   ```
+
+   Here, the `Home` and `About` components are loaded only when their respective routes are accessed.
+
+By using these techniques, you can make your React applications more efficient and responsive by leveraging code splitting.
+
+## 3. **Virtualization**:
+
+- Use libraries like `react-window` or `react-virtualized` to efficiently render large lists or tables.
+
+## 4. **Avoid Anonymous Functions in JSX**:
+
+- Passing anonymous functions directly in JSX can cause unnecessary re-renders.
+
+## 5. **Use Production Build**:
+
+- Ensure you are running a production build of React, which is optimized and stripped of development warnings.
+
+## 6. **Optimize Images and Assets**:
+
+- Compress and optimize images.
+- Use SVGs for simple graphics.
+
+## 7. **Efficient State Management**:
+
+- Lift state up only when necessary.
+- Use context wisely and avoid overusing it for global state.
+
+## 8. **Debounce and Throttle**:
+
+- Use techniques like debounce and throttle to limit the frequency of function execution, especially for input events.
+
+## 9. **Use React Profiler**:
+
+- Utilize the React Profiler to identify performance bottlenecks.
+
+## 10. **Avoid Reconciliation Pitfalls**:
+
+- Ensure that key props are stable and unique to avoid unnecessary re-renders.
+
+Implementing these strategies can significantly enhance the performance of your React application.
 
 ---
 
@@ -7281,121 +7610,6 @@ npm run deploy
 | **Customization**           | Less flexible due to framework constraints   | Highly flexible, can choose libraries                               |
 | **Mobile Development**      | NativeScript, Ionic                          | React Native                                                        |
 | **Server-side Rendering**   | Angular Universal                            | Next.js                                                             |
-
-## JSX
-
-JSX (JavaScript XML) is a syntax extension for JavaScript that looks similar to XML or HTML. It is often used with React to describe what the UI should look like. JSX provides a concise and expressive syntax for defining React elements, making it more readable and easier to write and understand UI components.
-JSX (JavaScript Extension) allows embedding HTML within JS files and supports JS within HTML. It is compiled by Babel.
-
-Here are some key points about JSX:
-
-1. **Embedding Expressions:**
-   JSX allows you to embed JavaScript expressions within curly braces `{}`. This allows you to include dynamic content or JavaScript logic within your markup.
-
-   ```jsx
-   const name = "World";
-   const element = <p>Hello, {name}!</p>;
-   ```
-
-2. **HTML-Like Syntax:**
-   JSX resembles HTML, making it familiar and easy for developers who are accustomed to working with HTML. However, there are some differences, such as using `className` instead of `class` for defining CSS classes.
-
-   ```jsx
-   const element = <div className="container">This is a JSX element</div>;
-   ```
-
-3. **Creating React Elements:**
-   JSX gets transpiled into JavaScript code that creates React elements. The `React.createElement` function is used under the hood.
-
-   ```jsx
-   const element = <h1>Hello, React!</h1>;
-   // Transpiles to: const element = React.createElement('h1', null, 'Hello, React!');
-   ```
-
-4. **Attributes and Props:**
-   JSX allows you to define attributes similar to HTML. These attributes are called props (short for properties) in React.
-
-   ```jsx
-   const element = <img src="path/to/image.jpg" alt="An example image" />;
-   ```
-
-5. **JSX Fragments:**
-   JSX fragments (`<></>`) allow you to return multiple elements without introducing an additional parent wrapper element.
-
-   ```jsx
-   const element = (
-     <>
-       <h1>Title</h1>
-       <p>Paragraph</p>
-     </>
-   );
-   ```
-
-6. **Expressions in JSX:**
-   You can use JavaScript expressions within JSX to compute values or perform conditional rendering.
-
-   ```jsx
-   const isLoggedIn = true;
-   const element = (
-     <div>{isLoggedIn ? <p>Welcome, User!</p> : <p>Please log in</p>}</div>
-   );
-   ```
-
-JSX makes it more convenient to work with React by providing a syntax that closely resembles the final output. While it might look like HTML, it's important to remember that JSX is not HTML; it's a syntactic sugar for `React.createElement` calls, producing React elements that are then rendered to the DOM.
-
-Goto https://babeljs.io/repl for converting JSX to vanilla JS which any browser can acceot for more understanding of JSX.
-
-## TSX
-
-1. **Definition:**
-
-   - TSX stands for TypeScript JSX. It is a syntax extension for TypeScript that allows developers to write JSX (JavaScript XML) syntax with the benefits of static typing provided by TypeScript.
-
-2. **JSX in React:**
-
-   - JSX is a syntax extension for JavaScript often used with React. It allows developers to write HTML-like code within JavaScript files. JSX makes it easier to describe what the UI should look like.
-
-3. **TypeScript Integration:**
-
-   - TypeScript is a superset of JavaScript that adds static typing to the language. TSX is an extension of JSX specifically designed to work seamlessly with TypeScript. It allows developers to write React components with strong typing.
-
-4. **Benefits of TypeScript with JSX (TSX):**
-
-   - **Static Typing:** TypeScript adds a layer of static typing to JavaScript, reducing runtime errors and improving code maintainability.
-   - **Code Autocompletion:** Developers get better tooling support, including autocompletion and inline documentation, in TypeScript-enabled IDEs.
-   - **Early Error Detection:** TypeScript can catch certain types of errors during development, providing feedback to developers before runtime.
-
-5. **Example TSX Code in React:**
-
-   ```tsx
-   import React, { useState } from "react";
-
-   // A simple React component using TSX
-   const MyComponent: React.FC = () => {
-     const [count, setCount] = useState<number>(0);
-
-     return (
-       <div>
-         <p>Count: {count}</p>
-         <button onClick={() => setCount(count + 1)}>Increment</button>
-       </div>
-     );
-   };
-
-   export default MyComponent;
-   ```
-
-6. **Type Annotations in TSX:**
-
-   - TypeScript allows developers to annotate types explicitly. In the example above, `useState<number>` specifies that the `count` state should be of type `number`.
-
-7. **Integration with React Ecosystem:**
-   - Many libraries and tools in the React ecosystem support TypeScript, making it easier for developers to adopt TypeScript in their React projects.
-
-In summary, TSX in React refers to using TypeScript with JSX syntax. It enhances React development by providing static typing, improved tooling, and early error detection, making it a popular choice for developers building robust and scalable React applications.
-
-
-
 
 ## Important Links
 
