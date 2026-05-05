@@ -837,8 +837,13 @@ Here are some key points about JSX:
    JSX gets transpiled into JavaScript code that creates React elements. The `React.createElement` function is used under the hood.
 
    ```jsx
-   const element = <h1>Hello, React!</h1>;
-   // Transpiles to: const element = React.createElement('h1', null, 'Hello, React!');
+   const element = <h1 className="greeting" id="main-title">Hello, React!</h1>;
+   // Transpiles to:
+   const element = React.createElement(
+     'h1',
+     { className: 'greeting', id: 'main-title' },
+     'Hello, React!'
+   );
    ```
 
 4. **Attributes and Props:**
