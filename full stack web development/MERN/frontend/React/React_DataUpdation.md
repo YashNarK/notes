@@ -1,11 +1,16 @@
 # React — Data Updation
 
-Data updation covers how to apply immutable state changes locally (Immer), trigger server mutations (TanStack Query / Server Actions), and keep the UI optimistically in sync.
-
 ## Table of contents
 
 - [React — Data Updation](#react--data-updation)
   - [Table of contents](#table-of-contents)
+  - [Data Updation Concepts](#data-updation-concepts)
+    - [What is a Mutation?](#what-is-a-mutation)
+    - [CRUD Operations](#crud-operations)
+    - [The Read/Write Lifecycle](#the-readwrite-lifecycle)
+    - [Immutability Revisited](#immutability-revisited)
+    - [What is an Optimistic Update?](#what-is-an-optimistic-update)
+    - [The Update vs Refetch Decision](#the-update-vs-refetch-decision)
   - [Plain React](#plain-react)
     - [Immutable Updates — The Problem](#immutable-updates--the-problem)
     - [Immer — Write Mutating Code, Get Immutable Updates](#immer--write-mutating-code-get-immutable-updates)
@@ -18,6 +23,116 @@ Data updation covers how to apply immutable state changes locally (Immer), trigg
     - [Cache Revalidation After Mutations](#cache-revalidation-after-mutations)
     - [Optimistic UI with useOptimistic](#optimistic-ui-with-useoptimistic)
     - [Combining Immer with Server Actions](#combining-immer-with-server-actions)
+
+---
+
+## Data Updation Concepts
+
+### What is a Mutation?
+
+In software, a **mutation** is any operation that changes data — as opposed to a **query**, which only reads data.
+
+```
+Query   → GET  /api/todos        → reads a list, nothing changes
+Mutation → POST  /api/todos       → creates a new todo
+Mutation → PATCH /api/todos/42    → updates todo 42
+Mutation → DELETE /api/todos/42   → deletes todo 42
+```
+
+TanStack Query distinguishes between `useQuery` (for reads) and `useMutation` (for writes) for this reason. Each has different behaviour — queries cache and auto-refetch; mutations don't cache and fire on demand.
+
+### CRUD Operations
+
+**CRUD** stands for Create, Read, Update, Delete — the four fundamental data operations:
+
+| Operation | HTTP Method | SQL | Example |
+|---|---|---|---|
+| **C**reate | POST | INSERT | Add a new user |
+| **R**ead | GET | SELECT | Fetch user list |
+| **U**pdate | PUT / PATCH | UPDATE | Change user's name |
+| **D**elete | DELETE | DELETE | Remove a user |
+
+`PUT` replaces the entire resource. `PATCH` updates only the fields you send:
+
+```
+PUT  /users/42  { name: "Bob", email: "bob@x.com", role: "admin" }  ← full replace
+PATCH /users/42 { name: "Bob" }                                      ← partial update
+```
+
+### The Read/Write Lifecycle
+
+After a successful mutation, the UI must reflect the new data. There are two strategies:
+
+**Refetch** — invalidate the cache and re-fetch from the server:
+```
+User deletes todo → DELETE /api/todos/42 → invalidate 'todos' cache → GET /api/todos → re-render
+```
+
+**Cache update** — update the local cache directly without a second network request:
+```
+User deletes todo → DELETE /api/todos/42 → remove item from TanStack Query cache → re-render
+```
+
+Refetch is simpler but slower. Cache update is instant but can go stale if other users also change data.
+
+### Immutability Revisited
+
+React tracks state changes by comparing **object references** (memory addresses), not object contents. This means you must always create a **new** object/array when updating state.
+
+```ts
+// Both are arrays with the same values, but different references
+const a = [1, 2, 3];
+const b = [...a];    // spread creates a new array
+
+a === b  // false — different references ← React detects a change
+a === a  // true  — same reference      ← React thinks nothing changed
+```
+
+For deeply nested objects, creating new references at every level by hand becomes messy:
+
+```ts
+// Updating a city deep inside a nested object
+setState({
+  ...state,
+  user: {
+    ...state.user,
+    profile: {
+      ...state.user.profile,
+      address: {
+        ...state.user.profile.address,
+        city: 'London',   // ← the actual change
+      }
+    }
+  }
+});
+```
+
+**Immer** solves this by letting you write direct mutations while producing a new reference internally.
+
+### What is an Optimistic Update?
+
+An **optimistic update** is when you immediately show the expected result in the UI *before* the server confirms the change.
+
+```
+Without optimistic update:
+  User clicks "Like" → button stays un-liked → wait 300ms → server responds → button shows liked
+  (feels sluggish)
+
+With optimistic update:
+  User clicks "Like" → button shows liked instantly → server confirms → done
+                                                    ↓ (or) server fails → revert to un-liked
+  (feels instant)
+```
+
+The trade-off: if the server rejects the mutation, you must **roll back** the optimistic change. This requires saving a snapshot of the previous state.
+
+### The Update vs Refetch Decision
+
+| Strategy | When to use | Trade-off |
+|---|---|---|
+| **Refetch** | When accuracy matters; multi-user data | Slower, always fresh |
+| **Cache update** | Single-user data; you trust the response | Faster, may be stale |
+| **Optimistic update** | High-frequency actions (like, follow, toggle) | Best UX, needs rollback logic |
 
 ---
 

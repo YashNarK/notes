@@ -1,11 +1,17 @@
 # React — Animations
 
-React has no built-in animation system. The ecosystem offers libraries ranging from declarative physics-based animation to performant CSS-driven transitions.
-
 ## Table of contents
 
 - [React — Animations](#react--animations)
   - [Table of contents](#table-of-contents)
+  - [Animation Concepts](#animation-concepts)
+    - [What is an Animation in the Browser?](#what-is-an-animation-in-the-browser)
+    - [CSS Transitions vs CSS Animations vs JavaScript Animations](#css-transitions-vs-css-animations-vs-javascript-animations)
+    - [The Browser Rendering Pipeline](#the-browser-rendering-pipeline)
+    - [Cheap vs Expensive Properties to Animate](#cheap-vs-expensive-properties-to-animate)
+    - [Easing — The Feel of Motion](#easing--the-feel-of-motion)
+    - [Duration-Based vs Spring-Based Animation](#duration-based-vs-spring-based-animation)
+    - [The Exit Animation Problem in React](#the-exit-animation-problem-in-react)
   - [Plain React](#plain-react)
     - [CSS Transitions \& Keyframes](#css-transitions--keyframes)
     - [Framer Motion (Recommended)](#framer-motion-recommended)
@@ -19,6 +25,153 @@ React has no built-in animation system. The ecosystem offers libraries ranging f
     - [Page Transition Animations](#page-transition-animations)
     - [LazyMotion — Reducing Bundle Size](#lazymotion--reducing-bundle-size)
     - [Avoiding Hydration Mismatches](#avoiding-hydration-mismatches)
+
+---
+
+## Animation Concepts
+
+### What is an Animation in the Browser?
+
+An **animation** is a change in an element's visual properties over time. The browser draws the change frame-by-frame (typically 60 frames per second).
+
+```
+Frame 1:  opacity = 0,  translateY = 20px   ← element is invisible, shifted down
+Frame 15: opacity = 0.5, translateY = 10px  ← halfway through
+Frame 30: opacity = 1,  translateY = 0px    ← element is fully visible, in place
+```
+
+At 60fps, 30 frames takes 500ms. The user sees a smooth fade-in slide-up transition.
+
+### CSS Transitions vs CSS Animations vs JavaScript Animations
+
+There are three mechanisms to animate in the browser:
+
+**CSS Transitions** — animate between two states when a CSS class changes. Simple and GPU-accelerated.
+
+```css
+.box {
+  opacity: 0;
+  transition: opacity 300ms ease;  /* animate any opacity change over 300ms */
+}
+.box.visible {
+  opacity: 1;
+}
+```
+
+```tsx
+<div className={`box ${isVisible ? 'visible' : ''}`} />
+```
+
+**CSS Animations (`@keyframes`)** — define a multi-step animation sequence. Runs automatically, no state change needed.
+
+```css
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+```
+
+**JavaScript Animations** — drive animations from JS, giving you full control over timing, physics, and interactivity (e.g., drag to dismiss, scroll-driven animations).
+
+```tsx
+// Framer Motion — JS drives the animation
+<motion.div animate={{ opacity: 1, y: 0 }} initial={{ opacity: 0, y: 20 }} />
+```
+
+| | CSS Transitions | CSS Keyframes | JS (Framer Motion) |
+|---|---|---|---|
+| Control | Simple state A→B | Multi-step sequences | Full — physics, gestures, scroll |
+| Performance | ✅ GPU-accelerated | ✅ GPU-accelerated | ✅ (with correct properties) |
+| Exit animations | ❌ Not possible | ❌ Not possible | ✅ AnimatePresence |
+| Complexity | Low | Medium | Higher |
+
+### The Browser Rendering Pipeline
+
+The browser goes through three stages to paint pixels:
+
+```
+1. Layout (Reflow)   → calculate size and position of every element
+2. Paint             → fill in pixels (colours, borders, shadows)
+3. Composite         → layer composition on the GPU
+```
+
+**Animating properties that trigger Layout is expensive** — the browser must recalculate positions for potentially hundreds of elements on every frame:
+
+```css
+/* ❌ Triggers Layout — expensive */
+width, height, top, left, margin, padding, font-size
+```
+
+**Animating properties that only trigger Composite is cheap** — happens entirely on the GPU:
+
+```css
+/* ✅ Compositor-only — always smooth */
+transform: translateX() translateY() scale() rotate()
+opacity
+```
+
+### Cheap vs Expensive Properties to Animate
+
+| Property | Pipeline stage | Performance |
+|---|---|---|
+| `transform` | Composite only | ✅ Always smooth |
+| `opacity` | Composite only | ✅ Always smooth |
+| `filter` (blur, etc.) | Paint + Composite | ⚠️ Usually fine |
+| `background-color` | Paint | ⚠️ Usually fine |
+| `width`, `height` | Layout + Paint + Composite | ❌ Can cause jank |
+| `top`, `left` | Layout + Paint + Composite | ❌ Use `transform` instead |
+| `box-shadow` | Paint | ❌ Expensive |
+
+**Rule:** Always animate `transform` and `opacity`. Simulate position changes with `transform: translate()`, not `top`/`left`.
+
+### Easing — The Feel of Motion
+
+**Easing** controls the acceleration curve of an animation — how fast it starts and ends.
+
+```
+linear     ──────────── constant speed — feels robotic
+ease-in    ─────────/   starts slow, ends fast — good for exits
+ease-out   \─────────   starts fast, ends slow — good for entrances ✅
+ease-in-out \────────/  slow at both ends — natural, polished ✅
+```
+
+**Natural motion** in the real world always has ease-in-out character — objects don't instantly jump to full speed. Most UI animations should use `ease-out` (elements entering) or `ease-in-out`.
+
+### Duration-Based vs Spring-Based Animation
+
+**Duration-based** — you specify exactly how long an animation takes.
+
+```css
+transition: transform 300ms ease-out;
+```
+
+Fixed timing can feel mechanical, especially for interactive animations (dragging, physics).
+
+**Spring-based** — instead of duration, you define physical properties: tension (stiffness) and friction (damping). The animation resolves when the spring "settles".
+
+```tsx
+// React Spring — physics model, no fixed duration
+useSpring({ tension: 300, friction: 20 })
+```
+
+Spring animations feel more natural because they behave like real-world objects. They're especially good for gestures and drag interactions.
+
+### The Exit Animation Problem in React
+
+This is the most misunderstood animation challenge in React.
+
+When a component **unmounts** (is removed from the JSX tree), React removes it from the DOM **immediately** — there's no chance for a CSS exit animation to play.
+
+```tsx
+// ❌ This exit animation NEVER plays — element is gone before CSS can run
+{isOpen && <div className="modal fade-out">...</div>}
+```
+
+The solution requires keeping the element in the DOM until the exit animation completes. **Framer Motion's `AnimatePresence`** handles this automatically — it delays unmounting until the `exit` animation finishes.
 
 ---
 

@@ -1,11 +1,16 @@
 # React — Managing App State
 
-State management covers local component state, shared cross-component state, and server-synchronised state.
-
 ## Table of contents
 
 - [React — Managing App State](#react--managing-app-state)
   - [Table of contents](#table-of-contents)
+  - [State Concepts](#state-concepts)
+    - [What is State?](#what-is-state)
+    - [Why Not Just Use a Variable?](#why-not-just-use-a-variable)
+    - [State vs Props](#state-vs-props)
+    - [What is Immutability?](#what-is-immutability)
+    - [The Four Kinds of State](#the-four-kinds-of-state)
+    - [The Prop-Drilling Problem](#the-prop-drilling-problem)
   - [Plain React](#plain-react)
     - [Local State — useState](#local-state--usestate)
     - [Derived \& Computed State](#derived--computed-state)
@@ -18,6 +23,133 @@ State management covers local component state, shared cross-component state, and
     - [Server vs Client State](#server-vs-client-state)
     - [Using Zustand with Next.js](#using-zustand-with-nextjs)
     - [URL as State](#url-as-state)
+
+---
+
+## State Concepts
+
+### What is State?
+
+**State** is any data that can change over time and whose change should cause the UI to update.
+
+Examples:
+- Is the menu open or closed? → `boolean`
+- What has the user typed into a search box? → `string`
+- Which items are in the shopping cart? → `array`
+- Is the user logged in? → `User | null`
+
+When state changes, React automatically re-renders the affected components to reflect the new data. This is React's core value proposition — you describe what the UI should look like for a given state, and React handles updating the DOM.
+
+```
+State changes  →  React re-renders  →  DOM updates  →  User sees new UI
+```
+
+### Why Not Just Use a Variable?
+
+```tsx
+// ❌ This does NOT work — React doesn't know the variable changed
+function Counter() {
+  let count = 0;
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={() => { count++; }}>  {/* count changes, but no re-render */}
+        Increment
+      </button>
+    </div>
+  );
+}
+
+// ✅ This works — React watches `count` and re-renders when it changes
+function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+`useState` stores the value **outside** the component function, so it survives re-renders. Calling `setCount` tells React "this changed — please re-render."
+
+### State vs Props
+
+| | State | Props |
+|---|---|---|
+| Owned by | The component itself | The parent component |
+| Mutable? | Yes — via setter function | No — read-only inside component |
+| Changes trigger re-render? | Yes | Yes |
+| Passed down? | Only if you pass it as a prop | Received from parent |
+
+```tsx
+function Parent() {
+  const [name, setName] = useState('Alice'); // ← state lives here
+  return <Child name={name} />;              // ← passed as prop
+}
+
+function Child({ name }: { name: string }) {
+  // name is a prop — Child cannot change it directly
+  return <p>Hello, {name}</p>;
+}
+```
+
+### What is Immutability?
+
+React uses **reference equality** to detect state changes — it checks if the new value is a different object in memory, not whether its contents changed.
+
+**Mutating** (modifying in place) = same reference → React thinks nothing changed:
+```tsx
+// ❌ Mutating — React will NOT re-render
+const [items, setItems] = useState(['a', 'b']);
+items.push('c');     // modifies the array in place
+setItems(items);     // same array reference → React skips re-render
+```
+
+**Immutable update** (new object/array) = new reference → React re-renders:
+```tsx
+// ✅ Immutable — React detects the change and re-renders
+setItems([...items, 'c']);          // new array
+setUser({ ...user, name: 'Bob' }); // new object
+```
+
+This is why tools like **Immer** exist — they let you write "mutating" code that is secretly immutable under the hood.
+
+### The Four Kinds of State
+
+Understanding what *type* of state you're dealing with determines which tool to use:
+
+| Kind | Description | Examples | Tool |
+|---|---|---|---|
+| **Local** | Belongs to one component | open/closed, input value, active tab | `useState`, `useReducer` |
+| **Shared** | Needed by several components in a subtree | theme, currently logged-in user | Context API |
+| **Global** | Needed anywhere in the app | shopping cart, notification queue | Zustand |
+| **Server** | Comes from an API; must stay in sync | user list, product catalogue | TanStack Query |
+
+> **Key insight:** Server state is fundamentally different from client state. It's owned by the server, can change at any time, and needs caching, refetching, and synchronisation. Don't store it in Zustand — use TanStack Query.
+
+### The Prop-Drilling Problem
+
+**Prop drilling** happens when you pass a value through many intermediate components just to get it to a deeply nested child.
+
+```
+App (has user state)
+└── Layout
+    └── Sidebar
+        └── UserMenu         ← needs user
+            └── UserAvatar   ← needs user
+```
+
+```tsx
+// Without a solution — every layer must pass `user` down
+<Layout user={user}>
+  <Sidebar user={user}>
+    <UserMenu user={user}>
+      <UserAvatar user={user} />   {/* finally! */}
+```
+
+This is hard to maintain. The solution is to use **Context API** or **Zustand** so `UserAvatar` can read the value directly without all the intermediate components caring about it.
 
 ---
 

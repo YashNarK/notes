@@ -1,11 +1,16 @@
 # React — UI Libraries & Component Systems
 
-React itself only handles the UI rendering layer. The ecosystem offers a rich set of libraries to build polished interfaces.
-
 ## Table of contents
 
 - [React — UI Libraries \& Component Systems](#react--ui-libraries--component-systems)
   - [Table of contents](#table-of-contents)
+  - [UI Concepts](#ui-concepts)
+    - [What is a UI Component?](#what-is-a-ui-component)
+    - [The Problem: Building from Scratch is Slow](#the-problem-building-from-scratch-is-slow)
+    - [The Spectrum: Four Approaches to UI](#the-spectrum-four-approaches-to-ui)
+    - [Accessibility (a11y)](#accessibility-a11y)
+    - [Design Systems](#design-systems)
+    - [Which Approach Should You Use?](#which-approach-should-you-use)
   - [Plain React](#plain-react)
     - [Built-in Primitives](#built-in-primitives)
     - [Popular UI Libraries](#popular-ui-libraries)
@@ -15,6 +20,123 @@ React itself only handles the UI rendering layer. The ecosystem offers a rich se
     - [SSR \& CSS Considerations](#ssr--css-considerations)
     - [Layouts \& UI Composition in App Router](#layouts--ui-composition-in-app-router)
     - [Recommended Libraries with Next.js](#recommended-libraries-with-nextjs)
+
+---
+
+## UI Concepts
+
+### What is a UI Component?
+
+A **UI component** is a self-contained, reusable piece of the interface — a button, a modal dialog, a dropdown menu, a date picker. It encapsulates structure (HTML), appearance (CSS), and sometimes behaviour (JavaScript) in one unit.
+
+```
+Without components:                With components:
+─────────────────────────────────  ─────────────────────────────────
+Copy-paste 50 lines of button      <Button variant="primary">Save</Button>
+HTML+CSS everywhere                 reused everywhere, styled once
+```
+
+React's component model makes this natural — every piece of UI is a function that returns JSX.
+
+### The Problem: Building from Scratch is Slow
+
+Building a polished, accessible button from scratch involves far more than you'd expect:
+
+```html
+<!-- What a properly accessible button actually needs -->
+<button
+  type="button"
+  aria-label="Save document"
+  aria-disabled="false"
+  class="btn btn-primary"
+  tabindex="0"
+>
+  Save
+</button>
+```
+
+And that's before you add:
+- hover, active, focus, disabled styles
+- keyboard navigation
+- screen-reader announcements
+- dark mode support
+- responsive sizing
+
+UI libraries solve this by giving you pre-built, tested, accessible components out of the box.
+
+### The Spectrum: Four Approaches to UI
+
+There is a spectrum from "fully styled" to "completely unstyled":
+
+```
+Fully styled ◄────────────────────────────────────────► Fully unstyled
+     │                                                           │
+ Component        Utility-first CSS          Headless
+ Libraries                                   Libraries
+(MUI, Ant,      (Tailwind CSS +              (Radix UI,
+ Chakra)         shadcn/ui)                  Headless UI)
+```
+
+**1. Component Libraries** — pre-designed components you import and use. Fast to build with, opinionated visually. Hard to fully customise.
+
+```tsx
+import Button from '@mui/material/Button';
+<Button variant="contained">Save</Button>  // looks like Material Design
+```
+
+**2. Utility-First CSS (Tailwind)** — no pre-built components; you compose them from atomic CSS classes. Full control over appearance.
+
+```tsx
+<button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+  Save
+</button>
+```
+
+**3. Headless Component Libraries** — provide behaviour and accessibility only, zero styling. You bring your own CSS.
+
+```tsx
+import * as Dialog from '@radix-ui/react-dialog';
+// Dialog opens/closes correctly, is accessible, traps focus —
+// but you style every pixel yourself
+```
+
+**4. Copy-paste (shadcn/ui)** — generates source code into your project that you own and customise. Best of Radix (behaviour) + Tailwind (styling).
+
+### Accessibility (a11y)
+
+**Accessibility** means your UI works for all users, including those using screen readers, keyboard-only navigation, or high-contrast modes.
+
+Key concepts:
+- **ARIA attributes** (`aria-label`, `aria-expanded`, `role`) — tell screen readers what an element is
+- **Focus management** — when a modal opens, focus must move into it; when it closes, focus must return
+- **Keyboard navigation** — dropdowns must be operable with arrow keys; modals must close on Escape
+- **Colour contrast** — text must have sufficient contrast ratio (WCAG AA: 4.5:1 for normal text)
+
+> **Why it matters:** Inaccessible UIs exclude users with disabilities and may violate legal requirements (ADA, EN 301 549). Component libraries like Radix UI and Headless UI handle all of this for you.
+
+### Design Systems
+
+A **design system** is a collection of reusable components, tokens (colours, spacing, typography), and guidelines that ensure visual consistency across an entire product.
+
+```
+Design system
+├── Tokens: --color-primary: #0066FF; --spacing-4: 16px;
+├── Components: Button, Card, Modal, Input, Badge
+├── Patterns: forms always use 8px gap between fields
+└── Guidelines: use primary button only once per page
+```
+
+Libraries like MUI implement Material Design (Google's design system). Chakra UI lets you define your own tokens. shadcn/ui gives you the components to build your own.
+
+### Which Approach Should You Use?
+
+| Situation | Recommendation |
+|---|---|
+| Need to ship fast, don't care about custom look | MUI, Chakra, Ant Design |
+| Custom design, full styling control | Tailwind CSS |
+| Custom design + need accessibility out of the box | shadcn/ui (Radix + Tailwind) |
+| Building your own design system | Radix UI or Headless UI + CSS Modules |
+| Next.js with SSR | shadcn/ui or Tailwind (no emotion/styled-components issues) |
 
 ---
 

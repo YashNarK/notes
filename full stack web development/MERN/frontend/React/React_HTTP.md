@@ -1,11 +1,17 @@
 # React — HTTP & Data Fetching
 
-React itself makes no HTTP calls. The ecosystem uses Axios or Fetch for transport and TanStack Query for caching, retries, and synchronisation.
-
 ## Table of contents
 
 - [React — HTTP \& Data Fetching](#react--http--data-fetching)
   - [Table of contents](#table-of-contents)
+  - [HTTP Concepts](#http-concepts)
+    - [What is HTTP?](#what-is-http)
+    - [Request and Response](#request-and-response)
+    - [REST APIs](#rest-apis)
+    - [Synchronous vs Asynchronous Requests](#synchronous-vs-asynchronous-requests)
+    - [The Problem with Raw fetch in React](#the-problem-with-raw-fetch-in-react)
+    - [Transport vs Data Layer](#transport-vs-data-layer)
+    - [What is Caching?](#what-is-caching)
   - [Plain React](#plain-react)
     - [Fetch API](#fetch-api)
     - [Axios](#axios)
@@ -16,6 +22,148 @@ React itself makes no HTTP calls. The ecosystem uses Axios or Fetch for transpor
     - [Revalidation \& Caching](#revalidation--caching)
     - [Route Handlers (API Routes)](#route-handlers-api-routes)
     - [Client-side Fetching in Next.js](#client-side-fetching-in-nextjs)
+
+---
+
+## HTTP Concepts
+
+### What is HTTP?
+
+**HTTP (HyperText Transfer Protocol)** is the language browsers and servers use to communicate. Every time your app loads data from a backend, it speaks HTTP.
+
+```
+Browser                              Server
+  │                                    │
+  │── GET /api/users ─────────────────►│
+  │                                    │  (database query)
+  │◄── 200 OK + JSON body ────────────│
+  │                                    │
+```
+
+### Request and Response
+
+Every HTTP interaction has two parts:
+
+**Request** — sent by the browser:
+```
+Method:  GET / POST / PUT / PATCH / DELETE
+URL:     https://api.example.com/users/42
+Headers: Content-Type: application/json
+         Authorization: Bearer <token>
+Body:    { "name": "Alice" }   ← only for POST/PUT/PATCH
+```
+
+**Response** — sent by the server:
+```
+Status:  200 OK / 201 Created / 400 Bad Request / 401 Unauthorized / 404 Not Found / 500 Server Error
+Headers: Content-Type: application/json
+Body:    { "id": 42, "name": "Alice" }
+```
+
+**Common status codes:**
+
+| Code | Meaning |
+|---|---|
+| 200 | OK — request succeeded |
+| 201 | Created — resource was created |
+| 400 | Bad Request — client sent invalid data |
+| 401 | Unauthorized — not logged in |
+| 403 | Forbidden — logged in but no permission |
+| 404 | Not Found — resource doesn't exist |
+| 500 | Server Error — bug on the backend |
+
+### REST APIs
+
+**REST (Representational State Transfer)** is a convention for structuring API URLs and HTTP methods around **resources** (things like users, posts, orders).
+
+```
+GET    /users          → list all users
+GET    /users/42       → get user with id 42
+POST   /users          → create a new user
+PUT    /users/42       → replace user 42 entirely
+PATCH  /users/42       → partially update user 42
+DELETE /users/42       → delete user 42
+```
+
+Most React apps talk to REST APIs. The backend exposes these endpoints; the frontend calls them.
+
+### Synchronous vs Asynchronous Requests
+
+HTTP requests take time — the browser must wait for the server to respond. JavaScript handles this with **Promises** and **async/await**, so the UI stays responsive while waiting.
+
+```ts
+// Synchronous (blocking) — the entire thread freezes until done
+// NOT how HTTP works in JavaScript
+
+// Asynchronous — correct approach
+async function loadUser(id: number) {
+  const response = await fetch(`/api/users/${id}`); // waits, but doesn't block
+  const user = await response.json();
+  return user;
+}
+```
+
+### The Problem with Raw fetch in React
+
+Using `fetch` directly inside a component requires a lot of boilerplate — and has hidden pitfalls:
+
+```tsx
+// Problems you have to solve manually every single time:
+const [data, setData]       = useState(null);  // 1. store the result
+const [loading, setLoading] = useState(true);  // 2. track loading state
+const [error, setError]     = useState(null);  // 3. handle errors
+
+useEffect(() => {
+  let cancelled = false;   // 4. prevent race conditions (if component unmounts)
+  fetch('/api/users')
+    .then(r => { if (!r.ok) throw new Error('Failed'); return r.json(); })
+    .then(d => { if (!cancelled) setData(d); })
+    .catch(e => { if (!cancelled) setError(e); })
+    .finally(() => { if (!cancelled) setLoading(false); });
+  return () => { cancelled = true; };  // 5. cleanup
+}, []);
+
+// 6. No caching — refetches every time component mounts
+// 7. No retry on network error
+// 8. No background refresh
+// 9. No deduplication if two components fetch the same thing
+```
+
+Libraries like **TanStack Query** solve all 9 of these problems automatically.
+
+### Transport vs Data Layer
+
+These are two different responsibilities:
+
+| Layer | Job | Libraries |
+|---|---|---|
+| **Transport** | Make HTTP requests, attach headers, handle auth tokens | `fetch`, Axios |
+| **Data layer** | Cache results, retry, refetch, sync with server | TanStack Query |
+
+You typically use both together:
+```
+Axios    →  makes the actual HTTP call
+TanStack Query  →  manages when/whether to make it
+```
+
+### What is Caching?
+
+**Caching** means storing a previously fetched result so you don't have to fetch it again immediately.
+
+```
+Without caching:
+  Navigate to Users list → fetch /api/users → show
+  Navigate away
+  Navigate back to Users list → fetch /api/users again → show
+
+With caching (TanStack Query):
+  Navigate to Users list → fetch /api/users → cache result → show
+  Navigate away
+  Navigate back → show cached data instantly → (background refetch to check for updates)
+```
+
+**Stale time** — how long cached data is considered fresh (no refetch needed).
+**Cache time** — how long cached data is kept in memory after all components stop using it.
 
 ---
 

@@ -1,11 +1,18 @@
 # React — Internationalization (i18n)
 
-Internationalization enables your app to serve users in multiple languages and locales, handling translations, date/number formatting, and pluralisation.
-
 ## Table of contents
 
 - [React — Internationalization (i18n)](#react--internationalization-i18n)
   - [Table of contents](#table-of-contents)
+  - [i18n Concepts](#i18n-concepts)
+    - [What is i18n?](#what-is-i18n)
+    - [i18n vs l10n](#i18n-vs-l10n)
+    - [Key Vocabulary](#key-vocabulary)
+    - [The Problem: Hard-Coded Strings Don't Scale](#the-problem-hard-coded-strings-dont-scale)
+    - [How Translation Libraries Work](#how-translation-libraries-work)
+    - [Pluralisation and Interpolation](#pluralisation-and-interpolation)
+    - [Right-to-Left (RTL) Languages](#right-to-left-rtl-languages)
+    - [Date, Number, and Currency Formatting](#date-number-and-currency-formatting)
   - [Plain React](#plain-react)
     - [react-i18next (Recommended)](#react-i18next-recommended)
     - [Setup](#setup)
@@ -18,6 +25,143 @@ Internationalization enables your app to serve users in multiple languages and l
     - [Using Translations](#using-translations)
     - [Locale-aware Routing](#locale-aware-routing)
     - [Server vs Client Components](#server-vs-client-components)
+
+---
+
+## i18n Concepts
+
+### What is i18n?
+
+**Internationalization (i18n)** is the process of designing your app so it can be adapted to different languages and regions **without changing the source code** for each one.
+
+The "18" in i18n stands for the 18 letters between the "i" and the "n" in "internationalization".
+
+A fully internationalised app can support French, Arabic, Japanese, and English by only swapping out a translation file — no code changes needed.
+
+### i18n vs l10n
+
+These two terms are often confused:
+
+| Term | Full name | What it means |
+|---|---|---|
+| **i18n** | Internationalization | Building the infrastructure that *allows* translation |
+| **l10n** | Localization | Actually *translating* and adapting content for a specific locale |
+
+```
+i18n = making your app translation-ready
+l10n = French translator fills in the French strings
+```
+
+You do i18n once (in code). l10n is done per language, often by translators.
+
+### Key Vocabulary
+
+| Term | Definition | Example |
+|---|---|---|
+| **Locale** | A language + region combination | `en-US`, `fr-FR`, `ar-SA`, `zh-TW` |
+| **Translation key** | A stable identifier for a piece of text | `"nav.home"`, `"errors.required"` |
+| **Namespace** | A group of related translation keys | `"common"`, `"auth"`, `"dashboard"` |
+| **Fallback locale** | Used when a key is missing in the current locale | `en` fallback when `fr` key is missing |
+| **Pluralization** | Different text for singular vs plural | "1 item" vs "3 items" |
+| **Interpolation** | Inserting dynamic values into translated strings | `"Welcome, {{name}}"` |
+
+### The Problem: Hard-Coded Strings Don't Scale
+
+```tsx
+// ❌ Hard-coded — you'd need to duplicate this component for each language
+function Greeting() {
+  return <h1>Welcome, Alice!</h1>;
+}
+
+// ❌ Manual translation with a variable — still doesn't scale
+const messages = { en: 'Welcome', fr: 'Bienvenue' };
+function Greeting({ lang }: { lang: string }) {
+  return <h1>{messages[lang]}, Alice!</h1>;
+}
+// Problems: plurals, date formats, word order varies by language,
+// no tooling support, translators can't work with this
+```
+
+### How Translation Libraries Work
+
+Translation libraries separate text from code using **JSON translation files**:
+
+```json
+// locales/en/translation.json
+{ "greeting": "Welcome, {{name}}!" }
+
+// locales/fr/translation.json
+{ "greeting": "Bienvenue, {{name}} !" }
+```
+
+Your component only references the **key**, never the actual string:
+
+```tsx
+// Component is language-agnostic
+const { t } = useTranslation();
+return <h1>{t('greeting', { name: 'Alice' })}</h1>;
+// Outputs "Welcome, Alice!" in English, "Bienvenue, Alice !" in French
+```
+
+When the user switches language, the library swaps the translation file and React re-renders — no component changes needed.
+
+### Pluralisation and Interpolation
+
+Different languages have very different plural rules. English has two forms (1 item / N items). Russian has four. Arabic has six.
+
+i18n libraries handle this with special plural keys:
+
+```json
+// English
+{ "itemCount": "You have {{count}} item", "itemCount_other": "You have {{count}} items" }
+
+// Russian needs four forms: _one, _few, _many, _other
+{ "itemCount_one": "У вас {{count}} товар", "itemCount_few": "У вас {{count}} товара", ... }
+```
+
+**Interpolation** lets you embed dynamic values safely:
+
+```tsx
+t('greeting', { name: user.name })   // "Welcome, Alice!"
+t('itemCount', { count: 3 })         // "You have 3 items"
+```
+
+### Right-to-Left (RTL) Languages
+
+Arabic, Hebrew, Persian, and Urdu are written right-to-left. Your layout must mirror:
+
+```css
+/* HTML attribute — set on <html> element */
+html[dir="rtl"] .sidebar { right: 0; left: auto; }
+
+/* Logical properties — automatically flip in RTL */
+padding-inline-start: 16px; /* = padding-left in LTR, padding-right in RTL */
+margin-inline-end: 8px;
+```
+
+```tsx
+// Set dir and lang on the html element based on locale
+<html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+```
+
+### Date, Number, and Currency Formatting
+
+Formatting rules vary enormously by locale. Never format these manually — use the built-in `Intl` API:
+
+```ts
+// Dates
+new Intl.DateTimeFormat('en-US').format(new Date()) // "5/5/2026"
+new Intl.DateTimeFormat('de-DE').format(new Date()) // "5.5.2026"
+new Intl.DateTimeFormat('ar-SA').format(new Date()) // "١٤٤٧/١١/٧"
+
+// Numbers
+new Intl.NumberFormat('en-US').format(1234567)  // "1,234,567"
+new Intl.NumberFormat('de-DE').format(1234567)  // "1.234.567"
+
+// Currency
+new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(42.5)  // "$42.50"
+new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(42.5)  // "42,50 €"
+```
 
 ---
 
