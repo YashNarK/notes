@@ -178,6 +178,8 @@
     - [Symbols](#symbols)
     - [Iterators and Generators](#iterators-and-generators)
     - [Proxy and Reflect](#proxy-and-reflect)
+      - [Proxy](#proxy)
+      - [Reflect](#reflect)
     - [WeakMap and WeakSet](#weakmap-and-weakset)
     - [Array Methods (ES6+)](#array-methods-es6)
     - [Object Methods (ES6+)](#object-methods-es6)
@@ -3488,7 +3490,15 @@ for await (const page of fetchPages('/api/items')) {
 
 ## Proxy and Reflect
 
-**Proxy** wraps an object and intercepts operations (get, set, delete, etc.).
+### Proxy
+
+**Proxy** wraps an object and lets you intercept and customise fundamental operations on it (get, set, delete, function calls, etc.) via a **handler** object whose methods are called **traps**.
+
+```
+new Proxy(target, handler)
+          ──────  ───────
+          the real object  traps (get/set/has/…)
+```
 
 ```js
 const validator = {
@@ -3496,29 +3506,129 @@ const validator = {
     if (key === 'age' && (typeof value !== 'number' || value < 0)) {
       throw new TypeError('Age must be a non-negative number');
     }
-    target[key] = value;
-    return true;
+    target[key] = value;   // write to the real object
+    return true;           // MUST return true to signal success
   },
   get(target, key) {
     console.log(`Accessing ${key}`);
-    return Reflect.get(target, key);
+    return Reflect.get(target, key);   // explained below ↓
   }
 };
 
 const user = new Proxy({}, validator);
-user.age = 25;    // ✅
-user.age = -1;    // ❌ TypeError
+user.age = 25;    // ✅ passes validation
+user.age = -1;    // ❌ TypeError: Age must be a non-negative number
 
-// Reactive state (basis of Vue 3)
+// Reactive state — the same idea Vue 3's reactivity system uses internally
 function reactive(obj) {
   return new Proxy(obj, {
     set(target, key, value) {
       target[key] = value;
-      render(); // trigger re-render
+      render();   // any mutation triggers a UI re-render
       return true;
     }
   });
 }
+```
+
+**Common traps:**
+
+| Trap | Triggered by |
+|---|---|
+| `get(target, key, receiver)` | `proxy.prop` or `proxy[key]` |
+| `set(target, key, value, receiver)` | `proxy.prop = value` |
+| `has(target, key)` | `key in proxy` |
+| `deleteProperty(target, key)` | `delete proxy.prop` |
+| `apply(target, thisArg, args)` | calling the proxy as a function |
+| `construct(target, args)` | `new proxy(...)` |
+
+---
+
+### Reflect
+
+**`Reflect`** is a built-in object with static methods that mirror every Proxy trap — one `Reflect` method per trap, with the exact same signature.
+
+#### Why Reflect exists
+
+When you write a Proxy trap, you need a way to **forward the operation to the original object** after your custom logic runs. You have two choices:
+
+```js
+// ❌ Option A — direct property access
+get(target, key) {
+  return target[key];   // works for simple cases but loses `receiver` context
+}
+
+// ✅ Option B — Reflect
+get(target, key, receiver) {
+  return Reflect.get(target, key, receiver);  // correct `this` preserved
+}
+```
+
+The key difference is the **`receiver`** argument. When an object inherits from a proxy and the getter uses `this`, `Reflect.get` passes the correct `this` (the proxy itself, not the raw target). `target[key]` bypasses that and can silently break inherited getters.
+
+#### Reflect method reference
+
+```js
+Reflect.get(target, key, receiver?)       // target[key]
+Reflect.set(target, key, value, receiver?) // target[key] = value → returns boolean
+Reflect.has(target, key)                  // key in target → boolean
+Reflect.deleteProperty(target, key)       // delete target[key] → boolean
+Reflect.ownKeys(target)                   // all own keys incl. Symbols
+Reflect.apply(fn, thisArg, args)          // fn.apply(thisArg, args)
+Reflect.construct(Cls, args, newTarget?)  // new Cls(...args)
+Reflect.defineProperty(target, key, desc) // Object.defineProperty but returns boolean
+Reflect.getPrototypeOf(target)            // Object.getPrototypeOf
+Reflect.setPrototypeOf(target, proto)     // Object.setPrototypeOf → boolean
+```
+
+#### The golden rule: always forward with Reflect
+
+```js
+// ✅ Correct pattern — intercept, then delegate
+const handler = {
+  get(target, key, receiver) {
+    console.log(`GET ${key}`);
+    return Reflect.get(target, key, receiver);   // forward to original behaviour
+  },
+  set(target, key, value, receiver) {
+    console.log(`SET ${key} = ${value}`);
+    return Reflect.set(target, key, value, receiver);  // returns boolean automatically
+  },
+  deleteProperty(target, key) {
+    console.log(`DELETE ${key}`);
+    return Reflect.deleteProperty(target, key);
+  }
+};
+
+const obj = new Proxy({ x: 1 }, handler);
+obj.x;        // logs "GET x"
+obj.y = 2;    // logs "SET y = 2"
+delete obj.x; // logs "DELETE x"
+```
+
+**`Reflect.set` vs `target[key] = value`:** `Reflect.set` returns `false` instead of throwing in strict mode when the write fails (e.g., on a non-writable property). In a Proxy trap you **must** return `true`/`false` — using `Reflect.set` handles that for you automatically.
+
+#### Practical example — logging proxy
+
+```js
+function createLogger(obj) {
+  return new Proxy(obj, {
+    get(target, key, receiver) {
+      const val = Reflect.get(target, key, receiver);
+      if (typeof val === 'function') {
+        return function(...args) {
+          console.log(`Called ${String(key)}(${args})`);
+          return Reflect.apply(val, target, args);  // call original fn with correct `this`
+        };
+      }
+      return val;
+    }
+  });
+}
+
+const arr = createLogger([1, 2, 3]);
+arr.push(4);   // logs: Called push(4)
+arr.length;    // 4 — normal access, no log (not a function)
 ```
 
 ---
