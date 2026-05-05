@@ -121,6 +121,24 @@
     - [Documentation:](#documentation)
     - [Frontend Code Archive:](#frontend-code-archive)
     - [Emmet Plugins Documentation:](#emmet-plugins-documentation)
+  - [Iterating Collections](#iterating-collections)
+    - [Array — value + index](#array--value--index)
+    - [Map — key + value](#map--key--value)
+    - [Object — key + value](#object--key--value)
+    - [Set — value only (no index)](#set--value-only-no-index)
+    - [Quick Comparison Table](#quick-comparison-table)
+  - [Type Checking](#type-checking)
+    - [The `typeof` Operator and Its Pitfalls](#the-typeof-operator-and-its-pitfalls)
+    - [Checking for `null`](#checking-for-null)
+    - [Checking for `undefined`](#checking-for-undefined)
+    - [Checking for `NaN`](#checking-for-nan)
+    - [Checking for an Array](#checking-for-an-array)
+    - [Checking for a plain Object](#checking-for-a-plain-object)
+    - [Checking for a Map](#checking-for-a-map)
+    - [Checking for a Set](#checking-for-a-set)
+    - [Checking for a Function](#checking-for-a-function)
+    - [Universal type tag via `Object.prototype.toString`](#universal-type-tag-via-objectprototypetostring)
+    - [Type-checking utility reference table](#type-checking-utility-reference-table)
 
 ## Introduction to JS
 
@@ -3390,3 +3408,312 @@ channel.close();
 ```
 
 **Use case:** Sync authentication state, theme changes, or cart updates across multiple open tabs.
+
+---
+
+## Iterating Collections
+
+### Array — value + index
+
+```js
+const fruits = ['apple', 'banana', 'cherry'];
+
+// 1. Classic for loop — full index control
+for (let i = 0; i < fruits.length; i++) {
+  console.log(i, fruits[i]);       // 0 'apple', 1 'banana', 2 'cherry'
+}
+
+// 2. forEach — callback receives (value, index, array)
+fruits.forEach((value, index) => {
+  console.log(index, value);
+});
+
+// 3. for...of with entries() — cleanest modern syntax
+for (const [index, value] of fruits.entries()) {
+  console.log(index, value);
+}
+
+// 4. map — returns a new array (use when you need a transformed result)
+const result = fruits.map((value, index) => `${index}: ${value}`);
+// ['0: apple', '1: banana', '2: cherry']
+
+// 5. for...in — iterates keys (strings!) — avoid for arrays
+for (const key in fruits) {
+  console.log(key, fruits[key]);   // '0' 'apple' — key is a string, not number
+}
+// ⚠️  for...in also picks up prototype properties; don't use on arrays.
+```
+
+### Map — key + value
+
+```js
+const scores = new Map([
+  ['Alice', 95],
+  ['Bob',   87],
+  ['Carol', 91],
+]);
+
+// 1. for...of — most idiomatic
+for (const [key, value] of scores) {
+  console.log(key, value);         // 'Alice' 95 ...
+}
+
+// 2. forEach — callback receives (value, key, map)  ← note: value first!
+scores.forEach((value, key) => {
+  console.log(key, value);
+});
+
+// 3. Separate key/value iterators
+for (const key   of scores.keys())   { console.log(key);   }
+for (const value of scores.values()) { console.log(value); }
+for (const entry of scores.entries()) { console.log(entry); }  // [key, value] pair
+```
+
+> **Gotcha:** `Map.forEach` callback signature is `(value, key)` — the opposite of `Array.forEach`'s `(value, index)`.
+
+### Object — key + value
+
+```js
+const user = { name: 'Alice', age: 30, role: 'admin' };
+
+// 1. for...in — iterates all enumerable keys including inherited ones
+for (const key in user) {
+  if (Object.hasOwn(user, key)) {          // guard against prototype keys
+    console.log(key, user[key]);
+  }
+}
+
+// 2. Object.entries() — recommended; gives [key, value] pairs
+for (const [key, value] of Object.entries(user)) {
+  console.log(key, value);                 // 'name' 'Alice', 'age' 30 ...
+}
+
+// 3. Object.keys() / Object.values() — when you only need one side
+Object.keys(user).forEach(key   => console.log(key));
+Object.values(user).forEach(val => console.log(val));
+
+// 4. forEach via entries
+Object.entries(user).forEach(([key, value]) => {
+  console.log(`${key} = ${value}`);
+});
+```
+
+> **Note:** `Object.entries/keys/values` only return **own enumerable** properties.  
+> Symbol-keyed properties are excluded — use `Object.getOwnPropertySymbols()` if needed.
+
+### Set — value only (no index)
+
+```js
+const tags = new Set(['js', 'react', 'css', 'js']); // duplicate 'js' ignored
+// Set {'js', 'react', 'css'}
+
+// 1. for...of — most common
+for (const value of tags) {
+  console.log(value);
+}
+
+// 2. forEach — callback receives (value, value, set)  ← second arg is also value (no index)
+tags.forEach((value) => {
+  console.log(value);
+});
+
+// 3. Spread to array if you need indices
+[...tags].forEach((value, index) => {
+  console.log(index, value);          // 0 'js', 1 'react', 2 'css'
+});
+
+// 4. Iterators
+for (const v of tags.values()) { console.log(v); }
+for (const e of tags.entries()) { console.log(e); }  // [value, value] — same twice
+```
+
+> **Why no index?** Sets are unordered by conceptual design (iteration order is insertion order as an implementation detail, but sets don't expose positional semantics).
+
+### Quick Comparison Table
+
+| Collection | Get value | Get key/index | Best loop | `forEach` signature |
+|---|---|---|---|---|
+| `Array` | `arr[i]` | index (number) | `for...of arr.entries()` | `(value, index, arr)` |
+| `Map` | `map.get(key)` | key (any type) | `for...of map` | `(value, key, map)` ⚠️ value first |
+| `Object` | `obj[key]` | key (string/Symbol) | `Object.entries(obj)` | N/A — use `.forEach` after `entries()` |
+| `Set` | value itself | ❌ N/A | `for...of set` | `(value, value, set)` |
+
+---
+
+## Type Checking
+
+JavaScript's type system has several well-known traps (`typeof null === 'object'`, `typeof [] === 'object'`). This section covers reliable patterns for every case.
+
+### The `typeof` Operator and Its Pitfalls
+
+```js
+typeof 42            // 'number'
+typeof 'hello'       // 'string'
+typeof true          // 'boolean'
+typeof undefined     // 'undefined'
+typeof Symbol()      // 'symbol'
+typeof 42n           // 'bigint'
+typeof function(){}  // 'function'  ← works for functions
+
+// ⚠️  Everything else returns 'object' — including traps:
+typeof null          // 'object'  ← historical bug, unfixable
+typeof []            // 'object'
+typeof {}            // 'object'
+typeof new Map()     // 'object'
+typeof new Set()     // 'object'
+```
+
+### Checking for `null`
+
+```js
+// Only reliable pattern — strict equality
+const x = null;
+
+x === null               // ✅ true
+typeof x === 'object' && x === null  // ✅ verbose but explicit
+
+// ❌ typeof alone doesn't work:
+typeof x === 'object'    // true for both null AND real objects
+```
+
+### Checking for `undefined`
+
+```js
+let y;
+
+y === undefined          // ✅ true
+typeof y === 'undefined' // ✅ true — also safe for undeclared variables
+
+// typeof is safer for undeclared variables:
+typeof undeclaredVar     // 'undefined' (no ReferenceError)
+undeclaredVar === undefined  // ❌ ReferenceError if not declared
+```
+
+### Checking for `NaN`
+
+```js
+const n = NaN;
+
+Number.isNaN(n)          // ✅ true — most reliable
+isNaN(n)                 // ✅ true — but coerces strings first (isNaN('hello') → true)
+n !== n                  // ✅ true — NaN is the only value not equal to itself
+
+// ❌ Avoid:
+typeof n === 'number' && isNaN(n)  // works but verbose; use Number.isNaN
+```
+
+### Checking for an Array
+
+```js
+const arr = [1, 2, 3];
+
+Array.isArray(arr)       // ✅ true — the canonical way
+arr instanceof Array     // ✅ true — but fails across iframes (different Array refs)
+
+// ❌ Unreliable:
+typeof arr               // 'object'
+```
+
+### Checking for a plain Object
+
+A "plain object" is `{}` — created by `Object.create(null)`, an object literal, or `new Object()`. It excludes Arrays, Maps, Sets, class instances, etc.
+
+```js
+function isPlainObject(val) {
+  if (typeof val !== 'object' || val === null) return false;
+  const proto = Object.getPrototypeOf(val);
+  return proto === Object.prototype || proto === null;
+}
+
+isPlainObject({})              // ✅ true
+isPlainObject({ a: 1 })        // ✅ true
+isPlainObject(Object.create(null)) // ✅ true
+isPlainObject([])              // ❌ false
+isPlainObject(new Map())       // ❌ false
+isPlainObject(new MyClass())   // ❌ false — has custom prototype
+```
+
+### Checking for a Map
+
+```js
+const m = new Map();
+
+m instanceof Map                           // ✅ true
+Object.prototype.toString.call(m)          // '[object Map]'
+
+// Cross-realm safe (e.g. across iframes):
+Object.prototype.toString.call(m) === '[object Map]'  // ✅
+```
+
+### Checking for a Set
+
+```js
+const s = new Set();
+
+s instanceof Set                           // ✅ true
+Object.prototype.toString.call(s)          // '[object Set]'
+Object.prototype.toString.call(s) === '[object Set]'  // ✅
+```
+
+### Checking for a Function
+
+```js
+const fn = () => {};
+
+typeof fn === 'function'           // ✅ true — most reliable
+fn instanceof Function             // ✅ true
+Object.prototype.toString.call(fn) // '[object Function]'
+
+// Works for all callable forms:
+typeof function(){} === 'function' // ✅
+typeof class Foo {}  === 'function' // ✅ — classes are functions too
+typeof fn.bind(null) === 'function' // ✅
+```
+
+### Universal type tag via `Object.prototype.toString`
+
+The most reliable way to distinguish built-in types. Returns `'[object <Tag>]'`.
+
+```js
+const tag = (val) => Object.prototype.toString.call(val);
+
+tag(null)          // '[object Null]'
+tag(undefined)     // '[object Undefined]'
+tag(42)            // '[object Number]'
+tag('hello')       // '[object String]'
+tag(true)          // '[object Boolean]'
+tag([])            // '[object Array]'
+tag({})            // '[object Object]'
+tag(new Map())     // '[object Map]'
+tag(new Set())     // '[object Set]'
+tag(() => {})      // '[object Function]'
+tag(new Date())    // '[object Date]'
+tag(/regex/)       // '[object RegExp]'
+tag(new Promise(() => {})) // '[object Promise]'
+tag(Symbol())      // '[object Symbol]'
+tag(42n)           // '[object BigInt]'
+```
+
+> **Caveat:** Custom classes can override `Symbol.toStringTag` to spoof any tag:
+> ```js
+> class Fake { get [Symbol.toStringTag]() { return 'Map'; } }
+> tag(new Fake())  // '[object Map]' — spoofed!
+> ```
+> For your own code this is rarely a problem, but it matters in security-sensitive contexts.
+
+### Type-checking utility reference table
+
+| Value | `typeof` | `instanceof` | `Array.isArray` | `=== null` | `Number.isNaN` | `toString` tag |
+|---|---|---|---|---|---|---|
+| `null` | `'object'` ⚠️ | — | — | ✅ `true` | — | `[object Null]` |
+| `undefined` | `'undefined'` ✅ | — | — | — | — | `[object Undefined]` |
+| `42` | `'number'` ✅ | — | — | — | `false` | `[object Number]` |
+| `NaN` | `'number'` ⚠️ | — | — | — | ✅ `true` | `[object Number]` |
+| `'hi'` | `'string'` ✅ | — | — | — | — | `[object String]` |
+| `true` | `'boolean'` ✅ | — | — | — | — | `[object Boolean]` |
+| `[]` | `'object'` ⚠️ | `Array` ✅ | ✅ `true` | — | — | `[object Array]` |
+| `{}` | `'object'` ⚠️ | `Object` ✅ | `false` | — | — | `[object Object]` |
+| `new Map()` | `'object'` ⚠️ | `Map` ✅ | — | — | — | `[object Map]` |
+| `new Set()` | `'object'` ⚠️ | `Set` ✅ | — | — | — | `[object Set]` |
+| `() => {}` | `'function'` ✅ | `Function` ✅ | — | — | — | `[object Function]` |
+| `new Date()` | `'object'` ⚠️ | `Date` ✅ | — | — | — | `[object Date]` |
