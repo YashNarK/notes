@@ -2713,6 +2713,161 @@ const isMobile = useMediaQuery("(max-width: 768px)");
 const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
 ```
 
+## React.memo
+
+`React.memo` is a **Higher Order Component** that memoizes the rendered output of a functional component. React skips re-rendering the component and reuses the last rendered result as long as its props have not changed (by shallow comparison).
+
+**When to reach for it**: a child component re-renders frequently due to its parent updating, but the child's own props rarely change and the render is non-trivial.
+
+### Basic usage
+
+```tsx
+import { memo } from "react";
+
+interface AvatarProps {
+  userId: string;
+  displayName: string;
+  avatarUrl: string;
+  size: "sm" | "md" | "lg";
+}
+
+// Without memo: re-renders every time the parent renders, even if props are identical.
+// With memo: React shallow-compares each prop; skips re-render if all are ===.
+const Avatar = memo(function Avatar({ userId, displayName, avatarUrl, size }: AvatarProps) {
+  const px = size === "sm" ? 32 : size === "md" ? 48 : 64;
+  return (
+    <img
+      key={userId}
+      src={avatarUrl}
+      alt={displayName}
+      width={px}
+      height={px}
+      style={{ borderRadius: "50%" }}
+    />
+  );
+});
+
+export default Avatar;
+```
+
+### The second argument — `arePropsEqual`
+
+`React.memo` accepts an optional second argument:
+
+```ts
+memo(Component, arePropsEqual?)
+```
+
+`arePropsEqual(prevProps, nextProps): boolean`
+
+- Return **`true`** → props are considered equal → **skip re-render**
+- Return **`false`** → props changed → **re-render**
+
+This is the inverse of `shouldComponentUpdate` in class components (which returned `true` to re-render).
+
+**Use-case: ignore noisy props that don't affect the output**
+
+```tsx
+interface DataGridRowProps {
+  row: { id: string; name: string; value: number };
+  isSelected: boolean;
+  onSelect: (id: string) => void;
+  // `meta` carries analytics data — it changes every render but doesn't
+  // affect what the row displays. Shallow comparison would always fail.
+  meta: Record<string, unknown>;
+}
+
+const DataGridRow = memo(
+  function DataGridRow({ row, isSelected, onSelect }: DataGridRowProps) {
+    return (
+      <tr
+        style={{ background: isSelected ? "#e8f0fe" : "transparent" }}
+        onClick={() => onSelect(row.id)}
+      >
+        <td>{row.name}</td>
+        <td>{row.value}</td>
+      </tr>
+    );
+  },
+  // Custom equality: compare only the props that actually affect rendering.
+  // Ignore `meta` entirely.
+  (prev, next) =>
+    prev.row.id === next.row.id &&
+    prev.row.name === next.row.name &&
+    prev.row.value === next.row.value &&
+    prev.isSelected === next.isSelected &&
+    prev.onSelect === next.onSelect
+);
+```
+
+**Use-case: deep-compare a specific nested object**
+
+```tsx
+interface ChartProps {
+  config: {
+    title: string;
+    color: string;
+    dataKeys: string[];
+  };
+  data: number[];
+}
+
+// config is rebuilt as a new object reference on every parent render
+// (e.g. `config={{ title, color, dataKeys }}` inline in JSX).
+// Shallow comparison sees a new object reference → always re-renders.
+// The custom comparator deep-checks only what the chart actually uses.
+const Chart = memo(
+  function Chart({ config, data }: ChartProps) {
+    /* expensive D3 render */
+    return <canvas />;
+  },
+  (prev, next) =>
+    prev.config.title === next.config.title &&
+    prev.config.color === next.config.color &&
+    prev.config.dataKeys.join(",") === next.config.dataKeys.join(",") &&
+    prev.data.length === next.data.length &&
+    prev.data.every((v, i) => v === next.data[i])
+);
+```
+
+### Why shallow comparison fails with objects and functions
+
+```tsx
+// ❌ Creates a NEW object reference on every render → memo always re-renders
+<DataGridRow row={{ id: "1", name: "Alice", value: 42 }} ... />
+
+// ✅ Stable reference from state/selector → memo works
+const row = useMemo(() => ({ id: "1", name: "Alice", value: 42 }), [id, name, value]);
+<DataGridRow row={row} ... />
+
+// ❌ Inline arrow function is a new reference every render → breaks memo
+<DataGridRow onSelect={(id) => handleSelect(id)} ... />
+
+// ✅ Stable reference via useCallback → memo works
+const handleSelect = useCallback((id: string) => { ... }, []);
+<DataGridRow onSelect={handleSelect} ... />
+```
+
+### The trio: memo + useMemo + useCallback
+
+These three work together:
+
+| Tool | What it stabilises | Without it |
+|---|---|---|
+| `memo` | The **component** — skips re-render if props unchanged | Child re-renders on every parent render |
+| `useCallback` | A **function prop** — same reference between renders | `memo` sees new function → re-renders anyway |
+| `useMemo` | An **object/array prop** — same reference between renders | `memo` sees new object → re-renders anyway |
+
+`memo` alone is useless if the parent passes new function or object references every render. All three must be applied together for the optimization to work.
+
+### When NOT to use React.memo
+
+- **Trivial renders** — wrapping a `<span>{name}</span>` in `memo` adds more overhead (comparator call) than it saves.
+- **Props change on every render anyway** — `memo` skips nothing and just wastes the comparison.
+- **Before profiling** — use React DevTools Profiler to confirm a component is a hot spot before wrapping it.
+
+> ⚠️ **Gotcha**: `memo` does **not** prevent re-renders caused by `useContext`. If a memoized component consumes a context that changes, it still re-renders — `memo` only compares props, not context values.
+
 ---
 
 ## Event Handling in React
@@ -7760,9 +7915,10 @@ Optimization in React involves improving the performance and efficiency of your 
 
 ## 1. **Memoization**:
 
-- Use `React.memo` to prevent unnecessary re-renders of functional components.
-- Use `useMemo` to memoize expensive calculations.
-- Use `useCallback` to memoize callback functions.
+- Use `React.memo` to prevent unnecessary re-renders of functional components. Supports a second `arePropsEqual` argument for custom comparison. See the [React.memo section above](#reactmemo) for full patterns.
+- Use `useMemo` to memoize expensive derived values (filtering, sorting, aggregating large arrays).
+- Use `useCallback` to stabilise function references passed as props to `memo()`-wrapped children.
+- All three work as a trio — `memo` alone is ineffective if the parent still passes new object/function references on every render.
 
 ## 2. **Code Splitting**:
 
