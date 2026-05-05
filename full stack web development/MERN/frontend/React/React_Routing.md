@@ -1,14 +1,22 @@
 # React — Routing
 
-React has no built-in router. The ecosystem provides two dominant solutions; Next.js ships its own file-based router.
-
 ## Table of contents
 
 - [React — Routing](#react--routing)
   - [Table of contents](#table-of-contents)
+  - [Routing Concepts](#routing-concepts)
+    - [What is Routing?](#what-is-routing)
+    - [Server-Side Routing](#server-side-routing)
+    - [Client-Side Routing](#client-side-routing)
+    - [Hash Routing](#hash-routing)
+    - [History API Routing](#history-api-routing)
+    - [File-Based vs Code-Based Routing](#file-based-vs-code-based-routing)
+    - [Which Strategy Should You Use?](#which-strategy-should-you-use)
   - [Plain React](#plain-react)
-    - [TanStack Router](#tanstack-router)
     - [React Router v6](#react-router-v6)
+    - [HashRouter — When You Cannot Configure the Server](#hashrouter--when-you-cannot-configure-the-server)
+    - [Nested Routes and Outlet](#nested-routes-and-outlet)
+    - [TanStack Router](#tanstack-router)
     - [Choosing Between Them](#choosing-between-them)
   - [Next.js](#nextjs)
     - [App Router (Recommended)](#app-router-recommended)
@@ -18,55 +26,187 @@ React has no built-in router. The ecosystem provides two dominant solutions; Nex
 
 ---
 
-## Plain React
+## Routing Concepts
 
-### TanStack Router
+### What is Routing?
 
-**TanStack Router** is the modern, fully type-safe choice for SPAs. It supports file-based or code-based route definitions.
+**Routing** is the mechanism that decides which UI to show based on the current URL.
 
-```bash
-npm i @tanstack/react-router
+In a traditional multi-page website, every URL maps to a separate HTML file on the server:
+
 ```
+User visits /about
+  → Browser sends HTTP GET /about to server
+  → Server responds with about.html
+  → Browser does a full page reload
+```
+
+In a React app (a **Single-Page Application**, or SPA), there is only **one HTML file** (`index.html`). The JavaScript application intercepts navigation and swaps out components without ever reloading the page. This is **client-side routing**.
+
+```
+User clicks a link to /about
+  → Browser does NOT reload
+  → JavaScript reads the URL, renders <AboutPage /> instead
+  → Address bar updates to /about (but no network request)
+```
+
+---
+
+### Server-Side Routing
+
+The traditional model. Every URL request hits the server, which returns a full HTML response.
+
+```
+/          → returns index.html
+/about     → returns about.html
+/users/42  → returns user-42.html  (or a 404 if it doesn't exist)
+```
+
+**Pros:** Works without JavaScript; great for SEO; simple mental model.  
+**Cons:** Full page reload on every navigation; slower perceived performance.
+
+> **Relevance to React:** Next.js uses a hybrid model — it does server-side routing for the initial page load (good for SEO) and then switches to client-side routing for subsequent navigations.
+
+---
+
+### Client-Side Routing
+
+The SPA model. The server always returns the same `index.html` for every route, and JavaScript handles the rest.
+
+```
+/          → server returns index.html → React renders <HomePage />
+/about     → server returns index.html → React renders <AboutPage />
+/users/42  → server returns index.html → React renders <UserPage id="42" />
+```
+
+The browser has two built-in mechanisms to change the URL without reloading the page:
+1. **Hash routing** — uses the `#` fragment
+2. **History API routing** — uses `pushState` / `replaceState`
+
+---
+
+### Hash Routing
+
+The URL fragment (`#`) was originally designed for in-page anchor links. Client-side routers hijack it to simulate navigation.
+
+```
+https://myapp.com/#/
+https://myapp.com/#/about
+https://myapp.com/#/users/42
+```
+
+**How it works:** Everything after `#` is never sent to the server. The browser fires a `hashchange` event when it changes, which the router library listens to.
+
+```js
+window.addEventListener('hashchange', () => {
+  const path = window.location.hash.slice(1); // e.g. "/about"
+  renderPage(path);
+});
+```
+
+**Pros:**
+- Works on any static file server with zero configuration — the server always serves `index.html` and never sees the path.
+- Works in environments where you cannot control server redirects (e.g., GitHub Pages).
+
+**Cons:**
+- The `#` looks ugly in the URL.
+- The fragment is not sent to the server, so server-side rendering is impossible.
+- Not ideal for SEO (search engines historically ignored the fragment).
+
+---
+
+### History API Routing
+
+The modern standard. Uses the browser's [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL without reloading.
+
+```js
+// Push a new entry onto the browser history stack
+window.history.pushState({}, '', '/about');
+
+// Replace the current entry (no new history entry)
+window.history.replaceState({}, '', '/about');
+
+// Listen for the back/forward button
+window.addEventListener('popstate', () => {
+  renderPage(window.location.pathname);
+});
+```
+
+The URL looks like a normal server URL:
+
+```
+https://myapp.com/
+https://myapp.com/about
+https://myapp.com/users/42
+```
+
+**Pros:** Clean URLs; compatible with SSR; better for SEO.
+
+**Cons — the catch:** If the user refreshes at `https://myapp.com/about`, the browser sends `GET /about` to the server. If the server doesn't know about that route, it returns a **404**. You must configure the server to return `index.html` for all routes:
+
+```nginx
+# Nginx example — serve index.html for any unmatched route
+location / {
+  try_files $uri $uri/ /index.html;
+}
+```
+
+> **React Router's `<BrowserRouter>`** uses the History API. **`<HashRouter>`** uses hash routing.
+
+---
+
+### File-Based vs Code-Based Routing
+
+These are two ways to **define** your routes — both can run on top of either hash or history routing.
+
+**Code-based routing** — you define routes explicitly in JavaScript/TypeScript:
 
 ```tsx
-// main.tsx — code-based route definition
-import { createRouter, createRoute, createRootRoute, RouterProvider } from '@tanstack/react-router';
-import { RootLayout } from './RootLayout';
-import { HomePage } from './pages/HomePage';
-import { UserPage } from './pages/UserPage';
-
-const rootRoute = createRootRoute({ component: RootLayout });
-
-const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: HomePage });
-const userRoute  = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/users/$userId',
-  component: UserPage,
-});
-
-const routeTree = rootRoute.addChildren([indexRoute, userRoute]);
-const router = createRouter({ routeTree });
-
-// Full TypeScript inference on params
-function UserPage() {
-  const { userId } = userRoute.useParams(); // typed: string
-  return <div>User: {userId}</div>;
-}
-
-export default function App() {
-  return <RouterProvider router={router} />;
-}
+// You write every route in code
+<Routes>
+  <Route path="/"       element={<Home />} />
+  <Route path="/about"  element={<About />} />
+  <Route path="/users/:id" element={<User />} />
+</Routes>
 ```
 
-**Key features:**
-- Automatic route splitting (lazy loading)
-- Type-safe `useParams`, `useSearch`, `useNavigate`
-- Built-in loader / pending states (similar to Remix)
-- Devtools: `@tanstack/router-devtools`
+**File-based routing** — the router reads your **folder structure** and generates routes automatically. Create a file → you get a route.
+
+```
+pages/
+  index.tsx        → /
+  about.tsx        → /about
+  users/
+    [id].tsx       → /users/:id
+```
+
+| | Code-based | File-based |
+|---|---|---|
+| Route definition | Explicit in JS | Folder/file structure |
+| Flexibility | Full control | Convention-driven |
+| Discoverability | Requires reading code | Folder structure is self-documenting |
+| Examples | React Router v6 | Next.js, TanStack Router (plugin), Remix |
+
+---
+
+### Which Strategy Should You Use?
+
+| Situation | Recommendation |
+|---|---|
+| Plain React SPA, full server control | History API (`BrowserRouter`) |
+| Plain React SPA, static host (GitHub Pages, S3) | Hash routing (`HashRouter`) |
+| Plain React SPA, large app, type safety matters | TanStack Router |
+| Full-stack app with SSR / SEO requirements | Next.js App Router |
+
+---
+
+## Plain React
+
+React has no built-in router. You add one as a library.
 
 ### React Router v6
 
-The long-standing standard. Simpler API, less type safety than TanStack Router.
+The long-standing standard for React routing. Uses the History API by default via `<BrowserRouter>`.
 
 ```bash
 npm i react-router-dom
@@ -83,9 +223,9 @@ function App() {
         <Link to="/users/42">User 42</Link>
       </nav>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/"          element={<HomePage />} />
         <Route path="/users/:userId" element={<UserPage />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*"          element={<NotFound />} />   {/* catch-all 404 */}
       </Routes>
     </BrowserRouter>
   );
@@ -97,54 +237,163 @@ function UserPage() {
 }
 ```
 
-**Nested routes** share layouts without remounting:
+> **Remember:** `<BrowserRouter>` uses the History API, so your server must be configured to return `index.html` for all routes (see [History API Routing](#history-api-routing) above). Most dev servers (Vite, CRA) do this automatically.
+
+### HashRouter — When You Cannot Configure the Server
+
+If you're deploying to a static host where you have no control over server redirects, swap `<BrowserRouter>` for `<HashRouter>`. No other code changes needed.
 
 ```tsx
-<Routes>
-  <Route path="/dashboard" element={<DashboardLayout />}>
-    <Route index element={<Overview />} />
-    <Route path="settings" element={<Settings />} />
-  </Route>
-</Routes>
+import { HashRouter, Routes, Route } from 'react-router-dom';
+
+function App() {
+  return (
+    <HashRouter>   {/* URLs become: /#/, /#/about, /#/users/42 */}
+      <Routes>
+        <Route path="/"     element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+      </Routes>
+    </HashRouter>
+  );
+}
 ```
+
+### Nested Routes and Outlet
+
+Nested routes let child routes render **inside** a parent layout without remounting the layout on navigation. The parent uses `<Outlet />` as the placeholder where the child renders.
+
+```tsx
+import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom';
+
+// Shared layout — renders once, children swap via <Outlet>
+function DashboardLayout() {
+  return (
+    <div>
+      <nav>
+        <Link to="/dashboard">Overview</Link>
+        <Link to="/dashboard/settings">Settings</Link>
+      </nav>
+      <main>
+        <Outlet />   {/* child route renders here */}
+      </main>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index        element={<Overview />} />   {/* /dashboard */}
+          <Route path="settings" element={<Settings />} /> {/* /dashboard/settings */}
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+`<Outlet />` is what makes it possible to have a persistent sidebar/navbar that doesn't remount as you navigate between child routes.
+
+### TanStack Router
+
+**TanStack Router** is the modern, fully type-safe alternative. It supports both code-based and file-based route definitions and gives you full TypeScript inference on route params and search params.
+
+```bash
+npm i @tanstack/react-router
+```
+
+```tsx
+// main.tsx — code-based route definition
+import { createRouter, createRoute, createRootRoute, RouterProvider } from '@tanstack/react-router';
+
+const rootRoute  = createRootRoute({ component: RootLayout });
+const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: HomePage });
+const userRoute  = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/users/$userId',
+  component: UserPage,
+});
+
+const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, userRoute]) });
+
+function UserPage() {
+  const { userId } = userRoute.useParams(); // TypeScript knows this is a string
+  return <div>User: {userId}</div>;
+}
+
+export default function App() {
+  return <RouterProvider router={router} />;
+}
+```
+
+**Key features:**
+- Fully type-safe `useParams`, `useSearch`, `useNavigate` — no manual generics needed
+- Automatic route-based code splitting (lazy loading)
+- Built-in loader / pending states (similar to Remix)
+- Optional file-based routing via `@tanstack/router-plugin`
+- Devtools: `@tanstack/router-devtools`
 
 ### Choosing Between Them
 
-| Feature | TanStack Router | React Router v6 |
+| Feature | React Router v6 | TanStack Router |
 |---|---|---|
-| Type-safe params/search | ✅ Full inference | ⚠️ Manual generics |
-| File-based routing | ✅ Optional plugin | ❌ |
-| Loaders / data fetching | ✅ Built-in | ✅ (v6.4+) |
-| Bundle size | Slightly larger | Smaller |
-| Maturity | Newer | Battle-tested |
+| Type-safe params/search | ⚠️ Manual generics | ✅ Full inference |
+| File-based routing | ❌ | ✅ Optional plugin |
+| Loaders / data fetching | ✅ (v6.4+) | ✅ Built-in |
+| HashRouter support | ✅ | ✅ |
+| Bundle size | Smaller | Slightly larger |
+| Maturity | Battle-tested | Newer, rapidly growing |
 
 ---
 
 ## Next.js
 
+Next.js has routing built in — no library to install. It uses **file-based routing** on top of **server-side + client-side hybrid** navigation.
+
 ### App Router (Recommended)
 
-Next.js App Router uses the **file system** as the routing layer. Every `page.tsx` inside `app/` becomes a route.
+The file system inside `app/` is the routing layer. Every `page.tsx` becomes a route; `layout.tsx` files wrap routes with shared UI.
 
 ```
 app/
-  page.tsx              → /
+  layout.tsx        ← root layout (wraps everything)
+  page.tsx          → /
   about/
-    page.tsx            → /about
+    page.tsx        → /about
   users/
-    page.tsx            → /users
+    page.tsx        → /users
     [id]/
-      page.tsx          → /users/:id
+      page.tsx      → /users/:id
 ```
 
 ```tsx
-// app/page.tsx
+// app/page.tsx — Server Component by default
 export default function HomePage() {
   return <h1>Home</h1>;
 }
 ```
 
+```tsx
+// app/layout.tsx — persistent shell, never remounts between navigations
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <nav>…</nav>
+        <main>{children}</main>   {/* equivalent to <Outlet /> */}
+      </body>
+    </html>
+  );
+}
+```
+
+> **`layout.tsx` is Next.js's equivalent of React Router's `<Outlet />`** — it defines a persistent shell and renders the current page inside `{children}`.
+
 ### Dynamic Routes
+
+Wrap a folder name in `[brackets]` to create a dynamic segment:
 
 ```tsx
 // app/users/[id]/page.tsx
@@ -157,37 +406,60 @@ export default function UserPage({ params }: Props) {
 }
 ```
 
-**Catch-all segments**: `app/docs/[...slug]/page.tsx` matches `/docs/a/b/c`.
+**Catch-all segments**: `app/docs/[...slug]/page.tsx` matches `/docs/a/b/c` — `slug` is `['a', 'b', 'c']`.
 
-**Optional catch-all**: `app/docs/[[...slug]]/page.tsx` also matches `/docs`.
+**Optional catch-all**: `app/docs/[[...slug]]/page.tsx` also matches `/docs` (slug is `undefined`).
 
 ### Route Groups & Parallel Routes
 
-Route groups `(groupName)` organise routes without affecting the URL:
+**Route groups** `(groupName)` organise routes into folders without affecting the URL. Use them to apply different layouts to different sets of routes:
 
 ```
 app/
   (auth)/
+    layout.tsx          ← auth layout (centered card, no nav)
     login/page.tsx      → /login
     register/page.tsx   → /register
   (dashboard)/
-    layout.tsx          ← shared dashboard shell
+    layout.tsx          ← dashboard layout (sidebar + nav)
     overview/page.tsx   → /overview
+    settings/page.tsx   → /settings
 ```
 
-Parallel routes render multiple pages in the same layout simultaneously using `@slot` folders:
+**Parallel routes** render multiple pages simultaneously in the same layout using `@slot` folders — useful for dashboards with independent panes:
 
 ```
 app/dashboard/
   layout.tsx
-  @analytics/page.tsx   ← rendered at props.analytics
-  @notifications/page.tsx
+  @analytics/page.tsx      ← props.analytics
+  @notifications/page.tsx  ← props.notifications
   page.tsx
+```
+
+```tsx
+// app/dashboard/layout.tsx
+export default function DashboardLayout({
+  children,
+  analytics,
+  notifications,
+}: {
+  children: React.ReactNode;
+  analytics: React.ReactNode;
+  notifications: React.ReactNode;
+}) {
+  return (
+    <div className="dashboard">
+      <main>{children}</main>
+      <aside>{analytics}</aside>
+      <aside>{notifications}</aside>
+    </div>
+  );
+}
 ```
 
 ### Navigation
 
-Use `<Link>` for client-side navigation and `useRouter` for programmatic navigation.
+Use `<Link>` for declarative navigation and `useRouter` for programmatic navigation in Client Components.
 
 ```tsx
 'use client';
@@ -201,21 +473,26 @@ export function Nav() {
     <nav>
       <Link href="/">Home</Link>
       <Link href="/about">About</Link>
+      {/* prefetch={false} disables automatic prefetching for this link */}
+      <Link href="/heavy-page" prefetch={false}>Heavy Page</Link>
+
       <button onClick={() => router.push('/dashboard')}>Go to Dashboard</button>
       <button onClick={() => router.back()}>Back</button>
+      <button onClick={() => router.replace('/login')}>Replace history</button>
     </nav>
   );
 }
 ```
 
-**`redirect()`** can be used inside Server Components and Server Actions:
+**`redirect()`** is used inside Server Components and Server Actions (runs before the response is sent):
 
 ```tsx
 import { redirect } from 'next/navigation';
 
 export default async function ProtectedPage() {
   const session = await getSession();
-  if (!session) redirect('/login');
+  if (!session) redirect('/login'); // server-side redirect, no client JS needed
   return <div>Protected content</div>;
 }
 ```
+
