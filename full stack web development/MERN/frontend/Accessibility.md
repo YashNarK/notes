@@ -16,6 +16,7 @@
   - [React and Accessibility](#react-and-accessibility)
   - [Testing Accessibility](#testing-accessibility)
   - [Common Mistakes and Fixes](#common-mistakes-and-fixes)
+  - [Reduced Motion](#reduced-motion)
 
 ---
 
@@ -157,7 +158,7 @@ ARIA adds accessibility information that HTML alone can't express. **Only use AR
 
 <!-- aria-live: announce dynamic content -->
 <div aria-live="polite">       <!-- wait for user to be idle -->
-<div aria-live="assertive">    <!-- interrupt (for errors/alerts)
+<div aria-live="assertive">    <!-- interrupt (for errors/alerts) -->
 
 <!-- aria-required, aria-invalid, aria-disabled -->
 <input aria-required="true" aria-invalid="true" />
@@ -256,8 +257,10 @@ function trapFocus(element) {
     }
   });
 }
+```
 
-// Visible focus indicator — never use outline:none without a replacement!
+```css
+/* Visible focus indicator — never use outline:none without a replacement! */
 :focus-visible {
   outline: 2px solid #005fcc;
   outline-offset: 2px;
@@ -491,3 +494,42 @@ test('form is accessible', async () => {
 | Modal without focus trap | Implement focus management inside modal |
 | Using color alone to convey info | Pair with text, icons, or patterns |
 | `aria-hidden` on interactive element | Never hide interactive elements from SR |
+
+---
+
+## Reduced Motion
+
+Some users have vestibular disorders or motion sensitivity and have set their OS preference to reduce motion. Always respect this.
+
+```css
+/* Wrap animations in prefers-reduced-motion check */
+@media (prefers-reduced-motion: no-preference) {
+  .card {
+    transition: transform 0.3s ease;
+  }
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+}
+
+/* Or disable animations globally for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+```
+
+```js
+// Check the preference in JavaScript
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (!prefersReducedMotion) {
+  startAnimation();
+}
+```
+
+> **Rule:** Never auto-play animations that last more than 5 seconds. If animation is essential, always provide a pause/stop control.

@@ -15,6 +15,17 @@
   - [Building AI-Powered Features](#building-ai-powered-features)
   - [Tools and Ecosystem](#tools-and-ecosystem)
   - [Responsible AI Development](#responsible-ai-development)
+  - [Why Audit AI-Generated Code?](#why-audit-ai-generated-code)
+  - [The Auditing Mindset](#the-auditing-mindset)
+  - [Accuracy and Correctness Checks](#accuracy-and-correctness-checks)
+  - [Performance Auditing](#performance-auditing)
+  - [Security Auditing](#security-auditing)
+  - [Accessibility Auditing](#accessibility-auditing)
+  - [TypeScript and Type Safety](#typescript-and-type-safety)
+  - [Production Readiness Checklist](#production-readiness-checklist)
+  - [Debugging AI-Generated Code](#debugging-ai-generated-code)
+  - [Tools for Automated Auditing](#tools-for-automated-auditing)
+  - [Building a Review Workflow](#building-a-review-workflow)
 
 ---
 
@@ -400,6 +411,9 @@ Prompts for generating tests:
 Common AI features to integrate in frontend applications:
 
 ```tsx
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
 // 1. Smart Search (semantic search)
 function SmartSearch() {
   const [query, setQuery] = useState('');
@@ -411,10 +425,20 @@ function SmartSearch() {
   // ...
 }
 
+// custom hook — implement or import from `use-debounce`
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+
 // 2. Auto-complete suggestions
-function SmartInput({ onSelect }) {
+function SmartInput({ onSelect }: { onSelect: (v: string) => void }) {
   const [value, setValue] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const debouncedValue = useDebounce(value, 300);
 
   useEffect(() => {

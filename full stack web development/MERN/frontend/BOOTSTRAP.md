@@ -33,6 +33,8 @@
     - [Offset](#offset)
 
 
+> **Bootstrap Version:** These notes target **Bootstrap 5** (the current stable release). Bootstrap 4 classes like `font-weight-bold` are not covered here.
+
 ## Navbar
 
 The Bootstrap navbar should always have the class `navbar-expand{-sm|-md|-lg|-xl|-xxl}` to define its behavior across different viewports.
@@ -61,26 +63,32 @@ There must be a div after the toggle button with the class `collapse navbar-coll
 
 Bootstrap provides a wide range of responsive margin and padding utility classes. They work for all breakpoints:
 
-- `xs` (<=576px)
-- `sm` (>=576px)
-- `md` (>=768px)
-- `lg` (>=992px)
-- `xl` (>=1200px)
+- `xs` (< 576px) — no breakpoint suffix
+- `sm` (≥ 576px)
+- `md` (≥ 768px)
+- `lg` (≥ 992px)
+- `xl` (≥ 1200px)
+- `xxl` (≥ 1400px) ← added in Bootstrap 5
 
 The classes are used in the format:
 
-- `{property}{sides}-{size}` for xs
-- `{property}{sides}-{breakpoint}-{size}` for sm, md, lg, and xl.
+- `{property}{sides}-{size}` (no breakpoint = applies to all sizes)
+- `{property}{sides}-{breakpoint}-{size}` for sm, md, lg, xl, xxl
+
+Where `property` is `m` (margin) or `p` (padding), and `sides` is `t` (top), `b` (bottom), `s` (start/left), `e` (end/right), `x` (left+right), `y` (top+bottom), or omitted for all sides.
 
 ### Examples
 
-- `m-2` - Sets margin.
-- `p-3` - Sets padding.
-- `t-1` - Sets margin-top or padding-top.
-- `b-0` - Sets margin-bottom or padding-bottom.
-- `s-auto` - Sets margin-left or padding-left to auto.
-- `x-4` - Sets both padding-left and padding-right or margin-left and margin-right to 1.5rem.
-- `y-2` - Sets both padding-top and padding-bottom or margin-top and margin-bottom to 0.5rem.
+```html
+<div class="m-2">...</div>       <!-- margin all sides 0.5rem -->
+<div class="p-3">...</div>       <!-- padding all sides 1rem -->
+<div class="mt-1">...</div>      <!-- margin-top 0.25rem -->
+<div class="mb-0">...</div>      <!-- margin-bottom 0 -->
+<div class="ms-auto">...</div>   <!-- margin-start (left) auto — pushes element right -->
+<div class="px-4">...</div>      <!-- padding left+right 1.5rem -->
+<div class="py-2">...</div>      <!-- padding top+bottom 0.5rem -->
+<div class="mt-md-3">...</div>   <!-- margin-top 1rem only on md+ screens -->
+```
 
 ### Size Values
 
@@ -101,8 +109,10 @@ These classes provide a convenient way to manage spacing in a responsive manner 
 Bootstrap includes various utility classes for typography, making it easy to control text alignment, weight, and style.
 
 ```html
-<p class="text-center font-weight-bold">Centered and Bold Text</p>
+<p class="text-center fw-bold">Centered and Bold Text</p>
 ```
+
+> **Bootstrap 4 → 5 rename:** `font-weight-bold` → `fw-bold`, `font-weight-normal` → `fw-normal`, `font-italic` → `fst-italic`.
 
 ## Buttons
 
@@ -168,13 +178,29 @@ Create modal dialogs with Bootstrap for pop-up content. Use the `.modal` class a
 
 ## Icons
 
-Bootstrap supports icons from the popular FontAwesome library. Include the FontAwesome CSS and use the `<i>` element with the appropriate classes.
+Bootstrap 5 ships its own icon library — **Bootstrap Icons** (~2,000 SVG icons, free and open source). Include via CDN or npm:
 
 ```html
-<i class="fas fa-heart"></i> <!-- Heart icon -->
+<!-- CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<!-- Usage: prefix all icons with bi- -->
+<i class="bi bi-heart"></i>         <!-- Heart icon -->
+<i class="bi bi-trash fs-4"></i>    <!-- Trash icon, larger size -->
+<i class="bi bi-check-circle text-success"></i>
 ```
 
-These additional notes cover key components and features in Bootstrap, enhancing your ability to create responsive and visually appealing web pages.
+```bash
+# Install via npm
+npm install bootstrap-icons
+```
+
+> **Note:** FontAwesome is a popular *third-party* alternative, but it is **not** bundled with Bootstrap. Bootstrap Icons is the first-party choice.
+
+```html
+<!-- FontAwesome (third party — requires separate install/CDN) -->
+<i class="fas fa-heart"></i>
+```
 
 ## Flex
 In Bootstrap, the Flex utility classes are part of the Flexbox layout system and provide a convenient way to create flexible and responsive layouts. 
@@ -317,10 +343,12 @@ Sets the flex grow factor of a flex item.
 
 ```html
 <div class="d-flex">
-  <div class="flex-grow-1">Flex Item 1</div>
-  <div class="flex-grow-2">Flex Item 2</div>
+  <div class="flex-grow-1">Flex Item 1 (grows to fill space)</div>
+  <div class="flex-grow-0">Flex Item 2 (does not grow)</div>
 </div>
 ```
+
+> **Bootstrap only provides `flex-grow-0` and `flex-grow-1`.** For custom grow factors, use inline styles or a custom CSS class.
 
 #### `order-{value}`
 Controls the order of a flex item. Values can be integers, positive or negative.

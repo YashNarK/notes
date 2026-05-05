@@ -1,13 +1,15 @@
-# Table of contents:
+# Chakra UI
 
-- [Table of contents:](#table-of-contents)
+## Table of contents
+
 - [Chakra UI](#chakra-ui)
+  - [Table of contents](#table-of-contents)
   - [What is ChakraUI?](#what-is-chakraui)
   - [Installation](#installation)
   - [Usage](#usage)
+  - [Theming and Customization](#theming-and-customization)
   - [Chakra UI Components](#chakra-ui-components)
-
-# Chakra UI
+  - [Component Examples](#component-examples)
 
 ## What is ChakraUI?
 
@@ -35,9 +37,14 @@ Here are some key features of Chakra UI:
   To install Chakra UI in your project, you can run the following commands in your terminal:
 
 ```bash
-# For Vite
+# Chakra UI v2 (React 18, Emotion-based)
 npm i @chakra-ui/react @emotion/react @emotion/styled framer-motion
+
+# Chakra UI v3 (2024 — new zero-config setup, no Emotion required)
+npm i @chakra-ui/react
 ```
+
+> **Version note:** **v3** (released 2024) is a full rewrite — no `@emotion` dependency, new `createSystem` theming API, and better performance. **v2** is still widely used. Check which version your project uses.
 
 ## Usage
 
@@ -56,7 +63,62 @@ function App() {
 }
 ```
 
-Please note that version 2 of Chakra UI is only compatible with React 18.
+Please note that **v2** of Chakra UI is only compatible with React 18. **v3** supports React 18+.
+
+## Theming and Customization
+
+Chakra UI is fully themeable. Extend the default theme to match your brand:
+
+```jsx
+// v2 — extend the default theme
+import { extendTheme, ChakraProvider } from '@chakra-ui/react';
+
+const theme = extendTheme({
+  colors: {
+    brand: {
+      50:  '#e3f9f5',
+      500: '#319795',   // teal-500
+      900: '#1a365d',
+    },
+  },
+  fonts: {
+    heading: `'Inter', sans-serif`,
+    body:    `'Inter', sans-serif`,
+  },
+  config: {
+    initialColorMode: 'light',   // 'light' | 'dark' | 'system'
+    useSystemColorMode: false,
+  },
+});
+
+function App() {
+  return (
+    <ChakraProvider theme={theme}>
+      <YourApp />
+    </ChakraProvider>
+  );
+}
+```
+
+```jsx
+// Use brand colors anywhere via the `colorScheme` prop
+<Button colorScheme="brand">Brand Button</Button>
+```
+
+### Dark Mode Toggle
+
+```jsx
+import { useColorMode, Button } from '@chakra-ui/react';
+
+function DarkModeToggle() {
+  const { colorMode, toggleColorMode } = useColorMode();
+  return (
+    <Button onClick={toggleColorMode}>
+      Switch to {colorMode === 'light' ? 'Dark' : 'Light'} Mode
+    </Button>
+  );
+}
+```
 
 ## Chakra UI Components
 
@@ -77,3 +139,111 @@ Please note that version 2 of Chakra UI is only compatible with React 18.
 10. **Other**: Close Button, Portal, Show / Hide, Transitions
 
 Each of these components is designed with accessibility in mind, adhering to WAI-ARIA standards. They are also themeable, allowing you to customize any part of the components to match your design needs.
+
+## Component Examples
+
+### Box, Flex, Stack
+
+```jsx
+import { Box, Flex, Stack, Text, Heading } from '@chakra-ui/react';
+
+// Box = div with style props
+<Box bg="gray.100" p={4} borderRadius="md">
+  <Heading size="md">Card Title</Heading>
+  <Text color="gray.600">Card body text.</Text>
+</Box>
+
+// Flex = flexbox container
+<Flex justify="space-between" align="center">
+  <Text>Left</Text>
+  <Text>Right</Text>
+</Flex>
+
+// Stack = vertical spacing helper (HStack for horizontal)
+<Stack spacing={3}>
+  <Text>Item 1</Text>
+  <Text>Item 2</Text>
+  <Text>Item 3</Text>
+</Stack>
+```
+
+### Form Controls
+
+```jsx
+import { FormControl, FormLabel, Input, FormErrorMessage, Button } from '@chakra-ui/react';
+
+function EmailForm() {
+  const [email, setEmail] = useState('');
+  const isError = email === '';
+
+  return (
+    <FormControl isInvalid={isError}>
+      <FormLabel>Email</FormLabel>
+      <Input
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        placeholder="Enter email"
+      />
+      {isError && <FormErrorMessage>Email is required.</FormErrorMessage>}
+      <Button mt={4} colorScheme="teal" type="submit">Submit</Button>
+    </FormControl>
+  );
+}
+```
+
+### Toast Notifications
+
+```jsx
+import { useToast, Button } from '@chakra-ui/react';
+
+function NotifyButton() {
+  const toast = useToast();
+  return (
+    <Button
+      onClick={() =>
+        toast({
+          title: 'Saved!',
+          description: 'Your changes have been saved.',
+          status: 'success',   // 'success' | 'error' | 'warning' | 'info'
+          duration: 3000,
+          isClosable: true,
+          position: 'top-right',
+        })
+      }
+    >
+      Save
+    </Button>
+  );
+}
+```
+
+### Modal
+
+```jsx
+import { Modal, ModalOverlay, ModalContent, ModalHeader,
+         ModalBody, ModalFooter, ModalCloseButton,
+         useDisclosure, Button } from '@chakra-ui/react';
+
+function DeleteModal() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  return (
+    <>
+      <Button colorScheme="red" onClick={onOpen}>Delete</Button>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Confirm Delete</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>Are you sure? This action cannot be undone.</ModalBody>
+          <ModalFooter>
+            <Button variant="ghost" mr={3} onClick={onClose}>Cancel</Button>
+            <Button colorScheme="red" onClick={() => { /* delete */ onClose(); }}>Delete</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+```
