@@ -414,13 +414,17 @@ import Image from 'next/image';
 
 /* 3. Prefer CSS animations over JS animations (runs on compositor thread) */
 @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+```
 
+```js
 /* 4. Avoid layout thrashing — don't mix reads and writes in loops */
-/* ❌ */
+
+// ❌ Forces layout recalculation on every iteration
 elements.forEach(el => {
   el.style.height = el.offsetHeight + 10 + 'px';  // read then write in same frame
 });
-/* ✅ Batch reads, then batch writes */
+
+// ✅ Batch reads first, then batch writes
 const heights = elements.map(el => el.offsetHeight);
 elements.forEach((el, i) => { el.style.height = heights[i] + 10 + 'px'; });
 ```
