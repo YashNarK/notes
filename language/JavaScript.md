@@ -133,6 +133,11 @@
     - [Checking for `undefined`](#checking-for-undefined)
     - [Checking for `NaN`](#checking-for-nan)
     - [Checking for an Array](#checking-for-an-array)
+  - [Copying Objects and Arrays](#copying-objects-and-arrays)
+    - [Shallow Copy](#shallow-copy)
+    - [Deep Copy](#deep-copy)
+    - [Method Comparison Table](#method-comparison-table)
+    - [What structuredClone Cannot Copy](#what-structuredclone-cannot-copy)
     - [Checking for a plain Object](#checking-for-a-plain-object)
     - [Checking for a Map](#checking-for-a-map)
     - [Checking for a Set](#checking-for-a-set)
@@ -3717,3 +3722,162 @@ tag(42n)           // '[object BigInt]'
 | `new Set()` | `'object'` ⚠️ | `Set` ✅ | — | — | — | `[object Set]` |
 | `() => {}` | `'function'` ✅ | `Function` ✅ | — | — | — | `[object Function]` |
 | `new Date()` | `'object'` ⚠️ | `Date` ✅ | — | — | — | `[object Date]` |
+
+---
+
+## Copying Objects and Arrays
+
+### Shallow Copy
+
+A **shallow copy** duplicates the top-level structure but nested objects/arrays are still **shared by reference** — mutating a nested value in the copy also mutates the original.
+
+```js
+const original = { name: 'Alice', address: { city: 'Chennai' } };
+
+// ── Spread operator ──────────────────────────────────────────────
+const copy1 = { ...original };
+copy1.name = 'Bob';           // ✅ original.name still 'Alice'
+copy1.address.city = 'Delhi'; // ❌ original.address.city ALSO becomes 'Delhi'!
+
+// ── Object.assign ─────────────────────────────────────────────────
+const copy2 = Object.assign({}, original);
+// Same behaviour as spread — nested objects are still shared refs
+
+// ── Array spread / slice ──────────────────────────────────────────
+const arr = [1, [2, 3], { x: 4 }];
+const arrCopy = [...arr];          // or arr.slice()
+arrCopy[0] = 99;                   // ✅ independent
+arrCopy[1].push(99);               // ❌ arr[1] also modified (shared ref)
+
+// ── Array.from ───────────────────────────────────────────────────
+const arrCopy2 = Array.from(arr);  // also shallow
+```
+
+> **Rule of thumb:** If the value contains only primitives (strings, numbers, booleans) at every level, a shallow copy is safe. As soon as there are nested objects or arrays, use a deep copy.
+
+### Deep Copy
+
+A **deep copy** recursively duplicates every nested structure. The copy is completely independent.
+
+#### `structuredClone()` — the modern standard (ES2022)
+
+Built-in, fast, handles circular references, and works in all modern browsers and Node.js ≥ 17.
+
+```js
+const original = {
+  name: 'Alice',
+  address: { city: 'Chennai', coords: [13.08, 80.27] },
+  tags: ['dev', 'js'],
+  joined: new Date('2022-01-01'),
+};
+
+const deep = structuredClone(original);
+
+deep.address.city = 'Delhi';
+deep.tags.push('ts');
+console.log(original.address.city); // 'Chennai' ✅ untouched
+console.log(original.tags);         // ['dev', 'js'] ✅ untouched
+console.log(deep.joined instanceof Date); // true ✅ Date is properly cloned
+```
+
+**Handles correctly:**
+- Nested objects and arrays
+- `Date`, `Map`, `Set`, `ArrayBuffer`, `RegExp`, `Blob`
+- Circular references (no infinite loop)
+
+```js
+// Circular reference — no problem
+const a = { val: 1 };
+a.self = a;
+const clone = structuredClone(a);
+console.log(clone.self === clone); // true — circularity preserved
+```
+
+#### `JSON.parse(JSON.stringify())` — legacy approach
+
+Works for plain data but has significant limitations:
+
+```js
+const deep2 = JSON.parse(JSON.stringify(original));
+
+// ❌ Limitations:
+// - Date becomes a string:   deep2.joined → '2022-01-01T00:00:00.000Z'
+// - undefined values dropped: { a: undefined } → {}
+// - Functions dropped:        { fn: () => {} } → {}
+// - NaN / Infinity → null
+// - Map / Set → {} (empty object)
+// - Circular references → throws TypeError
+```
+
+Use `JSON.parse(JSON.stringify())` only when you are certain the data is plain JSON-safe.
+
+#### Manual recursive clone (rare — only if customization needed)
+
+```js
+function deepClone(value, seen = new Map()) {
+  if (value === null || typeof value !== 'object') return value;
+  if (seen.has(value)) return seen.get(value);      // handle circular refs
+
+  if (value instanceof Date)   return new Date(value);
+  if (value instanceof RegExp) return new RegExp(value.source, value.flags);
+  if (value instanceof Map) {
+    const clone = new Map();
+    seen.set(value, clone);
+    value.forEach((v, k) => clone.set(deepClone(k, seen), deepClone(v, seen)));
+    return clone;
+  }
+  if (value instanceof Set) {
+    const clone = new Set();
+    seen.set(value, clone);
+    value.forEach(v => clone.add(deepClone(v, seen)));
+    return clone;
+  }
+  if (Array.isArray(value)) {
+    const clone = [];
+    seen.set(value, clone);
+    value.forEach((v, i) => { clone[i] = deepClone(v, seen); });
+    return clone;
+  }
+
+  const clone = Object.create(Object.getPrototypeOf(value));
+  seen.set(value, clone);
+  for (const key of Reflect.ownKeys(value)) {
+    clone[key] = deepClone(value[key], seen);
+  }
+  return clone;
+}
+```
+
+### Method Comparison Table
+
+| Method | Depth | Handles `Date` | Handles `Map`/`Set` | Handles circular refs | Functions | Speed |
+|---|---|---|---|---|---|---|
+| `{ ...obj }` / `Object.assign` | Shallow | N/A | N/A | N/A | Copied (ref) | ⚡ Fastest |
+| `[...arr]` / `arr.slice()` | Shallow | N/A | N/A | N/A | Copied (ref) | ⚡ Fastest |
+| `structuredClone()` | **Deep** | ✅ Date | ✅ Map/Set | ✅ Yes | ❌ Dropped | ✅ Fast |
+| `JSON.parse(JSON.stringify())` | **Deep** | ❌ → string | ❌ → `{}` | ❌ Throws | ❌ Dropped | 🐢 Slow |
+| Lodash `_.cloneDeep()` | **Deep** | ✅ | ✅ | ✅ | ✅ Cloned | Medium |
+| Manual `deepClone()` | **Deep** | Custom | Custom | Custom | Custom | Varies |
+
+### What `structuredClone` Cannot Copy
+
+```js
+// ❌ Functions are silently dropped
+structuredClone({ fn: () => 42 });     // → {}
+
+// ❌ Symbol-keyed properties are dropped
+const sym = Symbol('id');
+structuredClone({ [sym]: 1 });         // → {}
+
+// ❌ DOM nodes throw DataCloneError
+structuredClone(document.body);        // TypeError: Failed to execute 'structuredClone'
+
+// ❌ Class instances lose their prototype chain
+class User { greet() { return 'hi'; } }
+const u = new User();
+const cloned = structuredClone(u);
+cloned instanceof User;  // false — plain object, greet() is gone
+
+// ✅ Workaround for class instances: clone the data, then reconstruct
+const clonedUser = Object.assign(new User(), structuredClone({ ...u }));
+```
