@@ -1043,15 +1043,110 @@ These are the commonly used array functions in JavaScript along with their behav
 
 #### 3. **Hoisting:**
 
-- Function declarations are hoisted to the top of their scope, allowing them to be used before they are declared.
+Hoisting is JavaScript's behaviour of moving **declarations** (not initializations) to the top of their scope during the compilation phase. Different declarations hoist differently.
 
-```javascript
-console.log(greet("John")); // Outputs: "Hello, John!"
+**What actually gets hoisted:**
+
+| Declaration | Hoisted? | Initialized to | Usable before declaration? |
+|---|---|---|---|
+| `var` | ✅ Yes | `undefined` | ⚠️ Yes, but value is `undefined` |
+| `let` | ✅ Yes | ❌ Uninitialized (TDZ) | ❌ `ReferenceError` |
+| `const` | ✅ Yes | ❌ Uninitialized (TDZ) | ❌ `ReferenceError` |
+| Function declaration | ✅ Yes | Full function body | ✅ Yes — fully usable |
+| Function expression (`var fn = function`) | ✅ var part only | `undefined` | ❌ `TypeError` (not a function yet) |
+| Arrow function (`const fn = () =>`) | ✅ const part only | TDZ | ❌ `ReferenceError` |
+| Class declaration | ✅ Yes | TDZ | ❌ `ReferenceError` |
+
+---
+
+**1. `var` — hoisted and initialized to `undefined`**
+
+```js
+console.log(x); // undefined (NOT ReferenceError)
+var x = 5;
+console.log(x); // 5
+
+// What the engine actually sees:
+var x;          // declaration hoisted
+console.log(x); // undefined
+x = 5;          // assignment stays in place
+console.log(x); // 5
+```
+
+**2. `let` and `const` — hoisted but in the Temporal Dead Zone (TDZ)**
+
+The variable exists in scope from the top of the block but cannot be read or written until the declaration line is reached. Accessing it before that throws a `ReferenceError`.
+
+```js
+console.log(y); // ❌ ReferenceError: Cannot access 'y' before initialization
+let y = 10;
+
+console.log(PI); // ❌ ReferenceError
+const PI = 3.14;
+
+// TDZ in action inside a block
+{
+  // TDZ for 'z' starts here
+  console.log(z); // ❌ ReferenceError
+  let z = 99;     // TDZ ends here
+}
+```
+
+**3. Function declarations — fully hoisted (body and all)**
+
+```js
+console.log(greet('Alice')); // ✅ 'Hello, Alice!' — works before declaration
 
 function greet(name) {
   return `Hello, ${name}!`;
 }
 ```
+
+**4. Function expressions and arrow functions — only the variable is hoisted**
+
+```js
+// var function expression — variable hoisted as undefined
+console.log(sayHi); // undefined
+console.log(sayHi()); // ❌ TypeError: sayHi is not a function
+var sayHi = function() { return 'hi'; };
+
+// const arrow function — TDZ
+console.log(sayBye); // ❌ ReferenceError
+const sayBye = () => 'bye';
+```
+
+**5. Class declarations — hoisted but in TDZ (like `let`)**
+
+```js
+const p = new Person('Alice'); // ❌ ReferenceError: Cannot access 'Person' before initialization
+
+class Person {
+  constructor(name) { this.name = name; }
+}
+```
+
+---
+
+**Hoisting inside functions (function scope for `var`)**
+
+```js
+function example() {
+  console.log(a); // undefined — var is function-scoped, hoisted to top of fn
+  if (true) {
+    var a = 1;    // var ignores block scope
+  }
+  console.log(a); // 1
+}
+
+function example2() {
+  console.log(b); // ❌ ReferenceError — let is block-scoped, not hoisted outside block
+  if (true) {
+    let b = 2;
+  }
+}
+```
+
+**Key takeaway:** Prefer `const`/`let` over `var`. The TDZ turns subtle `undefined` bugs into explicit `ReferenceError`s that are easier to catch.
 
 #### 4. **Rest Operator and Arguments:**
 
