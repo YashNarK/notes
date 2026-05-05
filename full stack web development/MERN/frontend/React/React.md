@@ -1,3 +1,14 @@
+
+# React
+
+## Prerequisites
+
+Before diving into React, make sure you're comfortable with the following:
+
+- **[JavaScript](../../../../language/JavaScript.md)** — ES6+ features (arrow functions, destructuring, spread/rest, modules, Promises, async/await) are used extensively in React code.
+- **[TypeScript](../../../../language/TypeScript.md)** — Most modern React projects use TypeScript. Understanding interfaces, generics, and utility types is essential for typed React development.
+
+---
 
 # Table of Contents
 - [Table of Contents](#table-of-contents)
@@ -215,6 +226,30 @@
   - [8. **Debounce and Throttle**:](#8-debounce-and-throttle)
   - [9. **Use React Profiler**:](#9-use-react-profiler)
   - [10. **Avoid Reconciliation Pitfalls**:](#10-avoid-reconciliation-pitfalls)
+- [React 18+ Features](#react-18-features)
+  - [createRoot](#createroot)
+  - [Automatic Batching](#automatic-batching)
+  - [Transitions (useTransition \& useDeferredValue)](#transitions-usetransition--usedeferredvalue)
+  - [useId](#useid)
+  - [Suspense Improvements](#suspense-improvements)
+- [Error Boundaries](#error-boundaries)
+  - [Class-Based Error Boundary](#class-based-error-boundary)
+  - [react-error-boundary Library](#react-error-boundary-library)
+- [Custom Hooks](#custom-hooks)
+  - [Rules of Hooks](#rules-of-hooks)
+  - [useLocalStorage](#uselocalstorage)
+  - [useFetch](#usefetch)
+  - [useDebounce](#usedebounce)
+  - [useMediaQuery](#usemediaquery)
+- [Advanced Patterns](#advanced-patterns)
+  - [Compound Components](#compound-components)
+  - [Higher-Order Components (HOC)](#higher-order-components-hoc)
+  - [Render Props](#render-props)
+- [React Server Components (RSC)](#react-server-components-rsc)
+- [Testing React](#testing-react)
+  - [Jest Setup](#jest-setup)
+  - [React Testing Library Basics](#react-testing-library-basics)
+  - [Testing Hooks](#testing-hooks)
 - [Important Links](#important-links)
 - [React Summary](#react-summary)
 
@@ -6569,6 +6604,745 @@ By using these techniques, you can make your React applications more efficient a
 - Ensure that key props are stable and unique to avoid unnecessary re-renders.
 
 Implementing these strategies can significantly enhance the performance of your React application.
+
+---
+
+# React 18+ Features
+
+React 18 (released March 2022) introduced a new concurrent rendering engine and several new APIs.
+
+## createRoot
+
+React 18 replaced `ReactDOM.render` with `createRoot`. This opts your app into concurrent features.
+
+```tsx
+// Before (React 17)
+import ReactDOM from "react-dom";
+ReactDOM.render(<App />, document.getElementById("root"));
+
+// After (React 18)
+import { createRoot } from "react-dom/client";
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);
+```
+
+## Automatic Batching
+
+In React 17, state updates inside async callbacks (setTimeout, Promises, native event handlers) were NOT batched — each caused a separate re-render. React 18 batches all updates automatically.
+
+```tsx
+// React 18 — only ONE re-render, even in async callbacks
+setTimeout(() => {
+  setCount((c) => c + 1);
+  setFlag((f) => !f);
+  // Previously: 2 renders. Now: 1 render.
+}, 1000);
+
+// Opt-out if needed
+import { flushSync } from "react-dom";
+flushSync(() => setCount((c) => c + 1));
+flushSync(() => setFlag((f) => !f));
+// Forces 2 separate renders
+```
+
+## Transitions (useTransition & useDeferredValue)
+
+Transitions mark updates as **non-urgent**. React can interrupt them to keep the UI responsive for urgent updates (typing, clicking).
+
+### `useTransition`
+
+```tsx
+import { useState, useTransition } from "react";
+
+function SearchPage() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<string[]>([]);
+  const [isPending, startTransition] = useTransition();
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value); // urgent: update input immediately
+
+    startTransition(() => {
+      // non-urgent: heavy search/filter can lag
+      setResults(performExpensiveSearch(value));
+    });
+  };
+
+  return (
+    <>
+      <input value={query} onChange={handleSearch} placeholder="Search..." />
+      {isPending && <span>Loading...</span>}
+      <ResultsList results={results} />
+    </>
+  );
+}
+```
+
+### `useDeferredValue`
+
+Defer the rendering of a slow child component without blocking the parent:
+
+```tsx
+import { useState, useDeferredValue } from "react";
+
+function App() {
+  const [text, setText] = useState("");
+  const deferredText = useDeferredValue(text); // lags behind `text`
+
+  return (
+    <>
+      <input value={text} onChange={(e) => setText(e.target.value)} />
+      <SlowList query={deferredText} /> {/* re-renders only when idle */}
+    </>
+  );
+}
+```
+
+## `useId`
+
+Generate unique, stable IDs that work with server-side rendering. Never use `Math.random()` for IDs in React.
+
+```tsx
+import { useId } from "react";
+
+function FormField({ label }: { label: string }) {
+  const id = useId(); // e.g., ":r0:", ":r1:", ...
+
+  return (
+    <div>
+      <label htmlFor={id}>{label}</label>
+      <input id={id} type="text" />
+    </div>
+  );
+}
+```
+
+## Suspense Improvements
+
+React 18 extended Suspense to work with data fetching (not just lazy-loaded components):
+
+```tsx
+import { Suspense, lazy } from "react";
+
+// Lazy-loaded component
+const Dashboard = lazy(() => import("./Dashboard"));
+
+function App() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Dashboard />
+    </Suspense>
+  );
+}
+
+// Nested Suspense — granular loading states
+function Page() {
+  return (
+    <Suspense fallback={<PageSkeleton />}>
+      <Header />
+      <Suspense fallback={<FeedSkeleton />}>
+        <Feed />
+      </Suspense>
+      <Suspense fallback={<SidebarSkeleton />}>
+        <Sidebar />
+      </Suspense>
+    </Suspense>
+  );
+}
+```
+
+---
+
+# Error Boundaries
+
+Error Boundaries catch JavaScript errors anywhere in their child component tree, log them, and display a fallback UI instead of crashing the whole app.
+
+> **Error Boundaries do NOT catch:** event handlers, async code, server-side rendering, errors thrown in the boundary itself.
+
+## Class-Based Error Boundary
+
+Error boundaries must be class components (no hook equivalent exists yet):
+
+```tsx
+import { Component, ErrorInfo, ReactNode } from "react";
+
+interface Props {
+  fallback: ReactNode;
+  children: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+  state: State = { hasError: false, error: null };
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    // Log to error tracking service (e.g., Sentry)
+    console.error("Caught by ErrorBoundary:", error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+// Usage
+function App() {
+  return (
+    <ErrorBoundary fallback={<h2>Something went wrong. Please refresh.</h2>}>
+      <RiskyComponent />
+    </ErrorBoundary>
+  );
+}
+```
+
+## react-error-boundary Library
+
+The community package `react-error-boundary` provides a convenient functional API:
+
+```bash
+npm install react-error-boundary
+```
+
+```tsx
+import { ErrorBoundary, useErrorBoundary } from "react-error-boundary";
+
+function ErrorFallback({ error, resetErrorBoundary }: {
+  error: Error;
+  resetErrorBoundary: () => void;
+}) {
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre style={{ color: "red" }}>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Try again</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onError={(error, info) => logErrorToService(error, info)}
+      onReset={() => resetAppState()}
+    >
+      <MyComponent />
+    </ErrorBoundary>
+  );
+}
+
+// Throw errors from hooks/async handlers
+function MyComponent() {
+  const { showBoundary } = useErrorBoundary();
+
+  async function fetchData() {
+    try {
+      await api.getData();
+    } catch (e) {
+      showBoundary(e); // triggers the nearest error boundary
+    }
+  }
+}
+```
+
+---
+
+# Custom Hooks
+
+Custom hooks extract reusable stateful logic into standalone functions. Any function starting with `use` that calls React hooks is a custom hook.
+
+## Rules of Hooks
+
+1. Only call hooks at the **top level** — never inside loops, conditions, or nested functions
+2. Only call hooks from **React function components** or other custom hooks
+3. Custom hooks must start with **`use`**
+
+## useLocalStorage
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? (JSON.parse(item) as T) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      console.warn(`Failed to save "${key}" to localStorage`);
+    }
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}
+
+// Usage
+const [theme, setTheme] = useLocalStorage<"light" | "dark">("theme", "light");
+```
+
+## useFetch
+
+```tsx
+import { useState, useEffect, useRef } from "react";
+
+interface FetchState<T> {
+  data: T | null;
+  isLoading: boolean;
+  error: Error | null;
+}
+
+function useFetch<T>(url: string): FetchState<T> {
+  const [state, setState] = useState<FetchState<T>>({
+    data: null,
+    isLoading: true,
+    error: null,
+  });
+  const abortRef = useRef<AbortController>(null);
+
+  useEffect(() => {
+    abortRef.current = new AbortController();
+
+    setState({ data: null, isLoading: true, error: null });
+
+    fetch(url, { signal: abortRef.current.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json() as Promise<T>;
+      })
+      .then((data) => setState({ data, isLoading: false, error: null }))
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          setState({ data: null, isLoading: false, error: err });
+        }
+      });
+
+    return () => abortRef.current?.abort(); // cancel on unmount or url change
+  }, [url]);
+
+  return state;
+}
+
+// Usage
+const { data: users, isLoading, error } = useFetch<User[]>("/api/users");
+```
+
+## useDebounce
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useDebounce<T>(value: T, delay: number = 500): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// Usage — only fires search API call 500ms after user stops typing
+function SearchBar() {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 500);
+
+  useEffect(() => {
+    if (debouncedQuery) fetchResults(debouncedQuery);
+  }, [debouncedQuery]);
+
+  return <input value={query} onChange={(e) => setQuery(e.target.value)} />;
+}
+```
+
+## useMediaQuery
+
+```tsx
+import { useState, useEffect } from "react";
+
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia(query).matches
+      : false
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setMatches(e.matches);
+    mql.addEventListener("change", handler);
+    setMatches(mql.matches);
+    return () => mql.removeEventListener("change", handler);
+  }, [query]);
+
+  return matches;
+}
+
+// Usage
+const isMobile = useMediaQuery("(max-width: 768px)");
+const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
+```
+
+---
+
+# Advanced Patterns
+
+## Compound Components
+
+Compound components share implicit state via context, giving consumers a composable API — like `<select>` and `<option>`.
+
+```tsx
+import { createContext, useContext, useState, ReactNode } from "react";
+
+interface TabsContextType {
+  activeTab: string;
+  setActiveTab: (id: string) => void;
+}
+
+const TabsContext = createContext<TabsContextType | null>(null);
+
+function useTabs() {
+  const ctx = useContext(TabsContext);
+  if (!ctx) throw new Error("Must be used within <Tabs>");
+  return ctx;
+}
+
+// Parent manages state
+function Tabs({ children, defaultTab }: { children: ReactNode; defaultTab: string }) {
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  return (
+    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
+      <div className="tabs">{children}</div>
+    </TabsContext.Provider>
+  );
+}
+
+// Sub-components consume shared state
+function TabList({ children }: { children: ReactNode }) {
+  return <div className="tab-list" role="tablist">{children}</div>;
+}
+
+function Tab({ id, children }: { id: string; children: ReactNode }) {
+  const { activeTab, setActiveTab } = useTabs();
+  return (
+    <button
+      role="tab"
+      aria-selected={activeTab === id}
+      onClick={() => setActiveTab(id)}
+    >
+      {children}
+    </button>
+  );
+}
+
+function TabPanel({ id, children }: { id: string; children: ReactNode }) {
+  const { activeTab } = useTabs();
+  if (activeTab !== id) return null;
+  return <div role="tabpanel">{children}</div>;
+}
+
+// Attach sub-components as static properties (namespace pattern)
+Tabs.List  = TabList;
+Tabs.Tab   = Tab;
+Tabs.Panel = TabPanel;
+
+// Consumer — clean, declarative API
+function App() {
+  return (
+    <Tabs defaultTab="home">
+      <Tabs.List>
+        <Tabs.Tab id="home">Home</Tabs.Tab>
+        <Tabs.Tab id="about">About</Tabs.Tab>
+      </Tabs.List>
+      <Tabs.Panel id="home"><HomePage /></Tabs.Panel>
+      <Tabs.Panel id="about"><AboutPage /></Tabs.Panel>
+    </Tabs>
+  );
+}
+```
+
+## Higher-Order Components (HOC)
+
+An HOC is a function that takes a component and returns a new enhanced component. Useful for cross-cutting concerns (auth, logging, theming).
+
+```tsx
+import { ComponentType } from "react";
+
+// HOC that adds authentication guard
+function withAuth<P extends object>(WrappedComponent: ComponentType<P>) {
+  return function AuthenticatedComponent(props: P) {
+    const { user, isLoading } = useAuth();
+
+    if (isLoading) return <Spinner />;
+    if (!user) return <Navigate to="/login" replace />;
+
+    return <WrappedComponent {...props} />;
+  };
+}
+
+// HOC that injects loading state
+function withLoading<P extends object>(WrappedComponent: ComponentType<P>) {
+  return function WithLoadingComponent({
+    isLoading,
+    ...props
+  }: P & { isLoading: boolean }) {
+    if (isLoading) return <div>Loading...</div>;
+    return <WrappedComponent {...(props as P)} />;
+  };
+}
+
+// Usage — compose HOCs
+const ProtectedDashboard = withAuth(withLoading(Dashboard));
+```
+
+> **Prefer custom hooks over HOCs** when possible — hooks are simpler and don't add to the component tree depth.
+
+## Render Props
+
+A component accepts a function as a prop (or `children`) and calls it with internal state. Gives consumers full control over rendering.
+
+```tsx
+interface MousePosition { x: number; y: number }
+
+function MouseTracker({
+  render,
+}: {
+  render: (pos: MousePosition) => React.ReactNode;
+}) {
+  const [pos, setPos] = useState<MousePosition>({ x: 0, y: 0 });
+
+  return (
+    <div
+      onMouseMove={(e) => setPos({ x: e.clientX, y: e.clientY })}
+      style={{ height: "100vh" }}
+    >
+      {render(pos)}
+    </div>
+  );
+}
+
+// Usage
+<MouseTracker
+  render={({ x, y }) => (
+    <p>Mouse is at ({x}, {y})</p>
+  )}
+/>
+```
+
+> **Modern alternative:** Extract to a custom hook (`useMouse`) — same logic, cleaner code.
+
+---
+
+# React Server Components (RSC)
+
+React Server Components (introduced with Next.js 13+ App Router) run **exclusively on the server**. They can directly access databases, file systems, and secrets — without sending those to the browser.
+
+### Server vs Client Components
+
+| | Server Component | Client Component |
+|---|---|---|
+| Default in Next.js App Router | ✅ Yes | ❌ No (opt-in with `"use client"`) |
+| Runs on | Server only | Browser (+ server for hydration) |
+| Can use hooks (useState, etc.) | ❌ No | ✅ Yes |
+| Can access DB / filesystem | ✅ Yes | ❌ No |
+| Bundle size impact | Zero (not sent to browser) | Adds to JS bundle |
+| Can accept/render Server Components as children | ✅ Yes | ✅ Yes |
+
+```tsx
+// app/users/page.tsx — Server Component (default in Next.js App Router)
+import { db } from "@/lib/db";
+
+export default async function UsersPage() {
+  const users = await db.user.findMany(); // direct DB access, no API needed
+
+  return (
+    <ul>
+      {users.map((user) => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  );
+}
+
+// app/users/UserCard.tsx — Client Component (needs interactivity)
+"use client";
+
+import { useState } from "react";
+
+export function UserCard({ user }: { user: User }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div onClick={() => setExpanded((e) => !e)}>
+      <h3>{user.name}</h3>
+      {expanded && <p>{user.email}</p>}
+    </div>
+  );
+}
+```
+
+### Key RSC Rules
+
+1. Never `"use client"` on a component that accesses secrets/DB — those would leak to the browser
+2. Client Components can import Server Components as `children` props (pass-through is safe)
+3. Client Components **cannot** import Server Components directly
+4. Use `Suspense` around Server Components for streaming/loading states
+
+---
+
+# Testing React
+
+## Jest Setup
+
+For projects using Vite + TypeScript, use Vitest (Jest-compatible) or Jest with ts-jest:
+
+```bash
+# Option 1: Vitest (recommended for Vite projects)
+npm install --save-dev vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom
+
+# Option 2: Jest
+npm install --save-dev jest @types/jest ts-jest @testing-library/react @testing-library/jest-dom @testing-library/user-event jest-environment-jsdom
+```
+
+**vitest.config.ts:**
+```typescript
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+  },
+});
+```
+
+**src/test/setup.ts:**
+```typescript
+import "@testing-library/jest-dom";
+```
+
+## React Testing Library Basics
+
+RTL encourages testing behavior (what the user sees/does) over implementation details.
+
+```tsx
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { Counter } from "./Counter";
+
+describe("Counter", () => {
+  it("renders with initial count of 0", () => {
+    render(<Counter />);
+    expect(screen.getByText("Count: 0")).toBeInTheDocument();
+  });
+
+  it("increments count when button is clicked", async () => {
+    const user = userEvent.setup();
+    render(<Counter />);
+
+    await user.click(screen.getByRole("button", { name: /increment/i }));
+
+    expect(screen.getByText("Count: 1")).toBeInTheDocument();
+  });
+
+  it("displays error when fetch fails", async () => {
+    // Mock global fetch
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+    });
+
+    render(<DataComponent />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent("Failed to load");
+    });
+  });
+});
+```
+
+### Common RTL Queries (Preference Order)
+
+| Priority | Query | When to Use |
+|---|---|---|
+| 1st | `getByRole` | Most elements — buttons, headings, inputs |
+| 2nd | `getByLabelText` | Form inputs with labels |
+| 3rd | `getByPlaceholderText` | Inputs with placeholder |
+| 4th | `getByText` | Non-interactive text elements |
+| 5th | `getByDisplayValue` | Current value of select/input |
+| 6th | `getByAltText` | Images |
+| 7th | `getByTitle` | Elements with title attr |
+| Last | `getByTestId` | Last resort — add `data-testid` to element |
+
+### Async Queries
+
+```tsx
+// waitFor — retries assertion until it passes or times out
+await waitFor(() => expect(screen.getByText("Done")).toBeInTheDocument());
+
+// findBy* — returns a promise, waits for element to appear
+const element = await screen.findByText("Loaded Data");
+
+// queryBy* — returns null if not found (for testing absence)
+expect(screen.queryByText("Error")).not.toBeInTheDocument();
+```
+
+## Testing Hooks
+
+Use `renderHook` from RTL to test custom hooks in isolation:
+
+```tsx
+import { renderHook, act } from "@testing-library/react";
+import { useCounter } from "./useCounter";
+
+describe("useCounter", () => {
+  it("starts at the initial value", () => {
+    const { result } = renderHook(() => useCounter(10));
+    expect(result.current.count).toBe(10);
+  });
+
+  it("increments", () => {
+    const { result } = renderHook(() => useCounter(0));
+
+    act(() => result.current.increment());
+
+    expect(result.current.count).toBe(1);
+  });
+
+  it("resets to initial value", () => {
+    const { result } = renderHook(() => useCounter(5));
+
+    act(() => result.current.increment());
+    act(() => result.current.reset());
+
+    expect(result.current.count).toBe(5);
+  });
+});
+```
+
+---
 
 # Important Links
 
