@@ -15,6 +15,23 @@
   - [Code Coverage](#code-coverage)
   - [Vitest (Vite alternative to Jest)](#vitest-vite-alternative-to-jest)
   - [Testing Best Practices](#testing-best-practices)
+  - [Overview and Comparison (Playwright vs Puppeteer)](#overview-and-comparison)
+  - [Playwright Setup](#playwright-setup)
+  - [Playwright Core API](#playwright-core-api)
+    - [Navigation](#navigation)
+    - [Interactions](#interactions)
+    - [Waiting](#waiting)
+    - [Dialogs](#dialogs)
+  - [Locators (Playwright)](#locators-playwright)
+  - [Assertions (Playwright)](#assertions-playwright)
+  - [Page Object Model (POM)](#page-object-model-pom)
+  - [Playwright Configuration](#playwright-configuration)
+  - [Handling Authentication](#handling-authentication)
+  - [Network Interception](#network-interception)
+  - [Screenshots and Visual Testing](#screenshots-and-visual-testing)
+  - [Puppeteer Fundamentals](#puppeteer-fundamentals)
+  - [CI/CD Integration](#cicd-integration)
+  - [Intelligent Workflows and Scraping](#intelligent-workflows-and-scraping)
 
 ---
 
@@ -447,8 +464,10 @@ test('matches snapshot', () => {
 
 ```bash
 npx jest --coverage
+```
 
-# jest.config.ts
+**`jest.config.ts` — configure coverage thresholds:**
+```ts
 export default {
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.stories.*'],
   coverageThreshold: {
@@ -973,7 +992,9 @@ await locator.screenshot({ path: 'element.png' });
 await expect(page).toHaveScreenshot('dashboard.png');
 await expect(page).toHaveScreenshot({ maxDiffPixels: 100 });
 await expect(locator).toHaveScreenshot('card.png');
+```
 
+```bash
 # Update snapshots
 npx playwright test --update-snapshots
 ```

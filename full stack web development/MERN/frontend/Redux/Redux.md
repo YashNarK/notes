@@ -1,8 +1,10 @@
-# Table of Contents
+# Redux
+
+## Table of Contents
 
 - [Table of Contents](#table-of-contents)
-- [Redux](#redux)
-  - [Installation](#installation)
+- [Overview](#overview)
+- [Installation](#installation)
 - [Pros and Cons of using Redux](#pros-and-cons-of-using-redux)
   - [Pros:](#pros)
   - [Cons:](#cons)
@@ -33,9 +35,11 @@
     - [Component 1: Info](#component-1-info)
     - [Component 2: Header](#component-2-header)
 
-# Redux
+---
 
-Redux is an open-source JavaScript library primarily used for managing the state of applications. It is commonly used with libraries/frameworks like React, though it can be integrated with any JavaScript framework or library.
+## Overview
+
+Redux is an open-source JavaScript library primarily used for managing the state of applications.It is commonly used with libraries/frameworks like React, though it can be integrated with any JavaScript framework or library.
 
 The core concept of Redux revolves around maintaining a single immutable state tree for the entire application. This state tree represents the entire state of the application and is managed in a predictable manner using pure functions called reducers. Redux follows a unidirectional data flow pattern, which means that data flows in a single direction within the application, making it easier to understand and debug.
 
@@ -50,7 +54,7 @@ npm install redux
 npm install @reduxjs/toolkit react-redux
 ```
 
-# Pros and Cons of using Redux
+## Pros and Cons of using Redux
 
 ## Pros:
 
@@ -66,14 +70,14 @@ npm install @reduxjs/toolkit react-redux
 1. Complexity
 2. Verbosity
 
-# When should we not use Redux ?
+## When should we not use Redux ?
 
 - Tight Budget
 - Small to medium-size apps
 - Simple UI/Data Flow
 - Static Data
 
-# Redux and Functional Programming
+## Redux and Functional Programming
 
 Redux is heavily influenced by functional programming principles. Here's how Redux aligns with functional programming concepts:
 
@@ -89,7 +93,7 @@ Redux is heavily influenced by functional programming principles. Here's how Red
 
 Overall, Redux's design principles and usage patterns are heavily influenced by functional programming concepts, making it a natural fit for applications developed using functional programming paradigms.
 
-# Programming Paradigms
+## Programming Paradigms
 
 There are several programming paradigms, each offering different approaches to solving problems and structuring code. Here are some of the most prominent programming paradigms:
 
@@ -115,7 +119,7 @@ There are several programming paradigms, each offering different approaches to s
 
 These paradigms can be used individually or in combination, depending on the requirements of a given problem and the preferences of the developers.
 
-# Functional Programming
+## Functional Programming
 
 Functional programming (FP) is a programming paradigm that treats computation as the evaluation of mathematical functions and avoids changing-state and mutable data. It emphasizes the use of pure functions, higher-order functions, and immutable data. Here's a more detailed explanation of key concepts in functional programming:
 
@@ -439,7 +443,7 @@ Here's how you can use Immer to work with immutable data:
 
 Using Immer, you can write code that resembles mutable updates, which can be easier to understand and maintain, while still benefiting from the advantages of immutability, such as predictability and concurrency safety.
 
-# Redux Architecture
+## Redux Architecture
 
 Redux is a predictable state container for JavaScript applications, primarily used with frameworks like React for building user interfaces. Redux follows a unidirectional data flow architecture, which helps manage the state of an application in a predictable and maintainable way. Here's an overview of the Redux architecture:
 
@@ -478,7 +482,7 @@ Redux is a predictable state container for JavaScript applications, primarily us
 
 Overall, Redux provides a predictable and centralized way to manage application state, making it easier to develop and maintain complex applications, especially those with a large number of components and data interactions. By following a strict unidirectional data flow and maintaining immutability, Redux helps ensure application state changes are predictable and traceable, which aids in debugging and reasoning about the application's behavior.
 
-# Important Redux functions
+## Important Redux functions
 
 ## createStore()
 
@@ -580,7 +584,7 @@ Remember, Redux Toolkit provides a more streamlined and efficient way to set up 
 
 In summary, if you're starting a new Redux project or migrating an existing one, consider using `configureStore` for a more streamlined and efficient store setup experience.
 
-# Redux Implementation Steps (DUCKS Pattern):
+## Redux Implementation Steps (DUCKS Pattern):
 
 *For details regarding other redux patterns, check* [here](ReduxPatterns.md)
 

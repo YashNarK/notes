@@ -172,12 +172,8 @@ Tailwind uses **mobile-first** breakpoint prefixes. Apply a prefix to activate a
 | `2xl:` | 1536px | Wide screens |
 
 ```tsx
-<div className="
-  flex flex-col        // mobile: stacked column
-  md:flex-row          // tablet+: side by side
-  gap-4
-  p-4 md:p-8           // more padding on tablet+
-">
+{/* Mobile-first: stack vertically, switch to row at md+, pad more at md+ */}
+<div className="flex flex-col md:flex-row gap-4 p-4 md:p-8">
   <aside className="w-full md:w-64">Sidebar</aside>
   <main  className="flex-1">Content</main>
 </div>

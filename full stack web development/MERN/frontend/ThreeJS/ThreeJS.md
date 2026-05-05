@@ -1,8 +1,12 @@
-- [Three JS](#three-js)
-
 # Three JS
 
-**Three.js** is a popular open-source JavaScript library used to create and display 3D graphics in web browsers. It enables developers to build complex 3D scenes, animations, and visualizations directly in the browser without requiring plugins. Three.js leverages WebGL (Web Graphics Library), which is a JavaScript API for rendering 2D and 3D graphics, to provide a high-level abstraction for easier development.
+## Table of Contents
+
+- [Three JS](#three-js)
+
+---
+
+**Three.js** is a popular open-source JavaScript libraryused to create and display 3D graphics in web browsers. It enables developers to build complex 3D scenes, animations, and visualizations directly in the browser without requiring plugins. Three.js leverages WebGL (Web Graphics Library), which is a JavaScript API for rendering 2D and 3D graphics, to provide a high-level abstraction for easier development.
 
 ### Key Features of Three.js:
 
@@ -40,7 +44,7 @@ import * as THREE from "three";
 const SpinningCube: React.FC = () => {
   // Define a functional component using React.FC (TypeScript's type for function components).
 
-  const mountRef = (useRef < HTMLDivElement) | (null > null);
+  const mountRef = useRef<HTMLDivElement | null>(null);
   // Create a ref for the container div where the Three.js renderer will mount.
   // The ref can initially be `null` and will later reference an `HTMLDivElement`.
 

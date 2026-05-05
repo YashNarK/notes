@@ -1,3 +1,7 @@
+# Redux Patterns
+
+## Table of Contents
+
 - [Redux patterns](#redux-patterns)
   - [**1. Classic (Folder-by-Type) Pattern**](#1-classic-folder-by-type-pattern)
   - [**2. Feature-Based (Ducks) Pattern**](#2-feature-based-ducks-pattern)
@@ -6,7 +10,7 @@
   - [**5. Sagas \& Middleware Pattern** *(For Side Effects)*](#5-sagas--middleware-pattern-for-side-effects)
 
 
-# Redux patterns
+---
 
 Redux has evolved over time, leading to several patterns for organizing state management in applications. Here are the most common Redux patterns:  
 

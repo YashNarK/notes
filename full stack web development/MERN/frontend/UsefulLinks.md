@@ -2,7 +2,7 @@
 
 - [Texture Background](https://www.transparenttextures.com/)
 - [Google Fonts](https://fonts.google.com/)
-- [CCS Fonts](https://www.cssfontstack.com/)
+- [CSS Fonts](https://www.cssfontstack.com/)
 - [A complete guide to flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
 - [Images - Flat Icon](https://www.flaticon.com/)
 - [GIFs - Giphy](https://giphy.com/)
