@@ -1,3 +1,7 @@
+# React Summary
+
+## Table of Contents
+
 - [React Summary](#react-summary)
   - [Getting started with React](#getting-started-with-react)
   - [Building components](#building-components)
@@ -20,8 +24,7 @@
     - [Updating array of objects](#updating-array-of-objects)
     - [Updating with Immer](#updating-with-immer)
 
-
-# React Summary
+---
 
 ## Getting started with React
 

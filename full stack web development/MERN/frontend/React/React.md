@@ -11,8 +11,9 @@ Before diving into React, make sure you're comfortable with the following:
 
 ---
 
-# Table of Contents
+## Table of Contents
 - [Table of Contents](#table-of-contents)
+
 - [Setup Local Environment](#setup-local-environment)
   - [1. create-react-app](#1-create-react-app)
   - [2. Vite](#2-vite)
@@ -184,6 +185,7 @@ Before diving into React, make sure you're comfortable with the following:
     - [**1. useLocation**](#1-uselocation)
     - [**2. useNavigate**](#2-usenavigate)
     - [**3. useParams**](#3-useparams)
+    - [**4. useSearchParams**](#4-usesearchparams)
     - [**5. useRouteError**](#5-userouteerror)
 - [Optimization in React](#optimization-in-react)
   - [1. **Memoization**:](#1-memoization)
@@ -256,7 +258,7 @@ Before diving into React, make sure you're comfortable with the following:
 - [React Summary](#react-summary)
 
 
-# Setup Local Environment
+## Setup Local Environment
 
 1. Install Node LTS.
 2. Install VS Code and extensions like "sublime babel" and "vscode icons."
@@ -331,7 +333,7 @@ CRA was the go-to for years, but the React community has largely moved on from i
 
 > The official React docs (react.dev) no longer recommend CRA. For new projects, use **Vite**, **Next.js** (if you need SSR), or **Remix**.
 
-# JavaScript Concepts
+## JavaScript Concepts
 
 ## Useful JS Functions
 
@@ -486,7 +488,7 @@ function Form(props) {
 }
 ```
 
-# React Basics
+## React Basics
 
 ## What is React?
 
@@ -795,7 +797,7 @@ function App() {
 export default App;
 ```
 
-# State
+## State
 
 State makes UI interactive. UI = f(state). There are declarative and imperative approaches.
 
@@ -807,7 +809,7 @@ UI depends on the value of a state variable. Hooks help hook into state variable
 
 More primitive, used in early JS learning for frontend.
 
-# State in React
+## State in React
 
 In React, `state` is a fundamental concept that allows components to keep track of and manage their internal data. The `state` object is used to store and update information that can change over time, causing the component to re-render when the state is updated.
 
@@ -1436,7 +1438,7 @@ Here's a basic overview of how state works in React:
 
 State management is crucial for building dynamic and interactive user interfaces in React. By using state, components can respond to user interactions, data changes, and other events, providing a dynamic and responsive user experience.
 
-# Props vs State
+## Props vs State
 
 | Props                       | State                       |
 | --------------------------- | --------------------------- |
@@ -1445,7 +1447,7 @@ State management is crucial for building dynamic and interactive user interfaces
 | Immutable                   | Mutable                     |
 | Cause a re-render           | Cause a re-render           |
 
-# Hooks in React
+## Hooks in React
 
 Functions starting with 'use' are Hooks.
 React Hooks are functions that allow functional components to use state and lifecycle features that were previously only available in class components. Introduced in React 16.8, Hooks provide a more direct way to interact with React's features in functional components, making it easier to reuse stateful logic and manage side effects.
@@ -1540,7 +1542,7 @@ This hook is similar to `useEffect`, but it fires synchronously after all DOM mu
 
 These are some of the most commonly used React Hooks, but React provides many more hooks for various purposes, such as custom hooks (`useCustomHook`) and hooks for working with forms, animations, and more. Understanding and mastering these hooks can significantly enhance your productivity and enable you to build powerful and maintainable React applications.
 
-# Event Handling in React
+## Event Handling in React
 
 In React, event handling is similar to handling events in HTML but with some differences due to the nature of React components. React provides a consistent way to handle events across different browsers and abstracts away some of the complexities.
 
@@ -1676,7 +1678,7 @@ const MyButton = () => {
 };
 ```
 
-# React Event Pooling
+## React Event Pooling
 
 - [Official Documentation](https://legacy.reactjs.org/docs/legacy-event-pooling.html)
 
@@ -1717,7 +1719,7 @@ function handleChange(e) {
 }
 ```
 
-# Life Cycle of a React Component
+## Life Cycle of a React Component
 
 In React, the lifecycle of a component refers to the series of methods that are invoked at different stages of a component's existence, from its creation to its removal from the DOM. These lifecycle methods allow you to perform actions such as initializing state, fetching data, updating the UI, and cleaning up resources.
 
@@ -1818,7 +1820,7 @@ In this example:
 
 These `useEffect` hooks replicate common lifecycle behavior in functional components.
 
-# Uni directional data flow
+## Uni directional data flow
 
 In React, the data flow is **uni-directional**. This means that data flows in a single direction, from parent components to child components. This unidirectional data flow is a core concept in React and helps to maintain a predictable data flow and application state.
 
@@ -2006,7 +2008,7 @@ This structure maintains a clear and predictable flow of data throughout the app
 
 Unidirectional data flow is a fundamental principle in React that contributes to its simplicity and predictability. By passing data from parent to child components through props, React ensures a clear and manageable flow of information throughout an application.
 
-# Memoizing
+## Memoizing
 
 Memoizing is a technique used in computer science and software engineering to optimize the performance of functions by caching the results of expensive function calls and returning the cached result when the same inputs occur again. The term "memoization" is derived from the word "memo," which means to remember or note down.
 
@@ -2026,7 +2028,7 @@ In JavaScript, memoization is often implemented using techniques like caching re
 
 Overall, memoization is a powerful optimization technique that can help improve the efficiency and responsiveness of applications by reducing unnecessary computations and improving performance.
 
-# React Form
+## React Form
 
 In React, forms are a crucial part of building interactive user interfaces. Managing form data and handling user input efficiently is essential for creating dynamic and responsive web applications. React provides a way to handle forms through controlled components, which means that form elements are controlled by the state of the React components.
 
@@ -2587,7 +2589,7 @@ const Form = () => {
 export default Form;
 ```
 
-# React Form Validation
+## React Form Validation
 
 Form validation is an essential aspect of handling user inputs in React applications. There are several approaches to validating forms in React, ranging from basic manual validation to using specialized libraries that simplify the process. Here’s an overview of various methods for implementing form validation in React:
 
@@ -2885,7 +2887,7 @@ const ZodForm = () => {
 export default ZodForm;
 ```
 
-# Connecting to a backend
+## Connecting to a backend
 
 - For this example, we use a fake backend provided by https://jsonplaceholder.typicode.com/
 - This implementation is using `axios` for sending http requests
@@ -3656,7 +3658,7 @@ const App = () => {
 export default App;
 ```
 
-# TanStack Query
+## TanStack Query
 
 Powerful asynchronous state management for TS/JS, React, Solid, Vue and Svelte.
 Toss out that granular state management, manual refetching and endless bowls of async-spaghetti code. TanStack Query gives you declarative, always-up-to-date auto-managed queries and mutations that directly improve both your developer and user experiences.
@@ -4748,7 +4750,7 @@ const useData = <T>(
 export default useData;
 ```
 
-# React Query DevTools
+## React Query DevTools
 
 **React Query DevTools** is a development tool that helps visualize the inner workings of React Query and can save you hours of debugging.
 
@@ -4793,7 +4795,7 @@ You can also customize the DevTools using various props such as `panelProps`, `c
 
 Please note that for now, the DevTools do not support React Native.
 
-# Global State Management
+## Global State Management
 
 ## Reducer
 
@@ -5395,7 +5397,7 @@ Adjust the context names and state/data according to your specific use case.
   - xState
   - Zustand (simplest of all these)
 
-# Context vs Redux
+## Context vs Redux
 
 ## Redux
 
@@ -5431,7 +5433,7 @@ Adjust the context names and state/data according to your specific use case.
     - Consolidate state logic with a reducer
     - Use a simpler state management tool (like Zustand)
 
-# Zustand
+## Zustand
 
 **Zustand** is a **lightweight and straightforward state management library** for **React**. It provides an alternative to more complex solutions like **Redux**. Let's dive into what Zustand is and how it works:
 
@@ -5661,7 +5663,7 @@ if (process.env.NODE_ENV === "development")
 export default useStore;
 ```
 
-# What is Routing ?
+## What is Routing ?
 
 Routing is the process of determining how requests are handled by an application, specifically how incoming client requests (such as those made via HTTP) are directed to the appropriate handler (e.g., a function, method, or controller).
 
@@ -5700,7 +5702,7 @@ In this example:
 
 Routing is a fundamental concept in web development, crucial for directing users to different parts of an application.
 
-# Types of routing
+## Types of routing
 
 Routing in web development can be categorized into several types based on how URLs are structured and how navigation is handled. Here are the main types of routing:
 
@@ -5808,7 +5810,7 @@ Routing in web development can be categorized into several types based on how UR
 
 Each type of routing serves different needs depending on the architecture of the application, user experience requirements, and technical constraints.
 
-# React Router DOM
+## React Router DOM
 
 - [react-router-dom Website](https://reactrouter.com/en/main)
 - `react-router-dom` is an npm package that provides bindings for using React Router in web applications. It enables you to implement dynamic routing in a web application. This allows you to create and manage routes, navigate, and access history in your React web app.
@@ -6061,9 +6063,39 @@ function App() {
 }
 ```
 
+### **4. useSearchParams**
+
+The `useSearchParams` hook is used to read and modify the query string in the URL. It returns a tuple of the current `URLSearchParams` and a function to update them.
+
+```tsx
+import { useSearchParams } from 'react-router-dom';
+
+function SearchPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('q') ?? '';
+
+  return (
+    <div>
+      <input
+        value={query}
+        onChange={(e) => setSearchParams({ q: e.target.value })}
+        placeholder="Search..."
+      />
+      <p>Searching for: {query}</p>
+    </div>
+  );
+}
+```
+
+**Notes:**
+- `setSearchParams` replaces all query params by default — merge manually if you want to preserve others: `setSearchParams({ ...Object.fromEntries(searchParams), q: value })`
+- Changes to search params do **not** cause a full page reload; React Router updates the URL in place.
+
+---
+
 ### **5. useRouteError**
 
-Inside of an errorElement, this hook returns anything thrown during an action, loader, or rendering. Note that thrown responses have special treatment, see isRouteErrorResponse for more information.
+Inside of an errorElement, this hook returns anything thrown during an action, loader, or rendering.Note that thrown responses have special treatment, see isRouteErrorResponse for more information.
 
 This feature only works if using a data router, see [Picking a Router](https://reactrouter.com/en/main/routers/picking-a-router)
 
@@ -6092,7 +6124,7 @@ const ErrorPage = () => {
 export default ErrorPage;
 ```
 
-# Optimization in React
+## Optimization in React
 
 Optimization in React involves improving the performance and efficiency of your application. Here are some key techniques:
 
@@ -6237,7 +6269,7 @@ Implementing these strategies can significantly enhance the performance of your 
 
 ---
 
-# React 18+ Features
+## React 18+ Features
 
 React 18 (released March 2022) introduced a new concurrent rendering engine and several new APIs.
 
@@ -6384,7 +6416,7 @@ function Page() {
 
 ---
 
-# Error Boundaries
+## Error Boundaries
 
 Error Boundaries catch JavaScript errors anywhere in their child component tree, log them, and display a fallback UI instead of crashing the whole app.
 
@@ -6489,7 +6521,7 @@ function MyComponent() {
 
 ---
 
-# Custom Hooks
+## Custom Hooks
 
 Custom hooks extract reusable stateful logic into standalone functions. Any function starting with `use` that calls React hooks is a custom hook.
 
@@ -6634,7 +6666,7 @@ const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
 
 ---
 
-# Advanced Patterns
+## Advanced Patterns
 
 ## Compound Components
 
@@ -6782,7 +6814,7 @@ function MouseTracker({
 
 ---
 
-# React Server Components (RSC)
+## React Server Components (RSC)
 
 React Server Components (introduced with Next.js 13+ App Router) run **exclusively on the server**. They can directly access databases, file systems, and secrets — without sending those to the browser.
 
@@ -6839,7 +6871,7 @@ export function UserCard({ user }: { user: User }) {
 
 ---
 
-# Testing React
+## Testing React
 
 ## Jest Setup
 
@@ -6974,7 +7006,7 @@ describe("useCounter", () => {
 
 ---
 
-# General Programming Concepts & Libraries
+## General Programming Concepts & Libraries
 
 ## Cohesion and Coupling
 
@@ -7365,11 +7397,11 @@ In summary, TSX in React refers to using TypeScript with JSX syntax. It enhances
 
 
 
-# Important Links
+## Important Links
 
 1. [My Code Sample](https://codesandbox.io/s/introduction-to-jsx-forked-j5wyjn?file=/src/index.js)
 2. [JSX Syntax](https://github.com/airbnb/javascript/blob/master/react/README.md)
 3. [Practice: Keeper App](https://codesandbox.io/s/keeper-app-part-1-starting-forked-7ht3v2)
 4. [HTML, CSS Notes](https://codepen.io/NarendranAI/pen/VwXENJO)
 
-# [React Summary](ReactSummary.md)
+## [React Summary](ReactSummary.md)
