@@ -19,6 +19,8 @@
   - [Table Element](#table-element)
   - [Emoji Input](#emoji-input)
   - [Form Elements](#form-elements)
+  - [Semantic HTML5 Elements](#semantic-html5-elements)
+  - [Meta Tags and SEO](#meta-tags-and-seo)
   - [Additional Resources](#additional-resources)
 
 
@@ -121,7 +123,16 @@ Emmet plugin shortcut: `!` + `Enter` key
 ## Horizontal Ruler
 
 ```html
-<hr size="3" noshade>
+<hr>
+```
+
+```css
+/* Style with CSS — size and noshade attributes are deprecated in HTML5 */
+hr {
+  border: none;
+  border-top: 3px solid #ccc;
+  margin: 1rem 0;
+}
 ```
 
 ## Paragraph Tag
@@ -174,9 +185,11 @@ Emmet plugin shortcut: `!` + `Enter` key
 ## Image
 
 ```html
-<img src="https://media-exp1.licdn.com/dms/image/C5603AQGELz3SFyI14g/profile-displayphoto-shrink_800_800/0/1599111068362?e=1666224000&v=beta&t=3vLD2kP8nJYMti5lb9xcAiKjHLCStdeQL4cGiGOzvm"
-    alt=" Profile Picture" height="200" width="170">
+<img src="https://via.placeholder.com/170x200" alt="Profile Picture" height="200" width="170">
 ```
+
+> **Best practice:** Always provide a descriptive `alt` attribute for screen readers. For decorative images, use `alt=""`.
+> Prefer setting dimensions in CSS rather than HTML attributes for responsiveness.
 
 ## Anchor Tags - Links
 
@@ -189,9 +202,8 @@ Emmet plugin shortcut: `!` + `Enter` key
 ```html
 <!-- Contains table rows and table data -->
 <!-- It has three sections: thead, tbody, tfoot -->
-<!-- table element has an attribute called cellspacing which gives padding to all the cells of a table -->
-<!-- table element has an attribute called border which gives border to each cell of the table -->
-<table cellspacing="2" border="1">
+<!-- Note: cellspacing and border attributes are deprecated in HTML5 — use CSS instead -->
+<table>
     <thead>
         <tr>
             <th>Heading 1</th>
@@ -212,6 +224,17 @@ Emmet plugin shortcut: `!` + `Enter` key
 </table>
 ```
 
+```css
+/* CSS equivalents for deprecated table attributes */
+table {
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+```
+
 ## Emoji Input
 
 Windows Key + `.` Keys
@@ -222,16 +245,133 @@ Windows Key + `.` Keys
 <!-- Used to get input from the user -->
 <!-- A form can send GET, POST methods (requests) to the server -->
 <!-- action="mailto:email_address" can be used with method="post" for sending form body as an email to the mentioned email address -->
-<form class="" action="index.html" method="POST" enctype="text/plain">
+<form action="/submit" method="POST">
     <label for="name">Your Name:</label><br>
-    <input type="text" id="name"><br>
-    <input type="submit"><br>
-    <input type="checkbox"><br>
-    <input type="radio"><br>
-    <input type="file"><br>
-    <input type="range"><br>
-    <input type="color"><br>
+    <input type="text" id="name" name="name" placeholder="John Doe" required><br>
+
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br>
+
+    <label for="password">Password:</label><br>
+    <input type="password" id="password" name="password" minlength="8"><br>
+
+    <label for="age">Age:</label><br>
+    <input type="number" id="age" name="age" min="1" max="120"><br>
+
+    <label for="dob">Date of Birth:</label><br>
+    <input type="date" id="dob" name="dob"><br>
+
+    <label for="volume">Volume:</label><br>
+    <input type="range" id="volume" min="0" max="100"><br>
+
+    <label for="color">Favourite Color:</label><br>
+    <input type="color" id="color" name="color"><br>
+
+    <input type="file" name="avatar" accept="image/*"><br>
+    <input type="hidden" name="csrf_token" value="abc123"><br>
+
+    <input type="checkbox" id="agree" name="agree">
+    <label for="agree">I agree to the terms</label><br>
+
+    <input type="radio" id="yes" name="choice" value="yes">
+    <label for="yes">Yes</label>
+    <input type="radio" id="no" name="choice" value="no">
+    <label for="no">No</label><br>
+
+    <textarea name="message" rows="4" cols="40" placeholder="Your message..."></textarea><br>
+
+    <select name="country">
+        <option value="">Select country</option>
+        <option value="us">United States</option>
+        <option value="uk">United Kingdom</option>
+    </select><br>
+
+    <button type="submit">Submit</button>
+    <button type="reset">Reset</button>
 </form>
+```
+
+## Semantic HTML5 Elements
+
+Semantic elements clearly describe their meaning to both the browser and the developer. They improve accessibility, SEO, and code readability.
+
+```html
+<header>   <!-- Site or section header (logo, nav) -->
+<nav>      <!-- Primary navigation links -->
+<main>     <!-- Main content area — only ONE per page -->
+<article>  <!-- Self-contained content (blog post, product card) -->
+<section>  <!-- Thematic grouping of content (with a heading) -->
+<aside>    <!-- Sidebar / tangentially related content -->
+<footer>   <!-- Footer for a page or section -->
+<figure>   <!-- Self-contained media (image + caption) -->
+<figcaption>  <!-- Caption for a figure -->
+<time datetime="2024-01-15">January 15, 2024</time>  <!-- Machine-readable date -->
+<mark>     <!-- Highlighted / relevant text -->
+<details>  <!-- Expandable content block -->
+<summary>  <!-- Visible heading for a <details> element -->
+```
+
+```html
+<!-- Full page skeleton using semantic elements -->
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog">Blog</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <h1>Article Title</h1>
+      <time datetime="2024-06-01">June 1, 2024</time>
+      <p>Article content...</p>
+    </article>
+
+    <aside>
+      <h2>Related Posts</h2>
+    </aside>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 My Site</p>
+  </footer>
+</body>
+```
+
+> **Why it matters:** Screen readers use semantic elements to navigate. Search engines use them to understand page structure. Always prefer `<button>` over `<div onClick>`, `<nav>` over `<div class="nav">`.
+
+## Meta Tags and SEO
+
+```html
+<head>
+  <!-- Essential -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Title — Brand Name</title>
+  <meta name="description" content="150-160 char description used by search engines in snippets.">
+
+  <!-- Open Graph (social sharing) -->
+  <meta property="og:title" content="Page Title">
+  <meta property="og:description" content="Description shown when shared on social media.">
+  <meta property="og:image" content="https://example.com/preview.jpg">
+  <meta property="og:url" content="https://example.com/page">
+  <meta property="og:type" content="website">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Page Title">
+  <meta name="twitter:image" content="https://example.com/preview.jpg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <!-- Canonical URL (prevent duplicate content) -->
+  <link rel="canonical" href="https://example.com/page">
+</head>
 ```
 
 ## Additional Resources

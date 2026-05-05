@@ -120,9 +120,13 @@ function DataFetcher({ url, render }: { url: string; render: (data: any) => Reac
   const { data, loading } = useFetch(url);
   return loading ? <Spinner /> : render(data);
 }
+```
 
+```tsx
 <DataFetcher url="/api/users" render={(users) => <UserList users={users} />} />
+```
 
+```tsx
 // Custom hook — preferred modern approach
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);

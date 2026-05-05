@@ -65,6 +65,21 @@
       - [Complex Layouts with `fr` Units](#complex-layouts-with-fr-units)
       - [Auto-Fit and Auto-Fill with `fr`](#auto-fit-and-auto-fill-with-fr)
       - [Conclusion](#conclusion)
+  - [What is Sass?](#what-is-sass)
+  - [Sass vs SCSS Syntax](#sass-vs-scss-syntax)
+  - [Getting Started](#getting-started)
+  - [Variables](#variables)
+  - [Nesting](#nesting)
+  - [Partials and Modules](#partials-and-modules)
+  - [Mixins](#mixins)
+  - [Extends and Placeholders](#extends-and-placeholders)
+  - [Functions](#functions)
+  - [Operators](#operators)
+  - [Control Flow](#control-flow)
+  - [Maps](#maps)
+  - [Built-in Modules](#built-in-modules)
+  - [Sass vs CSS Custom Properties](#sass-vs-css-custom-properties)
+  - [Best Practices](#best-practices)
 
 ## Box Model
 
@@ -98,7 +113,14 @@ Here's a visual representation of the CSS Box Model:
 |________________________|
 ```
 
-Understanding the box model is crucial for designing and laying out web pages effectively. It helps in controlling spacing, alignment, and sizing of elements on a webpage. Additionally, it's important to note that the actual size of an element on the webpage is calculated as the sum of the content width/height, padding, border, and margin.
+Understanding the box model is crucial for designing and laying out web pages effectively. It helps in controlling spacing, alignment, and sizing of elements on a webpage.
+
+> **Essential reset:** By default, `width` and `height` apply only to the **content area** — padding and border are added *on top*. Add this reset to make sizing intuitive:
+> ```css
+> *, *::before, *::after {
+>   box-sizing: border-box; /* width now includes padding + border */
+> }
+> ```
 
 ## Display Properties
 
@@ -270,11 +292,44 @@ Use text-align in the parent container or margin for center alignment.
 
 ## Flexbox
 
-For flexbox, visit [A Complete Guide to Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/).
+Flexbox is a one-dimensional layout method for arranging items in rows or columns. See the detailed [CSS Grids](#css-grids) section for Grid, and below for Flexbox essentials:
+
+```css
+.flex-container {
+  display: flex;
+  flex-direction: row;          /* row | row-reverse | column | column-reverse */
+  justify-content: space-between; /* main axis alignment */
+  align-items: center;          /* cross axis alignment */
+  flex-wrap: wrap;              /* allow wrapping */
+  gap: 1rem;                    /* spacing between items */
+}
+
+.flex-item {
+  flex: 1;          /* shorthand for flex-grow:1, flex-shrink:1, flex-basis:0 */
+  flex: 0 0 200px;  /* fixed 200px, no grow/shrink */
+  align-self: flex-start; /* override align-items for this item */
+}
+```
+
+For the complete interactive guide: [A Complete Guide to Flexbox — CSS Tricks](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
 
 ## Float Property
 
-Use the float property only for wrapping texts.
+Use the float property only for wrapping text around images. For layouts, always prefer Flexbox or Grid.
+
+```css
+img {
+  float: left;
+  margin-right: 1rem;
+}
+
+/* Always clear floats to prevent container collapse */
+.clearfix::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+```
 
 ## Resources
 
@@ -360,19 +415,7 @@ CSS Grid provides a powerful layout system for creating complex designs.
 }
 ```
 
-## Flexbox
-
-Flexbox is a one-dimensional layout method for creating flexible and efficient layouts.
-
-```css
-.flex-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-```
-
-## CSS Variables
+## Float Property
 
 Use variables to store and reuse values throughout your stylesheets.
 
@@ -548,14 +591,16 @@ You can define the number and size of columns and rows using `grid-template-colu
 
 ### Grid Gap
 
-The `grid-gap` property sets the spacing between rows and columns.
+The `gap` property sets the spacing between rows and columns (`grid-gap` is deprecated — use `gap`).
 
 ```css
 .container {
   display: grid;
   grid-template-columns: 100px 100px 100px;
   grid-template-rows: 100px 100px;
-  grid-gap: 10px;
+  gap: 10px;           /* sets both row-gap and column-gap */
+  row-gap: 16px;       /* rows only */
+  column-gap: 8px;     /* columns only */
 }
 ```
 
@@ -624,7 +669,7 @@ Here’s a complete example demonstrating CSS Grid Layout:
           "footer footer footer";
         grid-template-rows: 50px 1fr 50px;
         grid-template-columns: 100px 1fr;
-        grid-gap: 10px;
+        gap: 10px;
         height: 100vh;
       }
 
@@ -669,7 +714,7 @@ You can create responsive layouts using CSS Grid combined with media queries.
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto;
-  grid-gap: 10px;
+  gap: 10px;
 }
 
 @media (min-width: 600px) {
@@ -693,9 +738,8 @@ You can create responsive layouts using CSS Grid combined with media queries.
   - `grid-template-columns`
   - `grid-template-rows`
   - `grid-template-areas`
-  - `grid-gap`
-  - `grid-column-gap`
-  - `grid-row-gap`
+  - `gap` (replaces deprecated `grid-gap`)
+  - `row-gap` / `column-gap`
   - `justify-items`
   - `align-items`
   - `justify-content`
@@ -1174,12 +1218,14 @@ string.length('hello')         // 5
 ## Operators
 
 ```scss
+@use 'sass:math';
+
 $container-width: 1200px;
 $columns: 12;
 $gutter: 20px;
 
 .col {
-  width: ($container-width / $columns) - $gutter;  // arithmetic
+  width: math.div($container-width, $columns) - $gutter;  // use math.div() — / is deprecated
 }
 
 // Comparison (in @if)
@@ -1308,10 +1354,11 @@ string.index('hello', 'ell')         // 2
 ```scss
 // _variables.scss
 $primary-hsl: 210, 70%, 50%;
+$primary-dark-hsl: 210, 70%, 35%;
 
 :root {
-  --primary: hsl(#{$primary-hsl});
-  --primary-dark: hsl(#{$primary-hsl}, 80%, 40%);
+  --primary: hsl(210, 70%, 50%);
+  --primary-dark: hsl(210, 70%, 35%);  // separate variable for the darker shade
 }
 ```
 
