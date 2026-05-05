@@ -1929,91 +1929,646 @@ React Hooks are functions that enable functional components to use state, lifecy
 
 ## 1. **useState**:
 
-This hook allows functional components to manage local state.
+Manages local component state. When the setter is called React schedules a re-render with the new value.
 
-- Usage: `const [state, setState] = useState(initialState);`
-- Example: `const [count, setCount] = useState(0);`
+**When to reach for it**: any UI-local value that, when changed, should cause the component to re-render.
+
+**Object state pattern** — group related fields into one state object instead of five separate `useState` calls:
+
+```tsx
+interface TableFilters {
+  search: string;
+  status: "all" | "active" | "archived";
+  page: number;
+  pageSize: number;
+  sortBy: string;
+  sortDir: "asc" | "desc";
+}
+
+const DEFAULT_FILTERS: TableFilters = {
+  search: "",
+  status: "all",
+  page: 1,
+  pageSize: 20,
+  sortBy: "createdAt",
+  sortDir: "desc",
+};
+
+function UserTable() {
+  const [filters, setFilters] = useState<TableFilters>(DEFAULT_FILTERS);
+
+  // Partial update — spread existing state first, then override changed fields
+  const updateFilter = <K extends keyof TableFilters>(
+    key: K,
+    value: TableFilters[K]
+  ) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+      // Reset to page 1 whenever a filter (not the page itself) changes
+      page: key === "page" ? (value as number) : 1,
+    }));
+  };
+
+  const reset = () => setFilters(DEFAULT_FILTERS);
+
+  return (
+    <div>
+      <input
+        value={filters.search}
+        onChange={(e) => updateFilter("search", e.target.value)}
+        placeholder="Search users…"
+      />
+      <select
+        value={filters.status}
+        onChange={(e) =>
+          updateFilter("status", e.target.value as TableFilters["status"])
+        }
+      >
+        <option value="all">All</option>
+        <option value="active">Active</option>
+        <option value="archived">Archived</option>
+      </select>
+      <button onClick={reset}>Reset filters</button>
+    </div>
+  );
+}
+```
+
+> ⚠️ **Gotcha**: React state updates are **asynchronous and batched**. Reading `filters` immediately after `setFilters(...)` still gives you the old value. Use the functional updater form (`prev => ...`) whenever the new state depends on the previous state.
 
 ## 2. **useEffect**:
 
-This hook allows performing side effects in functional components, such as data fetching, subscriptions, or manually changing the DOM.
+Runs a side-effect **after** the browser has painted. Return a cleanup function to cancel subscriptions, timers, or in-flight requests when the component unmounts or dependencies change.
 
-- Usage: `useEffect(() => { // side effect code }, [dependencies]);`
-- Example:
-  ```jsx
+**When to reach for it**: syncing with external systems (WebSockets, browser APIs, third-party libraries).
+
+```tsx
+import { useEffect, useRef, useState } from "react";
+
+interface Notification {
+  id: string;
+  message: string;
+  type: "info" | "warning" | "error";
+}
+
+function useNotificationStream(userId: string) {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [connectionStatus, setConnectionStatus] = useState<
+    "connecting" | "connected" | "disconnected"
+  >("connecting");
+  // useRef to hold the WebSocket instance — it's not display state, so we
+  // don't need it in useState (which would cause an extra render on creation)
+  const wsRef = useRef<WebSocket | null>(null);
+
   useEffect(() => {
-    document.title = `You clicked ${count} times`;
-  }, [count]);
-  ```
+    if (!userId) return;
+
+    setConnectionStatus("connecting");
+    const ws = new WebSocket(`wss://api.example.com/notifications/${userId}`);
+    wsRef.current = ws;
+
+    ws.onopen = () => setConnectionStatus("connected");
+
+    ws.onmessage = (event: MessageEvent) => {
+      const notification = JSON.parse(event.data) as Notification;
+      setNotifications((prev) => [notification, ...prev].slice(0, 50)); // keep last 50
+    };
+
+    ws.onerror = () => setConnectionStatus("disconnected");
+    ws.onclose = () => setConnectionStatus("disconnected");
+
+    // Cleanup: close the socket when userId changes or component unmounts
+    return () => {
+      ws.close();
+      wsRef.current = null;
+    };
+  }, [userId]); // re-runs only when userId changes
+
+  const dismiss = (id: string) =>
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+
+  return { notifications, connectionStatus, dismiss };
+}
+```
+
+> ⚠️ **Gotchas**:
+> - Missing dependencies in the array causes stale-closure bugs that are hard to track down. Use the `eslint-plugin-react-hooks` exhaustive-deps rule.
+> - **Always return a cleanup function** for subscriptions. Failing to do so leaks listeners and causes "Can't perform a React state update on an unmounted component" warnings.
+> - Empty `[]` dependency array means "run once on mount" — it does **not** mean "run every render".
 
 ## 3. **useContext**:
 
-This hook allows functional components to consume a context created by the `React.createContext` API.
+Reads a value from the nearest matching `<Provider>` above in the tree. The consumer re-renders whenever the context value changes.
 
-- Usage: `const value = useContext(MyContext);`
-- Example:
-  ```jsx
-  const theme = useContext(ThemeContext);
-  ```
+**When to reach for it**: cross-cutting concerns that many components need but that don't belong in a global store — auth user, theme, locale, feature flags.
+
+```tsx
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
+
+// ── Types ────────────────────────────────────────────────────────────────────
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+}
+
+interface AuthContextValue {
+  user: User | null;
+  isAuthenticated: boolean;
+  hasRole: (role: string) => boolean;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+}
+
+// ── Context ──────────────────────────────────────────────────────────────────
+// Initialise with `null` — the custom hook below guards against consuming
+// outside the provider so the non-null assertion is safe there.
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+// ── Provider ─────────────────────────────────────────────────────────────────
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+
+  const login = useCallback(async (email: string, password: string) => {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) throw new Error("Invalid credentials");
+    const loggedInUser: User = await res.json();
+    setUser(loggedInUser);
+  }, []);
+
+  const logout = useCallback(() => {
+    fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+  }, []);
+
+  const hasRole = useCallback(
+    (role: string) => user?.roles.includes(role) ?? false,
+    [user]
+  );
+
+  const value: AuthContextValue = {
+    user,
+    isAuthenticated: user !== null,
+    hasRole,
+    login,
+    logout,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+// ── Consumer hook ─────────────────────────────────────────────────────────────
+// Wrap useContext so consumers get a clear error if used outside the provider.
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+  return ctx;
+}
+
+// ── Usage ─────────────────────────────────────────────────────────────────────
+function AdminPanel() {
+  const { user, hasRole, logout } = useAuth();
+
+  if (!hasRole("admin")) return <p>Access denied.</p>;
+
+  return (
+    <div>
+      <p>Welcome, {user!.name}</p>
+      <button onClick={logout}>Sign out</button>
+    </div>
+  );
+}
+```
+
+> ⚠️ **Gotcha**: every component that calls `useContext(MyCtx)` re-renders whenever **any** field in the context value changes. Split large contexts (e.g. `AuthContext` and `AuthDispatchContext`) or use `useMemo` for the value object to avoid unnecessary re-renders.
 
 ## 4. **useReducer**:
 
-This hook is an alternative to `useState` for managing more complex state logic. It accepts a reducer function and an initial state, and returns the current state and a dispatch function.
+Alternative to `useState` for complex state where the next state depends on the previous state via well-defined transitions. Works best with TypeScript discriminated-union action types.
 
-- Usage: `const [state, dispatch] = useReducer(reducer, initialState);`
-- Example:
-  ```jsx
-  const [state, dispatch] = useReducer(reducer, initialState);
-  ```
+**When to reach for it**: multiple related state fields that change together, state machines, or when "what can happen" needs to be explicitly enumerable.
+
+```tsx
+import { useReducer } from "react";
+
+// ── Domain types ─────────────────────────────────────────────────────────────
+interface CartItem {
+  productId: string;
+  name: string;
+  unitPrice: number;
+  qty: number;
+}
+
+interface CartState {
+  items: CartItem[];
+  couponCode: string | null;
+  discountPct: number;
+}
+
+// Discriminated union — each action is self-documenting
+type CartAction =
+  | { type: "ADD_ITEM"; payload: Omit<CartItem, "qty"> }
+  | { type: "REMOVE_ITEM"; productId: string }
+  | { type: "INCREMENT"; productId: string }
+  | { type: "DECREMENT"; productId: string }
+  | { type: "APPLY_COUPON"; code: string; discountPct: number }
+  | { type: "CLEAR_CART" };
+
+// ── Reducer ───────────────────────────────────────────────────────────────────
+// Pure function — same inputs always produce the same output, no side effects
+function cartReducer(state: CartState, action: CartAction): CartState {
+  switch (action.type) {
+    case "ADD_ITEM": {
+      const exists = state.items.find(
+        (i) => i.productId === action.payload.productId
+      );
+      if (exists) {
+        return {
+          ...state,
+          items: state.items.map((i) =>
+            i.productId === action.payload.productId
+              ? { ...i, qty: i.qty + 1 }
+              : i
+          ),
+        };
+      }
+      return {
+        ...state,
+        items: [...state.items, { ...action.payload, qty: 1 }],
+      };
+    }
+    case "REMOVE_ITEM":
+      return {
+        ...state,
+        items: state.items.filter((i) => i.productId !== action.productId),
+      };
+    case "INCREMENT":
+      return {
+        ...state,
+        items: state.items.map((i) =>
+          i.productId === action.productId ? { ...i, qty: i.qty + 1 } : i
+        ),
+      };
+    case "DECREMENT":
+      return {
+        ...state,
+        items: state.items
+          .map((i) =>
+            i.productId === action.productId ? { ...i, qty: i.qty - 1 } : i
+          )
+          .filter((i) => i.qty > 0), // auto-remove when qty hits 0
+      };
+    case "APPLY_COUPON":
+      return {
+        ...state,
+        couponCode: action.code,
+        discountPct: action.discountPct,
+      };
+    case "CLEAR_CART":
+      return { items: [], couponCode: null, discountPct: 0 };
+    default:
+      return state; // TypeScript exhaustiveness: unreachable if all actions handled
+  }
+}
+
+const INITIAL_CART: CartState = { items: [], couponCode: null, discountPct: 0 };
+
+// ── Component ─────────────────────────────────────────────────────────────────
+function ShoppingCart() {
+  const [cart, dispatch] = useReducer(cartReducer, INITIAL_CART);
+
+  const subtotal = cart.items.reduce(
+    (sum, i) => sum + i.unitPrice * i.qty,
+    0
+  );
+  const total = subtotal * (1 - cart.discountPct / 100);
+
+  return (
+    <div>
+      {cart.items.map((item) => (
+        <div key={item.productId}>
+          <span>{item.name} × {item.qty}</span>
+          <button onClick={() => dispatch({ type: "INCREMENT", productId: item.productId })}>+</button>
+          <button onClick={() => dispatch({ type: "DECREMENT", productId: item.productId })}>−</button>
+          <button onClick={() => dispatch({ type: "REMOVE_ITEM", productId: item.productId })}>✕</button>
+        </div>
+      ))}
+      <p>Total: ${total.toFixed(2)}</p>
+      <button onClick={() => dispatch({ type: "CLEAR_CART" })}>Clear cart</button>
+    </div>
+  );
+}
+```
+
+> ⚠️ **Gotcha**: the reducer must be a **pure function**. Never mutate `state` directly or call APIs inside it. Side effects (API calls, logging) belong in `useEffect` or event handlers, not in the reducer.
 
 ## 5. **useRef**:
 
-This hook returns a mutable ref object whose `.current` property is initialized to the passed argument (initial value).
+Returns a stable object `{ current: T }` that persists across renders without causing re-renders when mutated. Has two distinct use-cases:
 
-- Usage: `const refContainer = useRef(initialValue);`
-- Example:
-  ```jsx
-  const inputRef = useRef();
-  ```
+1. **DOM access** — attach to a JSX element to read/manipulate it imperatively
+2. **Mutable instance variable** — store values that need to survive re-renders but shouldn't trigger them (timers, previous values, WebSocket instances)
+
+```tsx
+import { useRef, useEffect, useState, useCallback } from "react";
+
+// ── Use-case 1: DOM ref — programmatic focus management ───────────────────────
+function SearchDialog({ isOpen }: { isOpen: boolean }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus the search field whenever the dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      inputRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  return (
+    <dialog open={isOpen}>
+      <input ref={inputRef} type="search" placeholder="Search…" />
+    </dialog>
+  );
+}
+
+// ── Use-case 2: Mutable instance variable — tracking previous value ────────────
+function usePrevious<T>(value: T): T | undefined {
+  const ref = useRef<T | undefined>(undefined);
+  useEffect(() => {
+    ref.current = value; // runs after render, so ref.current is the PREVIOUS value during render
+  });
+  return ref.current;
+}
+
+// ── Use-case 3: Holding a timer ID to cancel it ───────────────────────────────
+function AutoSaveEditor() {
+  const [content, setContent] = useState("");
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
+
+  const handleChange = useCallback((text: string) => {
+    setContent(text);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(async () => {
+      setSaveStatus("saving");
+      await fetch("/api/draft", { method: "PUT", body: JSON.stringify({ content: text }) });
+      setSaveStatus("saved");
+    }, 2000); // auto-save 2 s after last keystroke
+  }, []);
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
+
+  return (
+    <div>
+      <textarea value={content} onChange={(e) => handleChange(e.target.value)} />
+      <span>{saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "Saved ✓" : ""}</span>
+    </div>
+  );
+}
+```
+
+> ⚠️ **Gotcha**: mutating `ref.current` does **not** trigger a re-render. If you need the UI to update, use `useState` instead. `useRef` is for values the UI doesn't need to observe.
 
 ## 6. **useCallback**:
 
-This hook returns a memoized callback function that only changes if one of the dependencies has changed.
+Returns a **stable function reference** that only changes when its dependencies change. Primarily useful when a function is passed as a prop to a `React.memo`-wrapped child — without it, the child re-renders on every parent render because a new function object is created each time.
 
-- Usage: `const memoizedCallback = useCallback(() => { // callback }, [dependencies]);`
-- Example:
-  ```jsx
-  const memoizedCallback = useCallback(() => {
-    doSomething(a, b);
-  }, [a, b]);
-  ```
+**When to reach for it**: a function is in a `useEffect` dependency array, or it is passed as a prop to an expensive memoized child.
+
+```tsx
+import { useState, useCallback, memo } from "react";
+
+// ── Child is memoized — will only re-render if props actually change ───────────
+const ProductRow = memo(function ProductRow({
+  product,
+  onAddToCart,
+  onWishlist,
+}: {
+  product: { id: string; name: string; price: number };
+  onAddToCart: (id: string) => void;
+  onWishlist: (id: string) => void;
+}) {
+  console.log(`ProductRow "${product.name}" rendered`); // watch how often this fires
+  return (
+    <tr>
+      <td>{product.name}</td>
+      <td>${product.price}</td>
+      <td>
+        <button onClick={() => onAddToCart(product.id)}>Add to cart</button>
+        <button onClick={() => onWishlist(product.id)}>♡</button>
+      </td>
+    </tr>
+  );
+});
+
+// ── Parent ─────────────────────────────────────────────────────────────────────
+function ProductList({ products }: { products: { id: string; name: string; price: number }[] }) {
+  const [cartIds, setCartIds] = useState<Set<string>>(new Set());
+  const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set());
+
+  // Without useCallback, these functions are recreated on every render,
+  // breaking memo() and causing ALL ProductRow children to re-render.
+  const handleAddToCart = useCallback((id: string) => {
+    setCartIds((prev) => new Set(prev).add(id));
+    fetch("/api/cart", { method: "POST", body: JSON.stringify({ productId: id }) });
+  }, []); // stable — doesn't depend on any changing variable
+
+  const handleWishlist = useCallback((id: string) => {
+    setWishlistIds((prev) => {
+      const next = new Set(prev);
+      prev.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
+
+  return (
+    <table>
+      <tbody>
+        {products.map((p) => (
+          <ProductRow
+            key={p.id}
+            product={p}
+            onAddToCart={handleAddToCart}
+            onWishlist={handleWishlist}
+          />
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+> ⚠️ **Gotcha**: `useCallback` is only useful when the function is passed to a `memo()`-wrapped child or appears in a `useEffect` dependency array. Wrapping every function in `useCallback` "just in case" adds overhead without benefit.
 
 ## 7. **useMemo**:
 
-This hook returns a memoized value that only recalculates when one of the dependencies has changed.
+Returns a **memoized computed value** that is only recalculated when its dependencies change. Avoids re-running expensive derivations on every render.
 
-- Usage: `const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);`
-- Example:
-  ```jsx
-  const memoizedValue = useMemo(() => {
-    return computeExpensiveValue(a, b);
-  }, [a, b]);
-  ```
+**When to reach for it**: deriving a value from props/state that involves sorting, filtering, or aggregating large arrays, or creating objects/arrays passed to memoized children.
+
+```tsx
+import { useState, useMemo } from "react";
+
+interface Order {
+  id: string;
+  customerId: string;
+  customerName: string;
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  total: number;
+  createdAt: string;
+}
+
+interface SortConfig {
+  field: keyof Order;
+  dir: "asc" | "desc";
+}
+
+function OrdersDashboard({ orders }: { orders: Order[] }) {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<Order["status"] | "all">("all");
+  const [sort, setSort] = useState<SortConfig>({ field: "createdAt", dir: "desc" });
+
+  // This derivation runs only when orders, search, statusFilter, or sort changes —
+  // NOT on every render (e.g. when an unrelated piece of state changes).
+  const processedOrders = useMemo(() => {
+    let result = orders;
+
+    // 1. Filter by status
+    if (statusFilter !== "all") {
+      result = result.filter((o) => o.status === statusFilter);
+    }
+
+    // 2. Filter by search
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (o) =>
+          o.customerName.toLowerCase().includes(q) ||
+          o.id.toLowerCase().includes(q)
+      );
+    }
+
+    // 3. Sort
+    result = [...result].sort((a, b) => {
+      const aVal = a[sort.field];
+      const bVal = b[sort.field];
+      const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      return sort.dir === "asc" ? cmp : -cmp;
+    });
+
+    return result;
+  }, [orders, search, statusFilter, sort]);
+
+  // Aggregate stats — also memoized separately so a search change doesn't
+  // recompute stats (which only depend on the full orders list).
+  const stats = useMemo(
+    () => ({
+      total: orders.length,
+      revenue: orders.reduce((s, o) => s + o.total, 0),
+      pending: orders.filter((o) => o.status === "pending").length,
+    }),
+    [orders]
+  );
+
+  return (
+    <div>
+      <p>Total revenue: ${stats.revenue.toLocaleString()} | Pending: {stats.pending}</p>
+      <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search…" />
+      {/* render processedOrders */}
+      <p>{processedOrders.length} results</p>
+    </div>
+  );
+}
+```
+
+> ⚠️ **Gotcha**: `useMemo` is an **optimisation hint**, not a guarantee. React may discard the cache in low-memory situations. Never use it to enforce a side effect or produce a non-deterministic value.
 
 ## 8. **useLayoutEffect**:
 
-This hook is similar to `useEffect`, but it fires synchronously after all DOM mutations. It can be useful for measuring DOM elements.
+Fires **synchronously after DOM mutations but before the browser paints**. This means you can read layout measurements and apply corrections in the same frame, avoiding visible flicker.
 
-- Usage: `useLayoutEffect(() => { // layout effect code }, [dependencies]);`
-- Example:
-  ```jsx
+**When to reach for it**: measuring DOM geometry (size, position) to position a tooltip, popover, or custom scroll indicator.  
+**When NOT to reach for it**: data fetching or anything that doesn't need layout measurements — use `useEffect` for that to avoid blocking the paint.
+
+```tsx
+import { useRef, useState, useLayoutEffect, type ReactNode } from "react";
+
+interface TooltipPosition {
+  top: number;
+  left: number;
+}
+
+function Tooltip({
+  anchor,
+  children,
+}: {
+  anchor: HTMLElement | null;
+  children: ReactNode;
+}) {
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<TooltipPosition | null>(null);
+
+  // useLayoutEffect so the tooltip renders in the right position in the same
+  // frame it first appears — no flash of incorrectly positioned tooltip.
   useLayoutEffect(() => {
-    const rect = inputRef.current.getBoundingClientRect();
-    console.log("Rect:", rect);
-  }, [inputRef]);
-  ```
+    if (!anchor || !tooltipRef.current) return;
 
-These are some of the most commonly used React Hooks, but React provides many more hooks for various purposes, such as custom hooks (`useCustomHook`) and hooks for working with forms, animations, and more. Understanding and mastering these hooks can significantly enhance your productivity and enable you to build powerful and maintainable React applications.
+    const anchorRect = anchor.getBoundingClientRect();
+    const tooltipRect = tooltipRef.current.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+
+    // Default: above the anchor, centred horizontally
+    let top = anchorRect.top - tooltipRect.height - 8;
+    let left = anchorRect.left + anchorRect.width / 2 - tooltipRect.width / 2;
+
+    // Flip to below if not enough space above
+    if (top < 0) {
+      top = anchorRect.bottom + 8;
+    }
+
+    // Clamp to viewport edges
+    left = Math.max(8, Math.min(left, viewportWidth - tooltipRect.width - 8));
+
+    setPos({ top, left });
+  }, [anchor]); // recalculate whenever the anchor element changes
+
+  return (
+    <div
+      ref={tooltipRef}
+      role="tooltip"
+      style={{
+        position: "fixed",
+        top: pos?.top ?? -9999, // hide off-screen until positioned
+        left: pos?.left ?? -9999,
+        zIndex: 1000,
+        background: "#1a1a1a",
+        color: "#fff",
+        padding: "4px 8px",
+        borderRadius: 4,
+        fontSize: 12,
+        pointerEvents: "none",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+```
+
+> ⚠️ **Gotcha**: `useLayoutEffect` runs **synchronously** — heavy work inside it blocks the browser paint and degrades perceived performance. Keep it limited to layout reads/writes. On the server (SSR/Next.js), `useLayoutEffect` is a no-op and triggers a warning; use `useEffect` or guard with `typeof window !== 'undefined'`.
+
+These are some of the most commonly used React Hooks. Understanding when and why to apply each one — not just the syntax — is what separates beginner from production-quality React code.
 
 ## Custom Hooks
 
