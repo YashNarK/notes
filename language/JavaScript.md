@@ -40,6 +40,7 @@
   - [Short Circuiting](#short-circuiting)
     - [Logical AND (`&&`) Short-Circuiting:](#logical-and--short-circuiting)
     - [Logical OR (`||`) Short-Circuiting:](#logical-or--short-circuiting)
+    - [Nullish Coalescing (`??`) Short-Circuiting:](#nullish-coalescing--short-circuiting)
   - [Strings](#strings)
     - [String Basics:](#string-basics)
     - [Primitive vs Object Strings:](#primitive-vs-object-strings)
@@ -125,6 +126,7 @@
     - [Synchronous Programming:](#synchronous-programming)
     - [Asynchronous Programming:](#asynchronous-programming)
     - [Key Differences:](#key-differences)
+  - [The JavaScript Event Loop](#the-javascript-event-loop)
   - [Callbacks, promises and Async/Await in detail](#callbacks-promises-and-asyncawait-in-detail)
     - [Callbacks in JavaScript:](#callbacks-in-javascript)
     - [Promises in JavaScript:](#promises-in-javascript)
@@ -135,6 +137,7 @@
     - [Documentation:](#documentation)
     - [Frontend Code Archive:](#frontend-code-archive)
     - [Emmet Plugins Documentation:](#emmet-plugins-documentation)
+  - [JSON](#json)
   - [Iterating Collections](#iterating-collections)
     - [Array — value + index](#array--value--index)
     - [Map — key + value](#map--key--value)
@@ -147,17 +150,57 @@
     - [Checking for `undefined`](#checking-for-undefined)
     - [Checking for `NaN`](#checking-for-nan)
     - [Checking for an Array](#checking-for-an-array)
-  - [Copying Objects and Arrays](#copying-objects-and-arrays)
-    - [Shallow Copy](#shallow-copy)
-    - [Deep Copy](#deep-copy)
-    - [Method Comparison Table](#method-comparison-table)
-    - [What structuredClone Cannot Copy](#what-structuredclone-cannot-copy)
     - [Checking for a plain Object](#checking-for-a-plain-object)
     - [Checking for a Map](#checking-for-a-map)
     - [Checking for a Set](#checking-for-a-set)
     - [Checking for a Function](#checking-for-a-function)
     - [Universal type tag via `Object.prototype.toString`](#universal-type-tag-via-objectprototypetostring)
     - [Type-checking utility reference table](#type-checking-utility-reference-table)
+  - [Copying Objects and Arrays](#copying-objects-and-arrays)
+    - [Shallow Copy](#shallow-copy)
+    - [Deep Copy](#deep-copy)
+    - [Method Comparison Table](#method-comparison-table)
+    - [What structuredClone Cannot Copy](#what-structuredclone-cannot-copy)
+  - [ES6+ Features Reference](#es6-features-reference)
+    - [let and const](#let-and-const)
+    - [Arrow Functions](#arrow-functions)
+    - [Template Literals](#template-literals)
+    - [Destructuring](#destructuring)
+    - [Spread and Rest Operators](#spread-and-rest-operators)
+    - [Default Parameters](#default-parameters)
+    - [Modules (import / export)](#modules-import--export)
+    - [Promises](#promises)
+    - [Async / Await](#async--await)
+    - [Optional Chaining](#optional-chaining)
+    - [Nullish Coalescing](#nullish-coalescing)
+    - [Logical Assignment Operators](#logical-assignment-operators)
+    - [Classes (ES6+)](#classes)
+    - [Symbols](#symbols)
+    - [Iterators and Generators](#iterators-and-generators)
+    - [Proxy and Reflect](#proxy-and-reflect)
+    - [WeakMap and WeakSet](#weakmap-and-weakset)
+    - [Array Methods (ES6+)](#array-methods-es6)
+    - [Object Methods (ES6+)](#object-methods-es6)
+    - [Error Handling Patterns](#error-handling-patterns)
+  - [Browser APIs](#browser-apis)
+    - [DOM Manipulation](#dom-manipulation)
+    - [Events](#events)
+    - [Fetch API](#fetch-api)
+    - [AJAX with XMLHttpRequest](#ajax-with-xmlhttprequest)
+    - [Web Storage](#web-storage)
+    - [Cookies](#cookies)
+    - [WebSockets](#websockets)
+    - [Service Workers](#service-workers)
+    - [Intersection Observer](#intersection-observer)
+    - [MutationObserver](#mutationobserver)
+    - [ResizeObserver](#resizeobserver)
+    - [Clipboard API](#clipboard-api)
+    - [Geolocation API](#geolocation-api)
+    - [Web Workers](#web-workers)
+    - [History API](#history-api)
+    - [URL and URLSearchParams](#url-and-urlsearchparams)
+    - [Performance API](#performance-api)
+    - [Broadcast Channel API](#broadcast-channel-api)
 
 ## Introduction to JS
 
@@ -341,7 +384,7 @@ JavaScript has several data types that can be broadly categorized into two main 
 
 These data types play a crucial role in JavaScript, and understanding them is fundamental for effective programming in the language. Keep in mind that JavaScript is a loosely typed language, meaning variables can change types as the program runs.
 
-# Operators
+## Operators
 
 JavaScript supports a variety of operators that allow you to perform operations on variables and values. Here's an overview of some of the common operators in JavaScript:
 
@@ -488,12 +531,19 @@ do {
 
 ### 4. **For...In Loop:**
 
-- Used to iterate over the properties of an object.
+- Used to iterate over the **enumerable properties** of an object.
+- ⚠️ **Do not use `for...in` on arrays** — it iterates keys as strings and also picks up prototype properties, producing unexpected results.
 
 ```javascript
 const person = { name: "John", age: 30 };
 for (let key in person) {
   console.log(key, person[key]);
+}
+
+// ⚠️ On arrays — use for...of or forEach instead:
+const arr = [1, 2, 3];
+for (const key in arr) {
+  console.log(key, arr[key]); // '0' 1, '1' 2, '2' 3 — keys are strings!
 }
 ```
 
@@ -709,6 +759,25 @@ let userName = enteredName || defaultName; // "Guest"
 
 Short-circuiting is commonly used for concise conditional expressions and can be leveraged to write more readable and efficient code. However, it's essential to understand its implications, especially when using expressions with side effects (such as function calls), as the skipped evaluation may affect the program's behavior.
 
+### Nullish Coalescing (`??`) Short-Circuiting:
+
+`??` returns the **right-hand side only when the left is `null` or `undefined`** — unlike `||`, it does **not** short-circuit for other falsy values like `0`, `false`, or `""`.
+
+```javascript
+// || returns first truthy — ?? returns first non-null/undefined
+let count = 0;
+let resultOR  = count || 10;   // 10  — 0 is falsy, so || skips it
+let resultNULL = count ?? 10;  // 0   — 0 is not null/undefined, ?? keeps it
+
+let name = null;
+let displayName = name ?? "Guest";   // "Guest"
+
+let active = false;
+let isActive = active ?? true;       // false (not null/undefined, so kept)
+```
+
+**Use `??` when `0`, `false`, or `""` are valid values you want to preserve.**
+
 ## Strings
 
 Strings in JavaScript are used to represent and manipulate sequences of characters. They can be created using string literals or the `String` constructor. Here's an overview of strings in JavaScript, including the difference between primitive and object strings:
@@ -754,11 +823,57 @@ Strings in JavaScript are used to represent and manipulate sequences of characte
 
 5. **String Methods:**
 
-   - JavaScript provides various built-in methods for string manipulation, such as `toUpperCase()`, `toLowerCase()`, `charAt()`, `substring()`, `split()`, and more.
+   - JavaScript provides various built-in methods for string manipulation.
 
+   **Case, trimming, padding:**
    ```javascript
-   let text = "Hello, World!";
-   console.log(text.toUpperCase()); // "HELLO, WORLD!"
+   let text = "  Hello, World!  ";
+   text.toUpperCase();          // "  HELLO, WORLD!  "
+   text.toLowerCase();          // "  hello, world!  "
+   text.trim();                 // "Hello, World!"   (both ends)
+   text.trimStart();            // "Hello, World!  " (left only)
+   text.trimEnd();              // "  Hello, World!" (right only)
+   "5".padStart(3, '0');        // "005"
+   "5".padEnd(3, '0');          // "500"
+   ```
+
+   **Searching:**
+   ```javascript
+   const s = "Hello, World!";
+   s.includes("World");         // true
+   s.startsWith("Hello");       // true
+   s.endsWith("!");             // true
+   s.indexOf("o");              // 4  (first occurrence)
+   s.lastIndexOf("o");          // 8  (last occurrence)
+   ```
+
+   **Extracting:**
+   ```javascript
+   s.slice(7, 12);              // "World"  (end index excluded)
+   s.slice(-6);                 // "orld!"  (negative = from end)
+   s.substring(7, 12);         // "World"  (same as slice for +ve indices)
+   s.charAt(0);                 // "H"
+   s.at(-1);                    // "!"  (ES2022, negative indexing)
+   ```
+
+   **Replacing:**
+   ```javascript
+   s.replace("World", "JS");    // "Hello, JS!"  (first match only)
+   s.replaceAll("l", "L");      // "HeLLo, WorLd!"
+   "hello".replace(/[aeiou]/g, '*');  // "h*ll*" (regex)
+   ```
+
+   **Splitting and joining:**
+   ```javascript
+   "a,b,c".split(",");          // ["a", "b", "c"]
+   "hello".split("");           // ["h","e","l","l","o"]
+   "ha".repeat(3);              // "hahaha"
+   ```
+
+   **Template literals (ES6):**
+   ```javascript
+   const name = "World";
+   `Hello, ${name}!`;           // "Hello, World!"
    ```
 
 ### Primitive vs Object Strings:
@@ -898,13 +1013,13 @@ numbers.splice(2, 0, 1.5);
 
 ```javascript
 // Remove from the end
-let removedElement = numbers.pop();
+let removedFromEnd = numbers.pop();
 
 // Remove from the beginning
-let removedElement = numbers.shift();
+let removedFromStart = numbers.shift();
 
 // Remove from the middle
-let removedElements = numbers.splice(2, 2);
+let removedFromMiddle = numbers.splice(2, 2);
 ```
 
 #### 4. **Finding Elements:**
@@ -1347,7 +1462,8 @@ console.log(myCircle.diameter); // Outputs: 10
 console.log(myCircle.area); // Outputs: 78.54
 
 myCircle.diameter = 12;
-console.log(myCircle.radius); // Outputs: 6
+console.log(myCircle.diameter); // Outputs: 12 (diameter is updated)
+console.log(myCircle._radius);  // Outputs: 6 (_radius = 12 / 2)
 ```
 
 In this example, the `Circle` class uses getters and setters to control access to the `diameter` property and calculate the `area` property.
@@ -1372,20 +1488,26 @@ try {
 
 In this example, if `someUndefinedVariable` is not defined, a `ReferenceError` will be thrown and caught by the `catch` block.
 
-### Multiple Catch Blocks:
+### Handling Different Error Types:
 
-You can have multiple `catch` blocks to handle different types of exceptions.
+JavaScript's `try/catch` has **only one `catch` block**. To handle different error types, use `instanceof` checks inside it.
 
 ```javascript
 try {
   // Code that might throw an exception
   let result = someUndefinedVariable + 5;
-} catch (referenceError) {
-  console.error('ReferenceError:', referenceError.message);
 } catch (error) {
-  console.error('An error occurred:', error.message);
+  if (error instanceof ReferenceError) {
+    console.error('ReferenceError:', error.message);
+  } else if (error instanceof TypeError) {
+    console.error('TypeError:', error.message);
+  } else {
+    console.error('Unknown error:', error.message);
+  }
 }
 ```
+
+> **Note:** Multiple sequential `catch` blocks (like Java/C#) are **not valid JavaScript syntax**. Use `instanceof` inside a single `catch` block instead.
 
 ### Finally Block:
 
@@ -2197,9 +2319,7 @@ it can open the backpack and use / update those variables
 
 - **Instance Members:** Properties or methods attached to an instance of a class or object.
 - **Prototype Members:** Properties or methods attached to the prototype of a class or object.
-- **Static Members:** Properties or
-
-methods attached to the class itself, not its instances.
+- **Static Members:** Properties or methods attached to the class itself, not its instances.
 
 ### Method Overriding and Polymorphism:
 
@@ -2498,7 +2618,7 @@ JavaScript is a single-threaded, non-blocking, asynchronous language. Understand
    Async Task
    ```
 
-4. **Example using Promises:**
+   **Example using Promises:**
 
    ```javascript
    console.log("Start");
@@ -2510,8 +2630,8 @@ JavaScript is a single-threaded, non-blocking, asynchronous language. Understand
    });
 
    asyncTask.then((result) => {
-     console.log(result);
-     console.log("End");
+     console.log(result);  // runs after 1 second
+     console.log("End");   // also runs after 1 second, inside .then()
    });
    ```
 
@@ -2519,8 +2639,8 @@ JavaScript is a single-threaded, non-blocking, asynchronous language. Understand
 
    ```
    Start
-   End
    Async Task
+   End
    ```
 
 5. **Example using Async/Await:**
@@ -2578,7 +2698,75 @@ JavaScript is a single-threaded, non-blocking, asynchronous language. Understand
 
 Understanding when to use synchronous or asynchronous programming is crucial for building responsive and scalable applications, especially in scenarios involving I/O operations or dealing with external services.
 
-## Callbacks, promises and Async/Await in detail
+## The JavaScript Event Loop
+
+Understanding the Event Loop is **essential** for reasoning about async JavaScript. It explains why `setTimeout(fn, 0)` doesn't run immediately, why Promises resolve before timers, and why JavaScript can be non-blocking despite being single-threaded.
+
+### Components
+
+| Component | Role |
+|---|---|
+| **Call Stack** | Where synchronous code executes — one frame at a time |
+| **Web APIs** | Browser/Node APIs (`setTimeout`, `fetch`, DOM events) — run outside the stack |
+| **Macro-task queue** (Task Queue) | Callbacks from `setTimeout`, `setInterval`, I/O, UI events |
+| **Micro-task queue** | Callbacks from resolved Promises and `queueMicrotask()` |
+| **Event Loop** | Constantly checks: if stack is empty → drain microtask queue → run next macro-task |
+
+### Priority order (per iteration)
+
+```
+1. Run all synchronous code (call stack empties)
+2. Drain the ENTIRE microtask queue (Promises, queueMicrotask)
+3. Render (browsers only, if applicable)
+4. Run ONE macro-task (setTimeout, setInterval, I/O callback)
+5. Repeat from step 2
+```
+
+> **Key insight:** Microtasks (Promises) ALWAYS run before the next macro-task (setTimeout). This is why `Promise.resolve().then(fn)` beats `setTimeout(fn, 0)`.
+
+### Annotated example
+
+```js
+console.log('1 — sync');
+
+setTimeout(() => console.log('2 — macro-task (setTimeout)'), 0);
+
+Promise.resolve()
+  .then(() => console.log('3 — microtask (Promise)'))
+  .then(() => console.log('4 — microtask (chained)'));
+
+console.log('5 — sync');
+
+// Output order:
+// 1 — sync
+// 5 — sync
+// 3 — microtask (Promise)       ← microtasks before macro-tasks!
+// 4 — microtask (chained)
+// 2 — macro-task (setTimeout)
+```
+
+### Why does this matter?
+
+```js
+// ❌ Common mistake — expecting callback to run "right now"
+setTimeout(() => { updateState(); }, 0);
+doSomethingAfterUpdate(); // runs BEFORE the setTimeout callback!
+
+// ✅ Correct — chain with Promise if you need ordering
+Promise.resolve().then(() => updateState()).then(() => doSomethingAfterUpdate());
+```
+
+```js
+// Blocking the event loop — blocks ALL other tasks
+function blockFor(ms) {
+  const end = Date.now() + ms;
+  while (Date.now() < end); // spins the CPU — no other code can run
+}
+blockFor(2000); // browser freezes for 2 seconds
+// → Never do heavy computation on the main thread; use Web Workers instead
+```
+
+
 
 ### Callbacks in JavaScript:
 
@@ -2749,6 +2937,86 @@ Choosing between callbacks, promises, or async/await depends on the specific use
 
 These resources cover a wide range of topics and cater to different learning styles. Whether you're looking to practice coding, explore documentation, or access archived versions of websites, you've got a solid set of tools at your disposal. Don't hesitate to explore additional resources as you continue your web development journey.
 
+
+---
+
+## JSON
+
+JSON (JavaScript Object Notation) is a lightweight text format for storing and transporting data. JavaScript provides built-in `JSON.stringify()` and `JSON.parse()` methods.
+
+### `JSON.stringify()` — Object → String
+
+```js
+const user = {
+  name: 'Alice',
+  age: 30,
+  roles: ['admin', 'editor'],
+  joined: new Date('2022-01-01'),
+  password: undefined,       // undefined properties are OMITTED
+  greet: () => 'hello',      // functions are OMITTED
+};
+
+JSON.stringify(user);
+// '{"name":"Alice","age":30,"roles":["admin","editor"],"joined":"2022-01-01T00:00:00.000Z"}'
+
+// Pretty-print (indent 2 spaces)
+JSON.stringify(user, null, 2);
+
+// Replacer — only include specified keys
+JSON.stringify(user, ['name', 'age']);
+// '{"name":"Alice","age":30}'
+
+// Replacer function — transform values
+JSON.stringify(user, (key, value) => {
+  if (typeof value === 'number') return value * 2;  // double all numbers
+  return value;
+});
+```
+
+### `JSON.parse()` — String → Object
+
+```js
+const json = '{"name":"Alice","age":30,"joined":"2022-01-01T00:00:00.000Z"}';
+const parsed = JSON.parse(json);
+
+// Note: Date comes back as a string — not a Date object!
+typeof parsed.joined;   // 'string'
+
+// Reviver function — transform values on parse
+const parsed2 = JSON.parse(json, (key, value) => {
+  if (key === 'joined') return new Date(value);  // re-hydrate Date
+  return value;
+});
+parsed2.joined instanceof Date;  // ✅ true
+```
+
+### What JSON cannot represent
+
+| Value | Behaviour in `JSON.stringify` |
+|---|---|
+| `undefined` | Property omitted |
+| Functions | Property omitted |
+| `Symbol` | Property omitted |
+| `NaN` / `Infinity` | Converted to `null` |
+| `Date` | Converted to ISO string |
+| `Map` / `Set` | Converted to `{}` (empty object) |
+| Circular refs | Throws `TypeError` |
+
+```js
+// ❌ Circular reference
+const obj = { a: 1 };
+obj.self = obj;
+JSON.stringify(obj);  // TypeError: Converting circular structure to JSON
+
+// ✅ Safe serialization helper
+function safeStringify(val) {
+  try {
+    return { ok: true, data: JSON.stringify(val) };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+}
+```
 
 ---
 
