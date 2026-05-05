@@ -29,9 +29,9 @@ Core building blocks every frontend developer must know.
 |---|---|
 | HTML5 | [HTML.md](HTML.md) |
 | CSS3 | [CSS.md](CSS.md) |
-| JavaScript | [JavaScript.md](../../language/JavaScript.md) |
-| TypeScript | [TypeScript.md](../../language/TypeScript.md) |
-| JavaScript ES6+ & Browser APIs | [JavaScript.md](../../language/JavaScript.md) (ES6+ and Browser & Web APIs sections) |
+| JavaScript | [JavaScript.md](../../../language/JavaScript.md) |
+| TypeScript | [TypeScript.md](../../../language/TypeScript.md) |
+| JavaScript ES6+ & Browser APIs | [JavaScript.md](../../../language/JavaScript.md) (ES6+ and Browser & Web APIs sections) |
 
 ---
 
@@ -50,7 +50,7 @@ Core building blocks every frontend developer must know.
 
 | Topic | File |
 |---|---|
-| JavaScript fundamentals + ES6+ + Browser APIs | [JavaScript.md](../../language/JavaScript.md) |
+| JavaScript fundamentals + ES6+ + Browser APIs | [JavaScript.md](../../../language/JavaScript.md) |
 
 ---
 
@@ -79,7 +79,7 @@ Core building blocks every frontend developer must know.
 
 | Topic | File |
 |---|---|
-| DOM, Fetch, AJAX, WebSockets, Service Workers, Intersection Observer, Web Workers | [JavaScript.md](../../language/JavaScript.md) (Browser & Web APIs section) |
+| DOM, Fetch, AJAX, WebSockets, Service Workers, Intersection Observer, Web Workers | [JavaScript.md](../../../language/JavaScript.md) (Browser & Web APIs section) |
 
 ---
 
@@ -153,5 +153,5 @@ Core building blocks every frontend developer must know.
 | Node.js / Express (Backend) | [../backend/NodeJS/nodeJS.md](../backend/NodeJS/nodeJS.md) |
 | API Design | [../backend/NodeJS/API_Design.md](../backend/NodeJS/API_Design.md) |
 | Security | [../../../cybersecurity/Authentication and Security.md](../../../cybersecurity/Authentication%20and%20Security.md) |
-| Networking Fundamentals | [../networks/Networking_Fundamentals.md](../networks/Networking_Fundamentals.md) |
+| Networking Fundamentals | [../../networks/Networking_Fundamentals.md](../../networks/Networking_Fundamentals.md) |
 | Prompt Engineering (General) | [../../../prompt_engineering/PromptEngineering.md](../../../prompt_engineering/PromptEngineering.md) |
