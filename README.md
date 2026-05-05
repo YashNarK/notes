@@ -36,11 +36,10 @@ Complete guide to building modern full-stack applications with the MERN stack an
 
 ### 1.1 Frontend Fundamentals
 
-Learn the core technologies that power every modern web application.
+> 🗺️ **Start here:** **[Modern Frontend Development — Index](full%20stack%20web%20development/MERN/frontend/frontend_basics.md)** — the master entry point linking all frontend notes organised by topic (Foundations, Styling, React, Testing, DevOps, AI, Accessibility, and more).
 
-- **[Frontend Basics](full%20stack%20web%20development/MERN/frontend/frontend_basics.md)** - HTML/CSS/JavaScript fundamentals, DOM manipulation, responsive design, and SPA concepts
 - **[HTML](full%20stack%20web%20development/MERN/frontend/HTML.md)** - HTML structure, semantic elements, and tags
-- **[CSS](full%20stack%20web%20development/MERN/frontend/CSS.md)** - Cascading Style Sheets, selectors, layout models, flexbox, and grid
+- **[CSS](full%20stack%20web%20development/MERN/frontend/CSS.md)** - Cascading Style Sheets, selectors, layout models, flexbox, grid, and Sass/SCSS
 
 ### 1.2 React
 
