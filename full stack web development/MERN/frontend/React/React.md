@@ -1,4 +1,5 @@
-
+
+
 # React
 
 ## Prerequisites
@@ -12,36 +13,6 @@ Before diving into React, make sure you're comfortable with the following:
 
 # Table of Contents
 - [Table of Contents](#table-of-contents)
-- [General Programming Concepts \& Libraries](#general-programming-concepts--libraries)
-  - [Cohesion and Coupling](#cohesion-and-coupling)
-  - [Useful VS Code extensions](#useful-vs-code-extensions)
-  - [Useful browser extensions](#useful-browser-extensions)
-  - [Populer UI Libraries](#populer-ui-libraries)
-  - [Icons for UI](#icons-for-ui)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [Icon Properties](#icon-properties)
-  - [Update logic Libraries](#update-logic-libraries)
-  - [React Form Libraries](#react-form-libraries)
-  - [Validation Libraries](#validation-libraries)
-    - [Joi vs Zod](#joi-vs-zod)
-  - [HTTP request library](#http-request-library)
-  - [CSS in JS styling libraries](#css-in-js-styling-libraries)
-  - [TS types for JS library variables](#ts-types-for-js-library-variables)
-  - [Cache, Retry AJAX, Infinite Scrolling/Pagination library](#cache-retry-ajax-infinite-scrollingpagination-library)
-    - [Installation](#installation-1)
-    - [Additional dev tools](#additional-dev-tools)
-  - [Infinite scrolling library - (to use with useInifiniteQuery of react-query)](#infinite-scrolling-library---to-use-with-useinifinitequery-of-react-query)
-    - [Installation](#installation-2)
-  - [Client State Management library](#client-state-management-library)
-    - [Installation](#installation-3)
-    - [Additional Dev Tools](#additional-dev-tools-1)
-  - [Routing Library](#routing-library)
-  - [Preferred backend stacks](#preferred-backend-stacks)
-  - [Deploying app in GitHub Pages](#deploying-app-in-github-pages)
-  - [Angular vs React](#angular-vs-react)
-  - [JSX](#jsx)
-  - [TSX](#tsx)
 - [Setup Local Environment](#setup-local-environment)
   - [1. create-react-app](#1-create-react-app)
   - [2. Vite](#2-vite)
@@ -250,398 +221,38 @@ Before diving into React, make sure you're comfortable with the following:
   - [Jest Setup](#jest-setup)
   - [React Testing Library Basics](#react-testing-library-basics)
   - [Testing Hooks](#testing-hooks)
+- [General Programming Concepts \& Libraries](#general-programming-concepts--libraries)
+  - [Cohesion and Coupling](#cohesion-and-coupling)
+  - [Useful VS Code extensions](#useful-vs-code-extensions)
+  - [Useful browser extensions](#useful-browser-extensions)
+  - [Populer UI Libraries](#populer-ui-libraries)
+  - [Icons for UI](#icons-for-ui)
+    - [Installation](#installation)
+    - [Usage](#usage)
+    - [Icon Properties](#icon-properties)
+  - [Update logic Libraries](#update-logic-libraries)
+  - [React Form Libraries](#react-form-libraries)
+  - [Validation Libraries](#validation-libraries)
+    - [Joi vs Zod](#joi-vs-zod)
+  - [HTTP request library](#http-request-library)
+  - [CSS in JS styling libraries](#css-in-js-styling-libraries)
+  - [TS types for JS library variables](#ts-types-for-js-library-variables)
+  - [Cache, Retry AJAX, Infinite Scrolling/Pagination library](#cache-retry-ajax-infinite-scrollingpagination-library)
+    - [Installation](#installation-1)
+    - [Additional dev tools](#additional-dev-tools)
+  - [Infinite scrolling library - (to use with useInifiniteQuery of react-query)](#infinite-scrolling-library---to-use-with-useinifinitequery-of-react-query)
+    - [Installation](#installation-2)
+  - [Client State Management library](#client-state-management-library)
+    - [Installation](#installation-3)
+    - [Additional Dev Tools](#additional-dev-tools-1)
+  - [Routing Library](#routing-library)
+  - [Preferred backend stacks](#preferred-backend-stacks)
+  - [Deploying app in GitHub Pages](#deploying-app-in-github-pages)
+  - [Angular vs React](#angular-vs-react)
+  - [JSX](#jsx)
+  - [TSX](#tsx)
 - [Important Links](#important-links)
 - [React Summary](#react-summary)
-
-
-# General Programming Concepts & Libraries
-
-## Cohesion and Coupling
-
-- Cohesion and coupling are two key concepts in software engineering that are used to measure the quality of a software system’s design.
-- Cohesion refers to the degree to which elements within a module work together to fulfill a single, well-defined purpose.
-- High cohesion means that elements are closely related and focused on a single purpose, while low cohesion means that elements are loosely related and serve multiple purposes.
-- Coupling refers to the degree of interdependence between software modules.
-- High coupling means that modules are closely connected and changes in one module may affect other modules.
-- Low coupling means that modules are independent and changes in one module have little impact on other modules.
-- Both coupling and cohesion are important factors in determining the maintainability, scalability, and reliability of a software system. High cohesion and low coupling can make a system easier to maintain and improve.
-
-## Useful VS Code extensions
-
-1. [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-2. [Simple React Snippets](https://marketplace.visualstudio.com/items?itemName=burkeholland.simple-react-snippets)
-3. [ES7+ React/Redux/React-Native snippets](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets)
-
-After installing above extensions, at preference > settings of VS Code, make default formatter as "Prettier" and enable format on save.
-
-## Useful browser extensions
-
-1. [React Dev Tools](https://microsoftedge.microsoft.com/addons/detail/react-developer-tools/gpphkfbcpidddadnkolkpfckpihlkkil)
-2. [Pesticide](https://chrome.google.com/webstore/detail/bakpbgckdnepkmkeaiomhmfcnejndkbi)
-
-## Populer UI Libraries
-
-1. [Bootstrap](https://getbootstrap.com/)
-2. [Material UI](https://mui.com/material-ui/)
-3. [Tailwind CSS](https://tailwindcss.com/)
-4. [Chakra UI](https://chakra-ui.com/)
-
-## Icons for UI
-
-1. [react-icons](https://react-icons.github.io/react-icons/)
-
-### Installation
-
-```bash
-npm install react-icons --save
-```
-
-### Usage
-
-```tsx
-import { FaBeer } from "react-icons/fa";
-
-function Question() {
-  return (
-    <h3>
-      Let's go for a <FaBeer />?
-    </h3>
-  );
-}
-```
-
-### Icon Properties
-
-| Key         | Default               | Notes                              |
-| ----------- | --------------------- | ---------------------------------- |
-| `color`     | `undefined` (inherit) |                                    |
-| `size`      | `1em`                 |                                    |
-| `className` | `undefined`           |                                    |
-| `style`     | `undefined`           | Can overwrite size and color       |
-| `attr`      | `undefined`           | Overwritten by other attributes    |
-| `title`     | `undefined`           | Icon description for accessibility |
-
-## Update logic Libraries
-
-1. [immer](https://github.com/immerjs/immer#readme)
-
-## React Form Libraries
-
-1. [React hook form](https://www.react-hook-form.com/)
-
-## Validation Libraries
-
-1. [Joi](https://github.com/hapijs/joi#readme)
-2. [Yup](https://github.com/jquense/yup)
-3. [Zod](https://github.com/colinhacks/zod)
-
-### Joi vs Zod
-
-**Joi** and **Zod** are both popular JavaScript validation libraries, each with their own strengths and use cases.
-
-**Joi** is a mature and feature-rich validation library, often used in Node.js applications. It provides a wide range of validation rules and customization options, making it suitable for complex validation scenarios. However, it can add some overhead to smaller projects and may require more effort for type safety in TypeScript projects.
-
-**Pros of Joi**:
-
-- Battle-tested and widely used in the Node.js ecosystem.
-- Extensive set of validation rules and options.
-- Robust error handling and customization capabilities.
-
-**Cons of Joi**:
-
-- Bulkier and can add some overhead to smaller projects.
-- May require more effort for type safety in TypeScript projects.
-
-On the other hand, **Zod** is a powerful validation library that shines in its ability to leverage TypeScript's type system. If you're using TypeScript, Zod's type inference will ensure that your validation code is type-safe, providing extra confidence in your data handling. However, there might be a learning curve for developers unfamiliar with TypeScript.
-
-**Pros of Zod**:
-
-- Strong TypeScript support for type-safe validation.
-- Powerful validation capabilities and rich validation API.
-- Excellent error messages and error handling.
-
-**Cons of Zod**:
-
-- Learning curve for developers unfamiliar with TypeScript.
-- Might add overhead for projects not using TypeScript.
-
-In conclusion, the choice between Joi and Zod depends on your project's requirements, familiarity with TypeScript, and the level of complexity your data validation demands.
-
-## HTTP request library
-
-1. [Axios](https://axios-http.com/)
-
-## CSS in JS styling libraries
-
-1. [Styled components](https://styled-components.com/)
-2. [Emotion](https://github.com/emotion-js/emotion/tree/main#readme)
-3. [Polished](https://polished.js.org/)
-
-## TS types for JS library variables
-
-1. @types
-
-## Cache, Retry AJAX, Infinite Scrolling/Pagination library
-
-1. [Tanstack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
-
-### Installation
-
-```bash
-npm i @tanstack/react-query
-# or
-pnpm add @tanstack/react-query
-# or
-yarn add @tanstack/react-query
-```
-
-### Additional dev tools
-
-1. [@tanstack/react-query-devtools](https://tanstack.com/query/latest/docs/framework/react/devtools)
-
-- **Installation**
-
-```bash
-npm i @tanstack/react-query-devtools
-# or
-pnpm add @tanstack/react-query-devtools
-# or
-yarn add @tanstack/react-query-devtools
-```
-
-- **Usage**
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      {/* The rest of your application */}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  );
-}
-```
-
-## Infinite scrolling library - (to use with useInifiniteQuery of react-query)
-
-1. [react-infinite-scroll-component](https://www.npmjs.com/package/react-infinite-scroll-component)
-
-### Installation
-
-```bash
-  npm install --save react-infinite-scroll-component
-
-  or
-
-  yarn add react-infinite-scroll-component
-
-```
-
-## Client State Management library
-
-1. [Zustand](https://github.com/pmndrs/zustand)
-
-### Installation
-
-```bash
-npm install zustand
-# or yarn add zustand or pnpm add zustand
-```
-
-### Additional Dev Tools
-
-1. [simple-zustand-devtools](https://github.com/beerose/simple-zustand-devtools#readme)
-
-**Installation**
-
-```bash
-npm i simple-zustand-devtools
-```
-
-## Routing Library
-
-1. [react-router-dom](https://github.com/remix-run/react-router#readme)
-
-**Installation:**
-
-```bash
-npm i react-router-dom
-```
-
-## Preferred backend stacks
-
-1. Node + Express
-2. C#/ASP.NET
-3. Firebase
-
-## Deploying app in GitHub Pages
-
-- Install the gh-pages npm package and designate it as a development dependency
-
-```bash
-npm install gh-pages --save-dev
-```
-
-- Add the deployment commands in package.json > scripts
-
-```json
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
-```
-
-- After successfully developing the app to a certain release version, build and deploy using below commands (we assume you already connected the local repo to a remote repo in GitHub)
-
-```bash
-npm run predeploy
-npm run deploy
-```
-## Angular vs React
-
-| Aspect                      | Angular                                      | React                                                               |
-| --------------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
-| **Type**                    | Framework                                    | Library                                                             |
-| **Developed by**            | Google                                       | Facebook                                                            |
-| **Initial Release**         | 2010 (AngularJS), 2016 (Angular 2+)          | 2013                                                                |
-| **Latest Version**          | Angular 12+ (as of 2023)                     | React 18+ (as of 2023)                                              |
-| **Language**                | TypeScript (superset of JavaScript)          | JavaScript (with optional TypeScript)                               |
-| **Architecture**            | MVC (Model-View-Controller)                  | Component-based                                                     |
-| **DOM Handling**            | Real DOM                                     | Virtual DOM                                                         |
-| **Data Binding**            | Two-way data binding                         | One-way data binding                                                |
-| **State Management**        | Built-in with Services and RxJS              | External libraries (e.g., Redux, MobX)                              |
-| **Component Communication** | @Input, @Output decorators                   | Props and state                                                     |
-| **Performance**             | Slightly slower due to real DOM              | Faster due to virtual DOM                                           |
-| **Learning Curve**          | Steeper due to comprehensive features        | Easier to get started, but more tools needed for full functionality |
-| **Size**                    | Larger bundle size                           | Smaller core, but can increase with libraries                       |
-| **Templating**              | HTML templates with Angular directives       | JSX (JavaScript XML)                                                |
-| **Dependency Injection**    | Built-in                                     | Not built-in, achieved through libraries                            |
-| **Routing**                 | Built-in with Angular Router                 | External libraries (e.g., React Router)                             |
-| **Forms**                   | Template-driven and Reactive Forms           | Controlled and Uncontrolled components                              |
-| **Testing**                 | Comprehensive testing tools (Karma, Jasmine) | Requires additional tools (Jest, Enzyme)                            |
-| **Build System**            | Angular CLI (Command Line Interface)         | Create React App (CRA), Next.js, custom setups                      |
-| **Ecosystem**               | Rich, integrated tools and libraries         | Rich, but relies on third-party libraries                           |
-| **Community Support**       | Strong, with extensive documentation         | Strong, with extensive documentation                                |
-| **Backward Compatibility**  | Breaking changes between major versions      | Generally maintains backward compatibility                          |
-| **Learning Resources**      | Plentiful tutorials, official documentation  | Plentiful tutorials, official documentation                         |
-| **Usage**                   | Enterprise-level applications, SPAs          | Wide range of applications, SPAs                                    |
-| **Development Speed**       | Slower initially due to configuration        | Faster initially due to minimal setup                               |
-| **Customization**           | Less flexible due to framework constraints   | Highly flexible, can choose libraries                               |
-| **Mobile Development**      | NativeScript, Ionic                          | React Native                                                        |
-| **Server-side Rendering**   | Angular Universal                            | Next.js                                                             |
-
-## JSX
-
-JSX (JavaScript XML) is a syntax extension for JavaScript that looks similar to XML or HTML. It is often used with React to describe what the UI should look like. JSX provides a concise and expressive syntax for defining React elements, making it more readable and easier to write and understand UI components.
-JSX (JavaScript Extension) allows embedding HTML within JS files and supports JS within HTML. It is compiled by Babel.
-
-Here are some key points about JSX:
-
-1. **Embedding Expressions:**
-   JSX allows you to embed JavaScript expressions within curly braces `{}`. This allows you to include dynamic content or JavaScript logic within your markup.
-
-   ```jsx
-   const name = "World";
-   const element = <p>Hello, {name}!</p>;
-   ```
-
-2. **HTML-Like Syntax:**
-   JSX resembles HTML, making it familiar and easy for developers who are accustomed to working with HTML. However, there are some differences, such as using `className` instead of `class` for defining CSS classes.
-
-   ```jsx
-   const element = <div className="container">This is a JSX element</div>;
-   ```
-
-3. **Creating React Elements:**
-   JSX gets transpiled into JavaScript code that creates React elements. The `React.createElement` function is used under the hood.
-
-   ```jsx
-   const element = <h1>Hello, React!</h1>;
-   // Transpiles to: const element = React.createElement('h1', null, 'Hello, React!');
-   ```
-
-4. **Attributes and Props:**
-   JSX allows you to define attributes similar to HTML. These attributes are called props (short for properties) in React.
-
-   ```jsx
-   const element = <img src="path/to/image.jpg" alt="An example image" />;
-   ```
-
-5. **JSX Fragments:**
-   JSX fragments (`<></>`) allow you to return multiple elements without introducing an additional parent wrapper element.
-
-   ```jsx
-   const element = (
-     <>
-       <h1>Title</h1>
-       <p>Paragraph</p>
-     </>
-   );
-   ```
-
-6. **Expressions in JSX:**
-   You can use JavaScript expressions within JSX to compute values or perform conditional rendering.
-
-   ```jsx
-   const isLoggedIn = true;
-   const element = (
-     <div>{isLoggedIn ? <p>Welcome, User!</p> : <p>Please log in</p>}</div>
-   );
-   ```
-
-JSX makes it more convenient to work with React by providing a syntax that closely resembles the final output. While it might look like HTML, it's important to remember that JSX is not HTML; it's a syntactic sugar for `React.createElement` calls, producing React elements that are then rendered to the DOM.
-
-Goto https://babeljs.io/repl for converting JSX to vanilla JS which any browser can acceot for more understanding of JSX.
-
-## TSX
-
-1. **Definition:**
-
-   - TSX stands for TypeScript JSX. It is a syntax extension for TypeScript that allows developers to write JSX (JavaScript XML) syntax with the benefits of static typing provided by TypeScript.
-
-2. **JSX in React:**
-
-   - JSX is a syntax extension for JavaScript often used with React. It allows developers to write HTML-like code within JavaScript files. JSX makes it easier to describe what the UI should look like.
-
-3. **TypeScript Integration:**
-
-   - TypeScript is a superset of JavaScript that adds static typing to the language. TSX is an extension of JSX specifically designed to work seamlessly with TypeScript. It allows developers to write React components with strong typing.
-
-4. **Benefits of TypeScript with JSX (TSX):**
-
-   - **Static Typing:** TypeScript adds a layer of static typing to JavaScript, reducing runtime errors and improving code maintainability.
-   - **Code Autocompletion:** Developers get better tooling support, including autocompletion and inline documentation, in TypeScript-enabled IDEs.
-   - **Early Error Detection:** TypeScript can catch certain types of errors during development, providing feedback to developers before runtime.
-
-5. **Example TSX Code in React:**
-
-   ```tsx
-   import React, { useState } from "react";
-
-   // A simple React component using TSX
-   const MyComponent: React.FC = () => {
-     const [count, setCount] = useState<number>(0);
-
-     return (
-       <div>
-         <p>Count: {count}</p>
-         <button onClick={() => setCount(count + 1)}>Increment</button>
-       </div>
-     );
-   };
-
-   export default MyComponent;
-   ```
-
-6. **Type Annotations in TSX:**
-
-   - TypeScript allows developers to annotate types explicitly. In the example above, `useState<number>` specifies that the `count` state should be of type `number`.
-
-7. **Integration with React Ecosystem:**
-   - Many libraries and tools in the React ecosystem support TypeScript, making it easier for developers to adopt TypeScript in their React projects.
-
-In summary, TSX in React refers to using TypeScript with JSX syntax. It enhances React development by providing static typing, improved tooling, and early error detection, making it a popular choice for developers building robust and scalable React applications.
-
 
 
 # Setup Local Environment
@@ -7343,6 +6954,397 @@ describe("useCounter", () => {
 ```
 
 ---
+
+# General Programming Concepts & Libraries
+
+## Cohesion and Coupling
+
+- Cohesion and coupling are two key concepts in software engineering that are used to measure the quality of a software system’s design.
+- Cohesion refers to the degree to which elements within a module work together to fulfill a single, well-defined purpose.
+- High cohesion means that elements are closely related and focused on a single purpose, while low cohesion means that elements are loosely related and serve multiple purposes.
+- Coupling refers to the degree of interdependence between software modules.
+- High coupling means that modules are closely connected and changes in one module may affect other modules.
+- Low coupling means that modules are independent and changes in one module have little impact on other modules.
+- Both coupling and cohesion are important factors in determining the maintainability, scalability, and reliability of a software system. High cohesion and low coupling can make a system easier to maintain and improve.
+
+## Useful VS Code extensions
+
+1. [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+2. [Simple React Snippets](https://marketplace.visualstudio.com/items?itemName=burkeholland.simple-react-snippets)
+3. [ES7+ React/Redux/React-Native snippets](https://marketplace.visualstudio.com/items?itemName=dsznajder.es7-react-js-snippets)
+
+After installing above extensions, at preference > settings of VS Code, make default formatter as "Prettier" and enable format on save.
+
+## Useful browser extensions
+
+1. [React Dev Tools](https://microsoftedge.microsoft.com/addons/detail/react-developer-tools/gpphkfbcpidddadnkolkpfckpihlkkil)
+2. [Pesticide](https://chrome.google.com/webstore/detail/bakpbgckdnepkmkeaiomhmfcnejndkbi)
+
+## Populer UI Libraries
+
+1. [Bootstrap](https://getbootstrap.com/)
+2. [Material UI](https://mui.com/material-ui/)
+3. [Tailwind CSS](https://tailwindcss.com/)
+4. [Chakra UI](https://chakra-ui.com/)
+
+## Icons for UI
+
+1. [react-icons](https://react-icons.github.io/react-icons/)
+
+### Installation
+
+```bash
+npm install react-icons --save
+```
+
+### Usage
+
+```tsx
+import { FaBeer } from "react-icons/fa";
+
+function Question() {
+  return (
+    <h3>
+      Let's go for a <FaBeer />?
+    </h3>
+  );
+}
+```
+
+### Icon Properties
+
+| Key         | Default               | Notes                              |
+| ----------- | --------------------- | ---------------------------------- |
+| `color`     | `undefined` (inherit) |                                    |
+| `size`      | `1em`                 |                                    |
+| `className` | `undefined`           |                                    |
+| `style`     | `undefined`           | Can overwrite size and color       |
+| `attr`      | `undefined`           | Overwritten by other attributes    |
+| `title`     | `undefined`           | Icon description for accessibility |
+
+## Update logic Libraries
+
+1. [immer](https://github.com/immerjs/immer#readme)
+
+## React Form Libraries
+
+1. [React hook form](https://www.react-hook-form.com/)
+
+## Validation Libraries
+
+1. [Joi](https://github.com/hapijs/joi#readme)
+2. [Yup](https://github.com/jquense/yup)
+3. [Zod](https://github.com/colinhacks/zod)
+
+### Joi vs Zod
+
+**Joi** and **Zod** are both popular JavaScript validation libraries, each with their own strengths and use cases.
+
+**Joi** is a mature and feature-rich validation library, often used in Node.js applications. It provides a wide range of validation rules and customization options, making it suitable for complex validation scenarios. However, it can add some overhead to smaller projects and may require more effort for type safety in TypeScript projects.
+
+**Pros of Joi**:
+
+- Battle-tested and widely used in the Node.js ecosystem.
+- Extensive set of validation rules and options.
+- Robust error handling and customization capabilities.
+
+**Cons of Joi**:
+
+- Bulkier and can add some overhead to smaller projects.
+- May require more effort for type safety in TypeScript projects.
+
+On the other hand, **Zod** is a powerful validation library that shines in its ability to leverage TypeScript's type system. If you're using TypeScript, Zod's type inference will ensure that your validation code is type-safe, providing extra confidence in your data handling. However, there might be a learning curve for developers unfamiliar with TypeScript.
+
+**Pros of Zod**:
+
+- Strong TypeScript support for type-safe validation.
+- Powerful validation capabilities and rich validation API.
+- Excellent error messages and error handling.
+
+**Cons of Zod**:
+
+- Learning curve for developers unfamiliar with TypeScript.
+- Might add overhead for projects not using TypeScript.
+
+In conclusion, the choice between Joi and Zod depends on your project's requirements, familiarity with TypeScript, and the level of complexity your data validation demands.
+
+## HTTP request library
+
+1. [Axios](https://axios-http.com/)
+
+## CSS in JS styling libraries
+
+1. [Styled components](https://styled-components.com/)
+2. [Emotion](https://github.com/emotion-js/emotion/tree/main#readme)
+3. [Polished](https://polished.js.org/)
+
+## TS types for JS library variables
+
+1. @types
+
+## Cache, Retry AJAX, Infinite Scrolling/Pagination library
+
+1. [Tanstack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
+
+### Installation
+
+```bash
+npm i @tanstack/react-query
+# or
+pnpm add @tanstack/react-query
+# or
+yarn add @tanstack/react-query
+```
+
+### Additional dev tools
+
+1. [@tanstack/react-query-devtools](https://tanstack.com/query/latest/docs/framework/react/devtools)
+
+- **Installation**
+
+```bash
+npm i @tanstack/react-query-devtools
+# or
+pnpm add @tanstack/react-query-devtools
+# or
+yarn add @tanstack/react-query-devtools
+```
+
+- **Usage**
+
+```tsx
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      {/* The rest of your application */}
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
+}
+```
+
+## Infinite scrolling library - (to use with useInifiniteQuery of react-query)
+
+1. [react-infinite-scroll-component](https://www.npmjs.com/package/react-infinite-scroll-component)
+
+### Installation
+
+```bash
+  npm install --save react-infinite-scroll-component
+
+  or
+
+  yarn add react-infinite-scroll-component
+
+```
+
+## Client State Management library
+
+1. [Zustand](https://github.com/pmndrs/zustand)
+
+### Installation
+
+```bash
+npm install zustand
+# or yarn add zustand or pnpm add zustand
+```
+
+### Additional Dev Tools
+
+1. [simple-zustand-devtools](https://github.com/beerose/simple-zustand-devtools#readme)
+
+**Installation**
+
+```bash
+npm i simple-zustand-devtools
+```
+
+## Routing Library
+
+1. [react-router-dom](https://github.com/remix-run/react-router#readme)
+
+**Installation:**
+
+```bash
+npm i react-router-dom
+```
+
+## Preferred backend stacks
+
+1. Node + Express
+2. C#/ASP.NET
+3. Firebase
+
+## Deploying app in GitHub Pages
+
+- Install the gh-pages npm package and designate it as a development dependency
+
+```bash
+npm install gh-pages --save-dev
+```
+
+- Add the deployment commands in package.json > scripts
+
+```json
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+```
+
+- After successfully developing the app to a certain release version, build and deploy using below commands (we assume you already connected the local repo to a remote repo in GitHub)
+
+```bash
+npm run predeploy
+npm run deploy
+```
+## Angular vs React
+
+| Aspect                      | Angular                                      | React                                                               |
+| --------------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
+| **Type**                    | Framework                                    | Library                                                             |
+| **Developed by**            | Google                                       | Facebook                                                            |
+| **Initial Release**         | 2010 (AngularJS), 2016 (Angular 2+)          | 2013                                                                |
+| **Latest Version**          | Angular 12+ (as of 2023)                     | React 18+ (as of 2023)                                              |
+| **Language**                | TypeScript (superset of JavaScript)          | JavaScript (with optional TypeScript)                               |
+| **Architecture**            | MVC (Model-View-Controller)                  | Component-based                                                     |
+| **DOM Handling**            | Real DOM                                     | Virtual DOM                                                         |
+| **Data Binding**            | Two-way data binding                         | One-way data binding                                                |
+| **State Management**        | Built-in with Services and RxJS              | External libraries (e.g., Redux, MobX)                              |
+| **Component Communication** | @Input, @Output decorators                   | Props and state                                                     |
+| **Performance**             | Slightly slower due to real DOM              | Faster due to virtual DOM                                           |
+| **Learning Curve**          | Steeper due to comprehensive features        | Easier to get started, but more tools needed for full functionality |
+| **Size**                    | Larger bundle size                           | Smaller core, but can increase with libraries                       |
+| **Templating**              | HTML templates with Angular directives       | JSX (JavaScript XML)                                                |
+| **Dependency Injection**    | Built-in                                     | Not built-in, achieved through libraries                            |
+| **Routing**                 | Built-in with Angular Router                 | External libraries (e.g., React Router)                             |
+| **Forms**                   | Template-driven and Reactive Forms           | Controlled and Uncontrolled components                              |
+| **Testing**                 | Comprehensive testing tools (Karma, Jasmine) | Requires additional tools (Jest, Enzyme)                            |
+| **Build System**            | Angular CLI (Command Line Interface)         | Create React App (CRA), Next.js, custom setups                      |
+| **Ecosystem**               | Rich, integrated tools and libraries         | Rich, but relies on third-party libraries                           |
+| **Community Support**       | Strong, with extensive documentation         | Strong, with extensive documentation                                |
+| **Backward Compatibility**  | Breaking changes between major versions      | Generally maintains backward compatibility                          |
+| **Learning Resources**      | Plentiful tutorials, official documentation  | Plentiful tutorials, official documentation                         |
+| **Usage**                   | Enterprise-level applications, SPAs          | Wide range of applications, SPAs                                    |
+| **Development Speed**       | Slower initially due to configuration        | Faster initially due to minimal setup                               |
+| **Customization**           | Less flexible due to framework constraints   | Highly flexible, can choose libraries                               |
+| **Mobile Development**      | NativeScript, Ionic                          | React Native                                                        |
+| **Server-side Rendering**   | Angular Universal                            | Next.js                                                             |
+
+## JSX
+
+JSX (JavaScript XML) is a syntax extension for JavaScript that looks similar to XML or HTML. It is often used with React to describe what the UI should look like. JSX provides a concise and expressive syntax for defining React elements, making it more readable and easier to write and understand UI components.
+JSX (JavaScript Extension) allows embedding HTML within JS files and supports JS within HTML. It is compiled by Babel.
+
+Here are some key points about JSX:
+
+1. **Embedding Expressions:**
+   JSX allows you to embed JavaScript expressions within curly braces `{}`. This allows you to include dynamic content or JavaScript logic within your markup.
+
+   ```jsx
+   const name = "World";
+   const element = <p>Hello, {name}!</p>;
+   ```
+
+2. **HTML-Like Syntax:**
+   JSX resembles HTML, making it familiar and easy for developers who are accustomed to working with HTML. However, there are some differences, such as using `className` instead of `class` for defining CSS classes.
+
+   ```jsx
+   const element = <div className="container">This is a JSX element</div>;
+   ```
+
+3. **Creating React Elements:**
+   JSX gets transpiled into JavaScript code that creates React elements. The `React.createElement` function is used under the hood.
+
+   ```jsx
+   const element = <h1>Hello, React!</h1>;
+   // Transpiles to: const element = React.createElement('h1', null, 'Hello, React!');
+   ```
+
+4. **Attributes and Props:**
+   JSX allows you to define attributes similar to HTML. These attributes are called props (short for properties) in React.
+
+   ```jsx
+   const element = <img src="path/to/image.jpg" alt="An example image" />;
+   ```
+
+5. **JSX Fragments:**
+   JSX fragments (`<></>`) allow you to return multiple elements without introducing an additional parent wrapper element.
+
+   ```jsx
+   const element = (
+     <>
+       <h1>Title</h1>
+       <p>Paragraph</p>
+     </>
+   );
+   ```
+
+6. **Expressions in JSX:**
+   You can use JavaScript expressions within JSX to compute values or perform conditional rendering.
+
+   ```jsx
+   const isLoggedIn = true;
+   const element = (
+     <div>{isLoggedIn ? <p>Welcome, User!</p> : <p>Please log in</p>}</div>
+   );
+   ```
+
+JSX makes it more convenient to work with React by providing a syntax that closely resembles the final output. While it might look like HTML, it's important to remember that JSX is not HTML; it's a syntactic sugar for `React.createElement` calls, producing React elements that are then rendered to the DOM.
+
+Goto https://babeljs.io/repl for converting JSX to vanilla JS which any browser can acceot for more understanding of JSX.
+
+## TSX
+
+1. **Definition:**
+
+   - TSX stands for TypeScript JSX. It is a syntax extension for TypeScript that allows developers to write JSX (JavaScript XML) syntax with the benefits of static typing provided by TypeScript.
+
+2. **JSX in React:**
+
+   - JSX is a syntax extension for JavaScript often used with React. It allows developers to write HTML-like code within JavaScript files. JSX makes it easier to describe what the UI should look like.
+
+3. **TypeScript Integration:**
+
+   - TypeScript is a superset of JavaScript that adds static typing to the language. TSX is an extension of JSX specifically designed to work seamlessly with TypeScript. It allows developers to write React components with strong typing.
+
+4. **Benefits of TypeScript with JSX (TSX):**
+
+   - **Static Typing:** TypeScript adds a layer of static typing to JavaScript, reducing runtime errors and improving code maintainability.
+   - **Code Autocompletion:** Developers get better tooling support, including autocompletion and inline documentation, in TypeScript-enabled IDEs.
+   - **Early Error Detection:** TypeScript can catch certain types of errors during development, providing feedback to developers before runtime.
+
+5. **Example TSX Code in React:**
+
+   ```tsx
+   import React, { useState } from "react";
+
+   // A simple React component using TSX
+   const MyComponent: React.FC = () => {
+     const [count, setCount] = useState<number>(0);
+
+     return (
+       <div>
+         <p>Count: {count}</p>
+         <button onClick={() => setCount(count + 1)}>Increment</button>
+       </div>
+     );
+   };
+
+   export default MyComponent;
+   ```
+
+6. **Type Annotations in TSX:**
+
+   - TypeScript allows developers to annotate types explicitly. In the example above, `useState<number>` specifies that the `count` state should be of type `number`.
+
+7. **Integration with React Ecosystem:**
+   - Many libraries and tools in the React ecosystem support TypeScript, making it easier for developers to adopt TypeScript in their React projects.
+
+In summary, TSX in React refers to using TypeScript with JSX syntax. It enhances React development by providing static typing, improved tooling, and early error detection, making it a popular choice for developers building robust and scalable React applications.
+
+
+
 
 # Important Links
 
