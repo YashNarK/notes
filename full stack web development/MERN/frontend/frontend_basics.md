@@ -93,6 +93,9 @@ Core building blocks every frontend developer must know.
 |---|---|
 | Frontend Performance Optimization (Core Web Vitals, React optimizations, bundle, images) | [PerformanceOptimization.md](PerformanceOptimization.md) |
 | Frontend System Design & Architecture (component patterns, micro-frontends, monorepos) | [FrontendSystemDesign.md](FrontendSystemDesign.md) |
+| Single Page Application (SPA) — routing, CSR, code splitting, SEO, auth | [Architectures/SPA.md](Architectures/SPA.md) |
+| Progressive Web Application (PWA) — Service Workers, caching, offline, push notifications | [Architectures/PWA.md](Architectures/PWA.md) |
+| Multi-Frontend Architecture (Micro-Frontends) — Module Federation, cross-MFE communication | [Architectures/MultiFrontendArchitecture.md](Architectures/MultiFrontendArchitecture.md) |
 
 ---
 
