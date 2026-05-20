@@ -19,13 +19,14 @@ Welcome to the Developer Notes Repository! This repository serves as a comprehen
   - [1.12 Interview Preparation](#112-interview-preparation)
   - [1.13 Useful Resources](#113-useful-resources)
 - [2. 💻 Programming Languages](#2--programming-languages)
-- [3. 🔐 Cybersecurity](#3--cybersecurity)
-- [4. 🤖 Prompt Engineering & Generative AI](#4--prompt-engineering--generative-ai)
-  - [4.1 Core Notes](#41-core-notes)
-  - [4.2 Course Modules](#42-course-modules)
-- [5. ⛓️ Blockchain & Web3](#5--blockchain--web3)
-- [6. 🔄 SDLC & Engineering Practices](#6--sdlc--engineering-practices)
-- [7. 🗂️ Version Control](#7--version-control)
+- [3. 📊 Data Engineering](#3--data-engineering)
+- [4. 🔐 Cybersecurity](#4--cybersecurity)
+- [5. 🤖 Prompt Engineering & Generative AI](#5--prompt-engineering--generative-ai)
+  - [5.1 Core Notes](#51-core-notes)
+  - [5.2 Course Modules](#52-course-modules)
+- [6. ⛓️ Blockchain & Web3](#6--blockchain--web3)
+- [7. 🔄 SDLC & Engineering Practices](#7--sdlc--engineering-practices)
+- [8. 🗂️ Version Control](#8--version-control)
 - [Contributing](#contributing)
 
 ---
@@ -133,10 +134,22 @@ Deep dives into programming languages beyond framework-specific topics.
 
 - **[JavaScript](language/JavaScript.md)** - Data types, operators, closures, promises, async/await, ES6+ features, and advanced JavaScript concepts
 - **[TypeScript](language/TypeScript.md)** - Static typing, interfaces, generics, utility types, advanced types, decorators, TSX patterns, and TypeScript with React
+- **[Python](language/Python.md)** - Data types, functions, OOP, type hints, iterators, generators, async/await, decorators, standard library, and advanced Python concepts
 
 ---
 
-## 3. 🔐 Cybersecurity
+## 3. 📊 Data Engineering
+
+Python-first data engineering — data manipulation, analysis, and pipeline fundamentals.
+
+> 🗺️ **Start here:** **[Data Engineering — Index](data%20engineering/data_engineer.md)** — the master entry point linking all data engineering notes.
+
+- **[Data Engineering Index](data%20engineering/data_engineer.md)** - Overview, Python patterns for data work, and full Pandas reference
+- **[Pandas Interactive Notebook](data%20engineering/pandas_learn.ipynb)** - Runnable Jupyter notebook covering all Pandas concepts from basics to advanced (Series, DataFrames, GroupBy, Merging, Reshaping, Datetime, and Visualization)
+
+---
+
+## 4. 🔐 Cybersecurity
 
 Secure your applications and protect user data.
 
@@ -144,15 +157,15 @@ Secure your applications and protect user data.
 
 ---
 
-## 4. 🤖 Prompt Engineering & Generative AI
+## 5. 🤖 Prompt Engineering & Generative AI
 
 Master the art of working with large language models and generative AI.
 
-### 4.1 Core Notes
+### 5.1 Core Notes
 
 - **[Prompt Engineering](prompt_engineering/PromptEngineering.md)** - Master reference for prompt engineering techniques, guidelines, and best practices with AI models
 
-### 4.2 Course Modules
+### 5.2 Course Modules
 
 Comprehensive Pluralsight learning pathway on Generative AI and Prompt Engineering.
 
@@ -164,11 +177,11 @@ Comprehensive Pluralsight learning pathway on Generative AI and Prompt Engineeri
 
 ---
 
-## 5. ⛓️ Blockchain & Web3
+## 6. ⛓️ Blockchain & Web3
 
 Explore the decentralized web and blockchain technology.
 
-### 5.1 Web3 Fundamentals
+### 6.1 Web3 Fundamentals
 
 - **[What is Web3?](blockchain/web3_101/Lesson1_what_is_web3.md)** - Introduction to Web3, decentralization concepts, and the evolution from Web2
 - **[Crypto Wallets](blockchain/web3_101/Lesson2_what_is_a_crypto_wallet.md)** - Understanding cryptocurrency wallets, private keys, public addresses, and wallet management
@@ -176,7 +189,7 @@ Explore the decentralized web and blockchain technology.
 
 ---
 
-## 6. 🔄 SDLC & Engineering Practices
+## 7. 🔄 SDLC & Engineering Practices
 
 Learn software development lifecycle methodologies and engineering practices.
 
@@ -184,7 +197,7 @@ Learn software development lifecycle methodologies and engineering practices.
 
 ---
 
-## 7. 🗂️ Version Control
+## 8. 🗂️ Version Control
 
 Master Git and collaborative development workflows.
 
