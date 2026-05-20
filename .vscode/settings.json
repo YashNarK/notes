@@ -1,0 +1,19 @@
+{
+  "python.analysis.typeCheckingMode": "off",
+  "pylance.insidersChannel": "off",
+  "python.analysis.diagnosticMode": "off",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none",
+    "reportMissingModuleSource": "none",
+    "reportUndefinedVariable": "none",
+    "reportGeneralTypeIssues": "none",
+    "reportOptionalMemberAccess": "none",
+    "reportAttributeAccessIssue": "none",
+    "reportOperatorIssue": "none",
+    "reportIndexIssue": "none",
+    "reportCallIssue": "none",
+    "reportArgumentType": "none",
+    "reportReturnType": "none",
+    "reportAssignmentType": "none"
+  }
+}
