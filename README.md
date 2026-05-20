@@ -135,6 +135,7 @@ Deep dives into programming languages beyond framework-specific topics.
 - **[JavaScript](language/JavaScript.md)** - Data types, operators, closures, promises, async/await, ES6+ features, and advanced JavaScript concepts
 - **[TypeScript](language/TypeScript.md)** - Static typing, interfaces, generics, utility types, advanced types, decorators, TSX patterns, and TypeScript with React
 - **[Python](language/Python.md)** - Data types, functions, OOP, type hints, iterators, generators, async/await, decorators, standard library, and advanced Python concepts
+- **[Python Interactive Notebook](language/Python.ipynb)** - Runnable Jupyter notebook version of the Python notes — all code examples executable cell-by-cell
 
 ---
 
