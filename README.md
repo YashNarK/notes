@@ -146,6 +146,13 @@ Python-first data engineering — data manipulation, analysis, and pipeline fund
 > 🗺️ **Start here:** **[Data Engineering — Index](data%20engineering/data_engineer.md)** — the master entry point linking all data engineering notes.
 
 - **[Data Engineering Index](data%20engineering/data_engineer.md)** - Overview, Python patterns for data work, and full Pandas reference
+- **[Apache Spark (PySpark)](data%20engineering/spark.md)** - Distributed processing, DataFrames, transformations, window functions, joins, and performance tuning
+- **[Apache Kafka & GCP Pub/Sub](data%20engineering/kafka.md)** - Event streaming, topics, partitions, consumer groups, DLQ patterns, and Python clients
+- **[Apache Airflow](data%20engineering/airflow.md)** - DAG authoring, operators, sensors, XComs, trigger rules, backfill, and orchestration best practices
+- **[Google BigQuery](data%20engineering/bigquery.md)** - Columnar architecture, partitioning, clustering, advanced SQL, and data loading/export
+- **[Data Modelling](data%20engineering/data_modelling.md)** - Star schema, SCD Type 2, medallion architecture (Bronze/Silver/Gold), and surrogate keys
+- **[Advanced SQL](data%20engineering/sql.md)** - Window functions, recursive CTEs, complex aggregations, deduplication, and data quality checks
+- **[Data Engineering System Design](data%20engineering/system_design.md)** - Batch vs streaming, Lambda/Kappa architecture, circuit breaker, resilience patterns, and pipeline design
 - **[Pandas Interactive Notebook](data%20engineering/pandas_learn.ipynb)** - Runnable Jupyter notebook covering all Pandas concepts from basics to advanced (Series, DataFrames, GroupBy, Merging, Reshaping, Datetime, and Visualization)
 
 ---

@@ -1,12 +1,16 @@
 # Data Engineering
 
-> 🗺️ **Main entry point** for all data engineering notes — covers Python for data, pandas, data manipulation, and analysis workflows.
+> 🗺️ **Main entry point** for all data engineering notes — Python for data, pandas, distributed computing, streaming, orchestration, warehousing, modelling, and system design.
 
 ## Table of contents
 
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Python for Data Engineering](#python-for-data-engineering)
+- [Data Engineering Patterns](#data-engineering-patterns)
+  - [Aggregation and Filtering](#aggregation-and-filtering)
+  - [Deduplication](#deduplication)
+  - [Pipeline Class Design](#pipeline-class-design)
 - [Pandas — Data Manipulation & Analysis](#pandas--data-manipulation--analysis)
   - [Core Data Structures](#core-data-structures)
   - [Reading & Writing Data](#reading--writing-data)
@@ -24,6 +28,7 @@
   - [MultiIndex](#multiindex)
   - [Categorical Data & Memory Optimization](#categorical-data--memory-optimization)
   - [Visualization with Pandas](#visualization-with-pandas)
+- [Distributed & Cloud Stack](#distributed--cloud-stack)
 - [Resources](#resources)
 
 ---
@@ -38,8 +43,13 @@ Data engineering involves building systems to collect, store, transform, and ser
 |---|---|---|
 | Language | Python | [`language/Python.md`](../language/Python.md) |
 | Data manipulation | Pandas | [`pandas_learn.ipynb`](pandas_learn.ipynb) |
-| Data source | CSV / Excel / SQL | Covered in pandas notebook |
-| Visualisation | Pandas `.plot()`, Matplotlib | Covered in pandas notebook |
+| Distributed processing | Apache Spark (PySpark) | [`spark.md`](spark.md) |
+| Streaming & messaging | Apache Kafka / GCP Pub/Sub | [`kafka.md`](kafka.md) |
+| Orchestration | Apache Airflow | [`airflow.md`](airflow.md) |
+| Cloud warehouse | Google BigQuery | [`bigquery.md`](bigquery.md) |
+| Data modelling | Star schema, SCD, Medallion | [`data_modelling.md`](data_modelling.md) |
+| Advanced SQL | Window functions, CTEs | [`sql.md`](sql.md) |
+| System design | Pipeline architecture, trade-offs | [`system_design.md`](system_design.md) |
 
 ---
 
@@ -118,6 +128,89 @@ def avg_salary(employees: list[Employee]) -> float:
 ```
 
 📖 **Full Python reference:** [Python Language Notes](../language/Python.md)
+
+---
+
+## Data Engineering Patterns
+
+Common Python patterns used in production data pipelines — data manipulation, deduplication, and pipeline class design.
+
+### Aggregation and Filtering
+
+```python
+import pandas as pd
+from datetime import datetime, timedelta
+
+def top_spenders(df: pd.DataFrame, n: int = 3, days: int = 30) -> pd.DataFrame:
+    """Return the top N users by total spend in the last `days` days."""
+    cutoff = datetime.today() - timedelta(days=days)
+    recent = df[df["transaction_date"] >= cutoff]
+    result = recent.groupby("user_id").agg(
+        total_spend=("amount", "sum"),
+        avg_amount=("amount", "mean"),
+        num_txns=("transaction_id", "count")
+    ).reset_index()
+    return result.nlargest(n, "total_spend")
+
+def group_by_key(records: list[dict], key: str) -> dict:
+    """Group a list of dicts by a key — returns {key_value: [records]}."""
+    from collections import defaultdict
+    result: dict = defaultdict(list)
+    for record in records:
+        result[record[key]].append(record)
+    return dict(result)
+```
+
+### Deduplication
+
+```python
+def deduplicate(df: pd.DataFrame, key: str, sort_by: str) -> pd.DataFrame:
+    """Keep the latest record per `key`, ordered by `sort_by` descending."""
+    return (
+        df.sort_values(sort_by, ascending=False)
+          .drop_duplicates(subset=[key], keep="first")
+          .reset_index(drop=True)
+    )
+
+# Example: keep the latest version of each transaction
+clean = deduplicate(df, key="transaction_id", sort_by="updated_at")
+```
+
+### Pipeline Class Design
+
+```python
+from typing import Any, Callable
+
+class DataPipeline:
+    """A simple composable data pipeline — supports method chaining."""
+
+    def __init__(self, name: str):
+        self.name   = name
+        self.steps: list[Callable] = []
+        self.errors: list[dict]    = []
+
+    def add_step(self, func: Callable) -> "DataPipeline":
+        self.steps.append(func)
+        return self   # enables chaining: pipeline.add_step(f1).add_step(f2)
+
+    def run(self, data: Any) -> Any:
+        for step in self.steps:
+            try:
+                data = step(data)
+            except Exception as e:
+                self.errors.append({"step": step.__name__, "error": str(e)})
+                raise RuntimeError(f"Pipeline '{self.name}' failed at step '{step.__name__}': {e}")
+        return data
+
+# Usage
+def extract(data):   return pd.read_csv("input.csv")
+def transform(df):   return df.dropna().drop_duplicates()
+def load(df):        df.to_parquet("output.parquet", index=False); return df
+
+pipeline = DataPipeline("daily_etl")
+pipeline.add_step(extract).add_step(transform).add_step(load)
+result = pipeline.run(None)
+```
 
 ---
 
@@ -449,9 +542,28 @@ For production charts use `matplotlib` or `seaborn` directly.
 
 ---
 
+## Distributed & Cloud Stack
+
+The notes below cover each tool in the modern Python data engineering stack in depth. Read them in order for a guided learning path, or jump directly to the tool you need.
+
+| # | Topic | File | Covers |
+|---|---|---|---|
+| 1 | Apache Spark | [spark.md](spark.md) | PySpark DataFrames, transformations, window functions, joins, performance tuning |
+| 2 | Kafka & Pub/Sub | [kafka.md](kafka.md) | Topics, partitions, offsets, consumer groups, Python client, GCP Pub/Sub, DLQ patterns |
+| 3 | Apache Airflow | [airflow.md](airflow.md) | DAGs, operators, sensors, XComs, trigger rules, backfill, best practices |
+| 4 | Google BigQuery | [bigquery.md](bigquery.md) | Columnar architecture, partitioning, clustering, advanced SQL, loading/exporting data |
+| 5 | Data Modelling | [data_modelling.md](data_modelling.md) | Star schema, SCD Type 2, medallion architecture, surrogate keys, grain |
+| 6 | Advanced SQL | [sql.md](sql.md) | Window functions, CTEs, recursive queries, complex aggregations, data quality checks |
+| 7 | System Design | [system_design.md](system_design.md) | Batch vs streaming, Lambda/Kappa architecture, resilience patterns, circuit breaker |
+
+---
+
 ## Resources
 
-- 📓 **[Pandas Interactive Notebook](pandas_learn.ipynb)** — runnable examples for every section above
+- 📓 **[Pandas Interactive Notebook](pandas_learn.ipynb)** — runnable examples for every Pandas section above
 - 📖 **[Python Language Notes](../language/Python.md)** — prerequisite Python reference
 - 🌐 [Pandas Official Docs](https://pandas.pydata.org/docs/)
-- 🌐 [Pandas Cheat Sheet (PyDataScience)](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf)
+- 🌐 [Pandas Cheat Sheet](https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf)
+- 🌐 [PySpark Docs](https://spark.apache.org/docs/latest/api/python/)
+- 🌐 [Apache Airflow Docs](https://airflow.apache.org/docs/)
+- 🌐 [BigQuery SQL Reference](https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax)
